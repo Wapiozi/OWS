@@ -7,5 +7,5 @@ function love.update(dt)
 end
 
 function love.draw()
-
+	--fuck this shit
 end
