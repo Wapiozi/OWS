@@ -8,5 +8,6 @@ end
 
 function love.draw()
 	x = 1
+	--more code
 	--fuck this shit
 end
