@@ -1,0 +1,5 @@
+1) Draw
+2) Compare
+3) Player & Background
+4) Game
+
