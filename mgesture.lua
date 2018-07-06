@@ -23,8 +23,7 @@ function loadMovement()
 	if not prevMov then
 		prevMov = true
 		prevx, prevy = love.mouse.getPosition()
-	end
-	elseif 
+	else 
 		local direct = getDirection(prevx, prevy, x, y)
 		
 		

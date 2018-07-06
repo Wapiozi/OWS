@@ -1,4 +1,4 @@
-mgest = require("mgesture.lua")
+mgest = require("mgesture")
 local Player, Field, Enemy, Mana, AKM -- smth like place 4 drawing
 
 --[[
@@ -10,6 +10,8 @@ local Player, Field, Enemy, Mana, AKM -- smth like place 4 drawing
 ]]--
 
 -- Player implementation --------------------------------------------------------
+
+Mana = {fire = 1, water = 2, air = 3, earth = 4}
 
 Player = {}
 Player.__index = Player
@@ -25,10 +27,10 @@ function Player:new(field, mana, x, y, vx, vy)
 	self.vy = vy or 5
 	
 	self.magic_delay = md or 1
-	self.magic_fire  = mana[fire] or 0
-	self.magic_water = mana[water] or 0
-	self.magic_air   = mana[air] or 0
-	self.magic_earth = mana[earth] or 0
+	self.magic_fire  = Mana[fire] or 0
+	self.magic_water = Mana[water] or 0
+	self.magic_air   = Mana[air] or 0
+	self.magic_earth = Mana[earth] or 0
 
 	return self;
 end
@@ -110,8 +112,8 @@ function Enemy:collision(x1, y1, r1, x2, y2, r2)
 end
 
 function Enemy:update(dt)
-	self.x = self.x = self.vx * dt
-	self.y = self.y = self.vy * dt
+	self.x = self.vx * dt
+	self.y = self.vy * dt
 	
 	for object in pairs(self.field:getObjects()) do
 		if object.type == 'player' then
