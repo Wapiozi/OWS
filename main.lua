@@ -1,4 +1,5 @@
-local Player, Field, Background, Enemy, Mana, AKM -- smth like place 4 drawing
+mgest = require("mgesture.lua")
+local Player, Field, Enemy, Mana, AKM -- smth like place 4 drawing
 
 --[[
 	Player - is a magician
@@ -102,7 +103,7 @@ function Enemy:applyMagic(Dmg_fire, Dmg_water, Dmg_earth, Dmg_air)
 	end
 end
 
-local function Enemy:collision(x1, y1, r1, x2, y2, r2)
+function Enemy:collision(x1, y1, r1, x2, y2, r2)
 	local distance = (x2 - x1) ^ 2 + (y2 - y1) ^ 2
 	local rdist = (r1 + r2) ^ 2
 	return distance < rdist
@@ -111,7 +112,7 @@ end
 function Enemy:update(dt)
 	self.x = self.x = self.vx * dt
 	self.y = self.y = self.vy * dt
-
+	
 	for object in pairs(self.field:getObjects()) do
 		if object.type == 'player' then
 			if collide(self.x, self.y, self.radius, object.x, object.y, object.radius) then
