@@ -1,9 +1,5 @@
-<<<<<<< HEAD
 mgest = require("mgesture.lua")
 local Player, Field, Enemy, Mana, AKM -- smth like place 4 drawing
-=======
-local Player, Field, Background, Enemy, Mana, AKM -- smth like place 4 drawing
->>>>>>> b980e509633e2062317ed561298d41f0d27c5c73
 
 --[[
 	Player - is a magician
@@ -103,10 +99,7 @@ end
 function Enemy:update(dt)
 	self.x = self.x = self.vx * dt
 	self.y = self.y = self.vy * dt
-
-<<<<<<< HEAD
-	--for object in pairs(self.field:getObjects()) do
-=======
+	
 	for object in pairs(self.field:getObjects()) do
 		if object.type == 'player' then
 			if collide(self.x, self.y, self.radius, object.x, object.y, object.radius) then
@@ -145,7 +138,6 @@ end
 function Field:update(dt)
 	-- :P
 end
->>>>>>> b980e509633e2062317ed561298d41f0d27c5c73
 
 function Field:draw()
 	for object in pairs(self.objects) do
