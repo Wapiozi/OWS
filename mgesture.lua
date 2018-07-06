@@ -11,9 +11,7 @@ local function getDirection(px, py, nx, ny)
 	gr.print(tostring(px) .. "  " .. tostring(py) .. "  " .. tostring(nx) .. "  " .. tostring(ny), 100, 200)
 	
 	gr.line(px, py, nx, ny)
-	gr.line(nx, py, nx, ny)
-	gr.line(px, py, nx, py)
-	
+
 	local xx = nx - px
 	local yy = ny - py
 	local mv = 0
@@ -32,9 +30,6 @@ local function getDirection(px, py, nx, ny)
 	elseif (xx >= 0) and (yy >= 0) then 
 		res = math.atan(yy/xx)*57.2958 
 	end
-	
-	gr.line(400, 400, 400+xx, 400)
-	gr.line(400+xx, 400, 400+xx, 400+yy)
 	
 	if xx == 0 then xx = 0.00001 end
 	
@@ -57,8 +52,6 @@ function loadMovement()
 	else 
 		
 		x, y = love.mouse.getPosition()
-		local direct = getDirection(prevx, prevy, x, y)
-		love.graphics.print(tostring(direct), 100, 100)
 		
 	end
 end
