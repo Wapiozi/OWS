@@ -56,7 +56,7 @@ Enemy = {}
 Enemy.__index = Enemy
 Enemy.type = 'enemy'
 
-function Enemy:new(field, hp, x, y, vx, vy, red) -- + class of enemy, warior, magician..
+function Enemy:new(field, hp, x, y, vx, vy) -- + class of enemy, warior, magician..
 	self = setmetatable({}, self)
 	self.x = x 
 	self.y = y
@@ -67,11 +67,24 @@ function Enemy:new(field, hp, x, y, vx, vy, red) -- + class of enemy, warior, ma
 
 	 -- also, there should be some agilities of different classes
 	 -- for ex. immortal, reduce fire dmg or smth like that
+	red = {}
+	self:randomGen(red)
 	self.fire_r  = red[f] -- if red[f] = 0 then fire cant affect
 	self.earth_r = red[e]
 	self.water_r = red[w]
 	self.air_r   = red[a]
 	return self
+end
+
+function Enemy:randomGen(red)
+	red[f] = math.random(0,3)
+	red[e] = math.random(0,3)
+	red[w] = math.random(0,3)
+	red[a] = math.random(0,3)
+
+	if red[f] + red[e] + red[w] + red[a] < 3 then
+		self:randomGen(red)
+	end 
 end
 
 function Enemy:applyMagic(Dmg_fire, Dmg_water, Dmg_earth, Dmg_air)
@@ -109,7 +122,10 @@ function Enemy:update(dt)
 end
 
 function Enemy:draw()
-	love.graphics.draw(PlayerImg, 100, 100)
+	-- there should be more enemies sprites
+	-- self:choose_sprite(red) 
+	-- 		find max red[] and choose a sprite 
+	love.graphics.draw(EnemyImg, 100, 100)
 end	
 
 -- Field Implementation --------------------------------------------------
@@ -153,13 +169,15 @@ function love.load(arg)
 	PlayerImg = love.graphics.newImage("Wizard.jpg")
 	EnemyImg  = love.graphics.newImage("Enemy.jpg")
 	-- by now there will be only one kind of enemies
+	Field:init()
 end
 
 function love.update(dt)
-
+	Field:update()
 end
 
 function love.draw()
 	--so this is game
-	--this game is shit
+	--this game is not shit
+	Field:draw()
 end
