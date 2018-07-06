@@ -146,7 +146,7 @@ function Field:init()
 end
 
 function Field:spawn(objects)
-	self.objects[object] = object
+	--self.objects[object] = object
 end
 
 function Field:destroy(object)
@@ -180,6 +180,7 @@ function love.update(dt)
 end
 
 function love.draw()
+	loadMovement()
 	--so this is game
 	--this game is not shit
 	Field:draw()
