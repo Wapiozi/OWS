@@ -4,8 +4,8 @@ prevx, prevy = love.mouse.getPosition()
 x, y = love.mouse.getPosition()
 prevMov = false
 prevDirect = null
-toler = 20
-angToler = 22.5
+toler = 20		--line tolerance
+angToler = 22.5  --angle tolerance
 
 --[[
 Angles:
@@ -53,9 +53,11 @@ local function getDirection(px, py, nx, ny)
 	return res
 end
 
+gest = {}
+lastIn = 1
+
 function loadMovement()
-	gest = {}
-	lastIn = 1
+	
 	
 	if love.mouse.isDown(1) then
 		x, y = love.mouse.getPosition()
@@ -63,8 +65,6 @@ function loadMovement()
 			local direct = getDirection(prevx, prevy, x, y)
 			prevx = x
 			prevy = y
-			
-			love.graphics.print(tostring(direct), 100, 200)
 			
 			local dir = 0
 			
@@ -96,7 +96,7 @@ function loadMovement()
 				gest[lastIn] = dir
 			
 			end
-			love.graphics.print(tostring(dir), 100, 100)
+			gr.print(tostring(dir), 100, 100)
 		end
 	else 
 		prevx, prevy = love.mouse.getPosition()
