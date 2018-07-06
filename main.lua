@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 mgest = require("mgesture.lua")
 local Player, Field, Enemy, Mana, AKM -- smth like place 4 drawing
+=======
+local Player, Field, Background, Enemy, Mana, AKM -- smth like place 4 drawing
+>>>>>>> b980e509633e2062317ed561298d41f0d27c5c73
 
 --[[
 	Player - is a magician
@@ -100,8 +104,56 @@ function Enemy:update(dt)
 	self.x = self.x = self.vx * dt
 	self.y = self.y = self.vy * dt
 
+<<<<<<< HEAD
 	--for object in pairs(self.field:getObjects()) do
+=======
+	for object in pairs(self.field:getObjects()) do
+		if object.type == 'player' then
+			if collide(self.x, self.y, self.radius, object.x, object.y, object.radius) then
+				-- end of game
+			end	
+		end -- or elseif if more options
+	end
+end
 
+function Enemy:draw()
+	love.graphics.draw(PlayerImg, 100, 100)
+end	
+
+-- Field Implementation --------------------------------------------------
+
+Field = {}
+Field.type = 'Field'
+
+function Field:init()
+	-- self.score, when score will bw availiable
+	self.objects = {}
+
+	local player = Player:new(self, 100, 200)
+	print(player)
+	self:spawn(player)
+end
+
+function Field:spawn(objects)
+	self.objects[object] = object
+end
+
+function Field:destroy(object)
+	self.objects[object] = nil
+end
+
+function Field:update(dt)
+	-- :P
+end
+>>>>>>> b980e509633e2062317ed561298d41f0d27c5c73
+
+function Field:draw()
+	for object in pairs(self.objects) do
+		if object.draw then
+			object:draw()
+		end
+	end
+	-- print score
 end
 -- Standart ------------------------------------------------------------
 
