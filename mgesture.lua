@@ -102,6 +102,7 @@ function loadMovement()
 			end
 			gr.print(tostring(dir), 100, 100)
 			lastMovement = dir
+			prevDirect = dir
 		end
 	else 
 		if prevState == 0 then 

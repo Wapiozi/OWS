@@ -29,17 +29,19 @@ function Player:new(mana, x, y)
 	self.magic_air   = Mana[air] or 0
 	self.magic_earth = Mana[earth] or 0
 	
+	self.movDirection = 0    --   1 right      -1 left      0 no
+	
 	self.body = love.physics.newBody(world, self.x, self.y, "dynamic")  --create new dynamic body in world
 	self.body:setMass(70) -- 70kg wizard
 	self.body:setX(x or 100)
 	self.body:setY(y or 100)
 	self.body:setAngle(0)
-	--self.body:setFixedRotation(true)
+	self.body:setFixedRotation(true)
 	
-	self.shape = love.physics.newRectangleShape(50, 200)      --wizard figure
+	self.shape = love.physics.newRectangleShape(80, 120)      --wizard figure
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setRestitution(0.1)
-	self.fixture:setFriction(1000)
+	self.fixture:setFriction(5)
 	
 	return self;
 end
@@ -204,15 +206,36 @@ function love.update(dt)
 	if gesture ~= nil then 
 		while gesture[i] ~= 10 do   --check for end code
 			if gesture[i] == 1 then 
-				player1.body:applyLinearImpulse(10000, 0) 
-			elseif 
-				gesture[i] == 5 then player1.body:applyLinearImpulse(-10000, 0) 
-			elseif 
-				gesture[i] == 7 then player1.body:applyLinearImpulse(0, 10000)
+				if player1.movDirection >= 0 then 
+					player1.movDirection = 1
+				else
+					player1.movDirection = 0
+				end
+			elseif gesture[i] == 5 then 
+				if player1.movDirection <= 0 then 
+					player1.movDirection = -1
+				else
+					player1.movDirection = 0
+				end
+			elseif gesture[i] == 7 then 
+				player1.body:applyLinearImpulse(0, -6000)
 			end
 			i = i+1
 		end
 	end
+	
+	local xveloc, yveloc = player1.body:getLinearVelocity()
+	
+	if (xveloc < 180) and (player1.movDirection == 1) then player1.body:applyForce(100000, 0) 
+	elseif (xveloc > -180) and (player1.movDirection == -1) then player1.body:applyForce(-100000, 0) 
+	elseif (player1.movDirection == 0) then
+		if (xveloc > 3) then 
+			player1.body:applyForce(-10000, 0)
+		elseif (xveloc < -3) then 
+			player1.body:applyForce(10000, 0)
+		end
+	end
+			
 	
 	world:update(dt) --update the whole world
 end
