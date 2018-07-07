@@ -4,7 +4,7 @@ world = null
 
 --[[
 	Player - is a magician
-	Field - is a background and all obstacles mot AI
+	Field - is a background and all obstacles mot AI      --and is useless
 	Enemy - is an obstacle with special power and defense agil.
 	Mana - is a value of different kinds magic elements for ex Earth, Water...
 	AKM - all kind of magic, all possible magic shit	
@@ -29,16 +29,17 @@ function Player:new(mana, x, y)
 	self.magic_air   = Mana[air] or 0
 	self.magic_earth = Mana[earth] or 0
 	
-	self.body = love.physics.newBody(world, self.x, self.y, "dynamic")
+	self.body = love.physics.newBody(world, self.x, self.y, "dynamic")  --create new dynamic body in world
 	self.body:setMass(70) -- 70kg wizard
-	self.body:applyForce(20, 0) --20N to player
 	self.body:setX(x or 100)
 	self.body:setY(y or 100)
 	self.body:setAngle(0)
+	--self.body:setFixedRotation(true)
 	
-	self.shape = love.physics.newRectangleShape(50, 200)
+	self.shape = love.physics.newRectangleShape(50, 200)      --wizard figure
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setRestitution(0.1)
+	self.fixture:setFriction(1000)
 	
 	return self;
 end
@@ -189,14 +190,29 @@ function love.load(arg)
 	EnemyImg  = love.graphics.newImage("Enemy.jpg")
 	-- by now there will be only one kind of enemies
 	
-	player1 = Player:new(100, 100, 100)
+	player1 = Player:new(100, 100, 500)
 	
 	
-	love.window.setMode(700, 500)
+	love.window.setMode(1600, 500)
 end
 
 function love.update(dt)
 	Field:update()
+	
+	gesture = getLastMovement()
+	local i = 1
+	if gesture ~= nil then 
+		while gesture[i] ~= 10 do   --check for end code
+			if gesture[i] == 1 then 
+				player1.body:applyLinearImpulse(10000, 0) 
+			elseif 
+				gesture[i] == 5 then player1.body:applyLinearImpulse(-10000, 0) 
+			elseif 
+				gesture[i] == 7 then player1.body:applyLinearImpulse(0, 10000)
+			end
+			i = i+1
+		end
+	end
 	
 	world:update(dt) --update the whole world
 end
