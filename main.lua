@@ -1,5 +1,6 @@
 mgest = require("mgesture")
 local Player, Field, Enemy, Mana, AKM -- smth like place 4 drawing
+world = null
 
 --[[
 	Player - is a magician
@@ -7,6 +8,8 @@ local Player, Field, Enemy, Mana, AKM -- smth like place 4 drawing
 	Enemy - is an obstacle with special power and defense agil.
 	Mana - is a value of different kinds magic elements for ex Earth, Water...
 	AKM - all kind of magic, all possible magic shit	
+	
+	world - is main world
 ]]--
 
 -- Player implementation --------------------------------------------------------
@@ -17,25 +20,30 @@ Player = {}
 Player.__index = Player
 Player.type = 'player'
 
-function Player:new(field, mana, x, y, vx, vy)
+function Player:new(mana, x, y)
 	self = setmetatable({}, self)
-	self.field = field
-	self.x = x or 100
-	self.y = y or 100
-	self.angle = 0
-	self.vx = vx or 5
-	self.vy = vy or 5
 	
 	self.magic_delay = md or 1
 	self.magic_fire  = Mana[fire] or 0
 	self.magic_water = Mana[water] or 0
 	self.magic_air   = Mana[air] or 0
 	self.magic_earth = Mana[earth] or 0
-
+	
+	self.body = love.physics.newBody(world, self.x, self.y, "dynamic")
+	self.body:setMass(70) -- 70kg wizard
+	self.body:applyForce(20, 0) --20N to player
+	self.body:setX(x or 100)
+	self.body:setY(y or 100)
+	self.body:setAngle(0)
+	
+	self.shape = love.physics.newRectangleShape(50, 200)
+	self.fixture = love.physics.newFixture(self.body, self.shape)
+	self.fixture:setRestitution(0.1)
+	
 	return self;
 end
 
-function Player:update(dt)
+function Player:update(dt)   --this function is useless since we have love.physics
 	self.magic_delay = self.magic_delay - dt
 
 	-- in making phase, mouse is used
@@ -50,8 +58,9 @@ function Player:update(dt)
 end
 
 function Player:draw()
-	love.graphics.draw(PlayerImg, 100, 100)
+	--love.graphics.draw(PlayerImg, 100, 100)
 	-- by now, it is only like that :P
+	love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
 end
 
 -- Enemy Implementation --------------------------------------------
@@ -105,13 +114,13 @@ function Enemy:applyMagic(Dmg_fire, Dmg_water, Dmg_earth, Dmg_air)
 	end
 end
 
-function Enemy:collision(x1, y1, r1, x2, y2, r2)
+function Enemy:collision(x1, y1, r1, x2, y2, r2)  --this function is useless since we have love.physics
 	local distance = (x2 - x1) ^ 2 + (y2 - y1) ^ 2
 	local rdist = (r1 + r2) ^ 2
 	return distance < rdist
 end
 
-function Enemy:update(dt)
+function Enemy:update(dt)  --this function is useless since we have love.physics
 	self.x = self.vx * dt
 	self.y = self.vy * dt
 	
@@ -140,9 +149,9 @@ function Field:init()
 	-- self.score, when score will bw availiable
 	self.objects = {}
 
-	local player = Player:new(self, 100, 200)
-	print(player)
-	self:spawn(player)
+	--local player = Player:new(self, 100, 200)
+	--print(player)
+	--self:spawn(player)
 end
 
 function Field:spawn(objects)
@@ -168,20 +177,41 @@ end
 -- Standart ------------------------------------------------------------
 
 function love.load(arg)
+	world = love.physics.newWorld(0, 9.81*100) --we need the whole world
+	
+	ground = {}
+	ground.shape = love.physics.newRectangleShape(10000, 10)
+	ground.body = love.physics.newBody(world, 0, 500, "static")
+	ground.fixture = love.physics.newFixture(ground.body, ground.shape)
+	
 	-- Sprites
 	PlayerImg = love.graphics.newImage("Wizard.jpg")
 	EnemyImg  = love.graphics.newImage("Enemy.jpg")
 	-- by now there will be only one kind of enemies
-	Field:init()
+	
+	player1 = Player:new(100, 100, 100)
+	
+	
+	love.window.setMode(700, 500)
 end
 
 function love.update(dt)
 	Field:update()
+	
+	world:update(dt) --update the whole world
 end
 
 function love.draw()
 	loadMovement()
 	--so this is game
 	--this game is not shit
-	Field:draw()
+	
+	--Field:draw()
+	
+	love.graphics.setColor(72, 160, 14)
+	love.graphics.polygon("fill", ground.body:getWorldPoints(ground.shape:getPoints()))
+	
+	love.graphics.setColor(193, 47, 14)
+	player1:draw()
+	
 end
