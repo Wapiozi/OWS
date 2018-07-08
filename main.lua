@@ -143,6 +143,8 @@ end
 
 function love.update(dt)
 	
+	
+	----------------PROCESSING GESTURE----------------------
 	gesture = getLastMovement()
 	local i = 1
 	if gesture ~= nil then 
@@ -165,7 +167,10 @@ function love.update(dt)
 			i = i+1
 		end
 	end
+	-------------------------------------------------------
 	
+	
+	-----------set speed-----------------------------------
 	local xveloc, yveloc = player1.body:getLinearVelocity()
 	
 	if (xveloc < 180) and (player1.movDirection == 1) then player1.body:applyForce(100000, 0) 
@@ -177,6 +182,7 @@ function love.update(dt)
 			player1.body:applyForce(10000, 0)
 		end
 	end
+	------------------------------------------------------
 			
 	
 	world:update(dt) --update the whole world
