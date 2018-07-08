@@ -31,10 +31,8 @@ function Player:new(mana, x, y)
 	
 	self.movDirection = 0    --   1 right      -1 left      0 no
 	
-	self.body = love.physics.newBody(world, self.x, self.y, "dynamic")  --create new dynamic body in world
+	self.body = love.physics.newBody(world, x, y, "dynamic")  --create new dynamic body in world
 	self.body:setMass(70) -- 70kg wizard
-	self.body:setX(x or 100)
-	self.body:setY(y or 100)
 	self.body:setAngle(0)
 	self.body:setFixedRotation(true)
 	
@@ -71,23 +69,32 @@ Enemy = {}
 Enemy.__index = Enemy
 Enemy.type = 'enemy'
 
-function Enemy:new(field, hp, x, y, vx, vy) -- + class of enemy, warior, magician..
+function Enemy:new(hp, x, y) -- + class of enemy, warior, magician..
 	self = setmetatable({}, self)
-	self.x = x 
-	self.y = y
-	self.vx = vx
-	self.vy = vy
-	self.radius = CollisionMask or 15; 
+	self.body = love.physics.newBody(world, x, y, "dynamic")
+	self.body:setMass(70)
+	self.body:setAngle(0)
+	self.body:setFixedRotation(true)
+	
+	self.shape = love.physics.newRectangleShape(80, 120)
+	self.fixture = love.physics.newFixture(self.body, self.shape)
+	self.fixture:setRestitution(0.1)
+	self.fixture:setFriction(5)
+	
 	self.hp = hp
 
 	 -- also, there should be some agilities of different classes
 	 -- for ex. immortal, reduce fire dmg or smth like that
+	 
+	--[[
 	red = {}
-	self:randomGen(red)
+	self:randomGen(red)  --WTF IS THAT???????
 	self.fire_r  = red[f] -- if red[f] = 0 then fire cant affect
 	self.earth_r = red[e]
 	self.water_r = red[w]
 	self.air_r   = red[a]
+	]]--
+	
 	return self
 end
 
@@ -140,7 +147,10 @@ function Enemy:draw()
 	-- there should be more enemies sprites
 	-- self:choose_sprite(red) 
 	-- 		find max red[] and choose a sprite 
-	love.graphics.draw(EnemyImg, 100, 100)
+	--love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
+	
+	local x, y = self.body:getWorldPoints(self.shape:getPoints())
+	love.graphics.draw(EnemyImg, x, y)
 end	
 
 -- Field Implementation --------------------------------------------------
@@ -189,10 +199,11 @@ function love.load(arg)
 	
 	-- Sprites
 	PlayerImg = love.graphics.newImage("Wizard.jpg")
-	EnemyImg  = love.graphics.newImage("Enemy.jpg")
+	EnemyImg  = love.graphics.newImage("Enemy.png")
 	-- by now there will be only one kind of enemies
 	
 	player1 = Player:new(100, 100, 500)
+	enem = Enemy:new(500, 100, 500)
 	
 	
 	love.window.setMode(1600, 500)
@@ -247,10 +258,13 @@ function love.draw()
 	
 	--Field:draw()
 	
-	love.graphics.setColor(72, 160, 14)
+	love.graphics.setColor(0.5, 0.9, 0.1)
 	love.graphics.polygon("fill", ground.body:getWorldPoints(ground.shape:getPoints()))
 	
-	love.graphics.setColor(193, 47, 14)
+	love.graphics.setColor(0.1, 0.2, 0.9)
 	player1:draw()
+	
+	love.graphics.setColor(1, 1, 1)
+	enem:draw()
 	
 end
