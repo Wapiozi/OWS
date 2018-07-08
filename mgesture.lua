@@ -6,6 +6,9 @@ prevMov = false
 prevDirect = null
 toler = 20		--line tolerance
 angToler = 22.5  --angle tolerance
+lastMovement = {}
+got = 0       --there is free unused gesture
+prevState = 1   --needed for right got status
 
 --[[
 Angles:
@@ -60,6 +63,7 @@ function loadMovement()
 	
 	
 	if love.mouse.isDown(1) then
+		prevState = 0
 		x, y = love.mouse.getPosition()
 		if (math.abs(x-prevx) > toler) or (math.abs(y-prevy) > toler) then
 			local direct = getDirection(prevx, prevy, x, y)
@@ -97,8 +101,28 @@ function loadMovement()
 			
 			end
 			gr.print(tostring(dir), 100, 100)
+			lastMovement = dir
+			prevDirect = dir
 		end
 	else 
+		if prevState == 0 then 
+			got = 1 
+			lastIn = lastIn + 1
+			gest[lastIn] = 10   --end code
+			prevState = 1
+		end
 		prevx, prevy = love.mouse.getPosition()
+		lastIn = 1
+		prevDirect = null
+		if got == 0 then gest = {} end
+	end
+end
+
+function getLastMovement() 
+	if got > 0 then 
+		got = got - 1
+		return gest
+	else
+		return nil
 	end
 end
