@@ -1,7 +1,7 @@
 mgest = require("mgesture")
-MAGIC = require("magic")
+libmagic = require("magic")
 local Player, Field, Enemy, Mana, AKM -- smth like place 4 drawing
-world = null
+world = nil
 
 --[[
 	Player - is a magician
@@ -123,6 +123,7 @@ end
 -- Standart ------------------------------------------------------------
 
 function love.load(arg)
+	bullets = MagicCont:new()
 	world = love.physics.newWorld(0, 9.81*100) --we need the whole world
 	
 	ground = {}
@@ -130,17 +131,24 @@ function love.load(arg)
 	ground.body = love.physics.newBody(world, 0, 720, "static")
 	ground.fixture = love.physics.newFixture(ground.body, ground.shape)
 	
+	wall = {}
+	wall.shape = love.physics.newRectangleShape(10, 10000)
+	wall.body = love.physics.newBody(world, 1280, 0, "static")
+	wall.fixture = love.physics.newFixture(wall.body, wall.shape)
+	
 	-- Sprites
 	PlayerImg = love.graphics.newImage("Wizard.jpg")
 	EnemyImg  = love.graphics.newImage("Enemy.png")
 	-- by now there will be only one kind of enemies
 	
 	player1 = Player:new(100, 100, 500)
-	enem = Enemy:new(500, 100, 500)
+	enem = Enemy:new(500, 1000, 500)
 	
 	
 	love.window.setMode(1280, 720)
 end
+
+
 
 function love.update(dt)
 	
@@ -164,6 +172,8 @@ function love.update(dt)
 				end
 			elseif gesture[i] == 7 then 
 				player1.body:applyLinearImpulse(0, -6000)
+			elseif gesture[i] == 2 then 
+				bullets:add(Magic:new(player1.body:getX(), player1.body:getY()-120, 50, 1, "ss"))
 			end
 			i = i+1
 		end
@@ -196,11 +206,14 @@ function love.draw()
 	
 	love.graphics.setColor(0.5, 0.9, 0.1)
 	love.graphics.polygon("fill", ground.body:getWorldPoints(ground.shape:getPoints()))
+	love.graphics.polygon("fill", wall.body:getWorldPoints(wall.shape:getPoints()))
 	
 	love.graphics.setColor(0.1, 0.2, 0.9)
 	player1:draw()
 	
 	love.graphics.setColor(1, 1, 1)
 	enem:draw()
+	
+	bullets:CheckDraw()
 	
 end
