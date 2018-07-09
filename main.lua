@@ -1,4 +1,5 @@
 mgest = require("mgesture")
+MAGIC = require("magic")
 local Player, Field, Enemy, Mana, AKM -- smth like place 4 drawing
 world = null
 
@@ -126,7 +127,7 @@ function love.load(arg)
 	
 	ground = {}
 	ground.shape = love.physics.newRectangleShape(10000, 10)
-	ground.body = love.physics.newBody(world, 0, 500, "static")
+	ground.body = love.physics.newBody(world, 0, 720, "static")
 	ground.fixture = love.physics.newFixture(ground.body, ground.shape)
 	
 	-- Sprites
@@ -138,7 +139,7 @@ function love.load(arg)
 	enem = Enemy:new(500, 100, 500)
 	
 	
-	love.window.setMode(1600, 500)
+	love.window.setMode(1280, 720)
 end
 
 function love.update(dt)
