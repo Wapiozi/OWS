@@ -44,20 +44,6 @@ function Player:new(mana, x, y)
 	return self;
 end
 
-function Player:update(dt)   --this function is useless since we have love.physics
-	self.magic_delay = self.magic_delay - dt
-
-	-- in making phase, mouse is used
-
-	if love.mouse.isDown(1) and self.magic_delay < 0 then
-		-- drawing process
-	end
-
-	self.x = self.x + self.vx * dt
-	self.y = self.y + self.vy * dt
-
-end
-
 function Player:draw()
 	--love.graphics.draw(PlayerImg, 100, 100)
 	-- by now, it is only like that :P
@@ -120,26 +106,6 @@ function Enemy:applyMagic(Dmg_fire, Dmg_water, Dmg_earth, Dmg_air)
 
 	if self.hp < 0 then
 		-- add score
-		self.field:destroy(self)
-	end
-end
-
-function Enemy:collision(x1, y1, r1, x2, y2, r2)  --this function is useless since we have love.physics
-	local distance = (x2 - x1) ^ 2 + (y2 - y1) ^ 2
-	local rdist = (r1 + r2) ^ 2
-	return distance < rdist
-end
-
-function Enemy:update(dt)  --this function is useless since we have love.physics
-	self.x = self.vx * dt
-	self.y = self.vy * dt
-	
-	for object in pairs(self.field:getObjects()) do
-		if object.type == 'player' then
-			if collide(self.x, self.y, self.radius, object.x, object.y, object.radius) then
-				-- end of game
-			end	
-		end -- or elseif if more options
 	end
 end
 
@@ -153,40 +119,6 @@ function Enemy:draw()
 	love.graphics.draw(EnemyImg, x, y)
 end	
 
--- Field Implementation --------------------------------------------------
-
-Field = {}
-Field.type = 'Field'
-
-function Field:init()
-	-- self.score, when score will bw availiable
-	self.objects = {}
-
-	--local player = Player:new(self, 100, 200)
-	--print(player)
-	--self:spawn(player)
-end
-
-function Field:spawn(objects)
-	--self.objects[object] = object
-end
-
-function Field:destroy(object)
-	self.objects[object] = nil
-end
-
-function Field:update(dt)
-	-- :P
-end
-
-function Field:draw()
-	for object in pairs(self.objects) do
-		if object.draw then
-			object:draw()
-		end
-	end
-	-- print score
-end
 -- Standart ------------------------------------------------------------
 
 function love.load(arg)
@@ -210,8 +142,9 @@ function love.load(arg)
 end
 
 function love.update(dt)
-	Field:update()
 	
+	
+	----------------PROCESSING GESTURE----------------------
 	gesture = getLastMovement()
 	local i = 1
 	if gesture ~= nil then 
@@ -234,7 +167,10 @@ function love.update(dt)
 			i = i+1
 		end
 	end
+	-------------------------------------------------------
 	
+	
+	-----------set speed-----------------------------------
 	local xveloc, yveloc = player1.body:getLinearVelocity()
 	
 	if (xveloc < 180) and (player1.movDirection == 1) then player1.body:applyForce(100000, 0) 
@@ -246,6 +182,7 @@ function love.update(dt)
 			player1.body:applyForce(10000, 0)
 		end
 	end
+	------------------------------------------------------
 			
 	
 	world:update(dt) --update the whole world
@@ -255,8 +192,6 @@ function love.draw()
 	loadMovement()
 	--so this is game
 	--this game is not shit
-	
-	--Field:draw()
 	
 	love.graphics.setColor(0.5, 0.9, 0.1)
 	love.graphics.polygon("fill", ground.body:getWorldPoints(ground.shape:getPoints()))
