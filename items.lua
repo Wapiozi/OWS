@@ -2,22 +2,26 @@ Item = {}
 Item.__index = Item
 
 function Item:init() 
-	WandObj{			
-		image = WandSdImg -- Wand standart image 
-		size = ItemSize
-		init = nil
+	WandObj = {			
+		image = WandSdImg, -- Wand standart image 
+		size = ItemSize,
+		init = nil,
 	}
 
-	ClothObj{
-		image = ClothSdImg --Clothes standart image
-		size = ItemSize
-		init = nil
+	ClothObj = {
+		image = ClothSdImg, --Clothes standart image
+		size = ItemSize,
+		init = nil,
 	}
 	-- more to add
 end
 
 function Item:new(x, y, itemID, SpecialImg)
 	self = setmetatable({}, self)
+
+	self.x = x
+	self.y = y
+	self.r = 5
 
 	self.type = itemID.type 
 
@@ -36,6 +40,12 @@ function Item:new(x, y, itemID, SpecialImg)
 	self.body:setAngle(45)
 	return self
 end
+
+function Item:checkcollis(x, y){
+	if math.abs(self.x - x) <= self.r and math.abs(self.y - y) <= self.r then
+		return true
+	end
+}
 
 function Item:draw()
 	local x, y = self.body:getWorldPoints(self.shape:getPoints())
