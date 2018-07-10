@@ -19,7 +19,10 @@ function Magic:new(x, y, vx, vy, type, dmg)
 	
 	self.image = love.graphics.newImage("Fireball.png")
 	
+	self.shader = shad
+	
 	self.body:applyLinearImpulse(1000*vx, 1000*vy)
+	self.body:setAngle(45)
 	return self
 end
 
@@ -49,8 +52,11 @@ end
 function MagicCont:CheckDraw()
 	local tmp = self.list
 	
+	
 	while tmp ~= nil do 
+		love.graphics.setShader(tmp.value.shader)
 		tmp.value:draw()
+		love.graphics.setShader()
 		tmp = tmp.next
 	end
 end

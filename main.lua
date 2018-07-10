@@ -123,29 +123,7 @@ end
 -- Standart ------------------------------------------------------------
 
 function love.load(arg)
-	bullets = MagicCont:new()
-	world = love.physics.newWorld(0, 9.81*100) --we need the whole world
-	
-	ground = {}
-	ground.shape = love.physics.newRectangleShape(10000, 10)
-	ground.body = love.physics.newBody(world, 0, 720, "static")
-	ground.fixture = love.physics.newFixture(ground.body, ground.shape)
-	
-	wall = {}
-	wall.shape = love.physics.newRectangleShape(10, 10000)
-	wall.body = love.physics.newBody(world, 1280, 0, "static")
-	wall.fixture = love.physics.newFixture(wall.body, wall.shape)
-	
-	-- Sprites
-	PlayerImg = love.graphics.newImage("Wizard.jpg")
-	EnemyImg  = love.graphics.newImage("Enemy.png")
-	-- by now there will be only one kind of enemies
-	
-	player1 = Player:new(100, 100, 500)
-	enem = Enemy:new(500, 1000, 500)
-	
-	
-	love.window.setMode(1280, 720)
+	-----------RESOURCES LOAD----------------------------------
 	
 	shad = love.graphics.newShader[[
 		extern number time;
@@ -161,6 +139,36 @@ function love.load(arg)
 			return col;
 		}
 	]]
+	
+	-- Sprites
+	PlayerImg = love.graphics.newImage("Wizard.jpg")
+	EnemyImg  = love.graphics.newImage("Enemy.png")
+	-- by now there will be only one kind of enemies
+	
+	--------------------------------------------------------------
+	
+	bullets = MagicCont:new()
+	world = love.physics.newWorld(0, 9.81*100) --we need the whole world
+	
+	ground = {}
+	ground.shape = love.physics.newRectangleShape(10000, 10)
+	ground.body = love.physics.newBody(world, 0, 720, "static")
+	ground.fixture = love.physics.newFixture(ground.body, ground.shape)
+	
+	wall = {}
+	wall.shape = love.physics.newRectangleShape(10, 10000)
+	wall.body = love.physics.newBody(world, 1280, 0, "static")
+	wall.fixture = love.physics.newFixture(wall.body, wall.shape)
+	
+	
+	
+	player1 = Player:new(100, 100, 500)
+	enem = Enemy:new(500, 1000, 500)
+	
+	
+	love.window.setMode(1280, 720)
+	
+	
 end
 
 
@@ -230,11 +238,5 @@ function love.draw()
 	enem:draw()
 	
 	shad:send("time", love.timer.getTime()*20)
-	love.graphics.setShader(shad)
 	bullets:CheckDraw()
-	love.graphics.setShader()
-	
-	
-	
-	
 end
