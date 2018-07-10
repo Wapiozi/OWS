@@ -43,6 +43,8 @@ function Player:new(mana, x, y)
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setRestitution(0.1)
 	self.fixture:setFriction(5)
+
+	self:body:setUserData(self)
 	
 	return self;
 end
@@ -84,6 +86,8 @@ function Enemy:new(hp, x, y) -- + class of enemy, warior, magician..
 	self.air_r   = red[a]
 	]]--
 	
+	self:body:setUserData(self)
+
 	return self
 end
 
@@ -125,7 +129,7 @@ end
 --------------WORLD CALLBACK--------------------------------------
 
 function beginContact(body_a, body_b, collision)
- 
+	if body_a == "player"
 end
  
 function endContact(body_a, body_b, collision)
