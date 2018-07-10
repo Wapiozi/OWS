@@ -25,7 +25,7 @@ function Item:new(x, y, itemID, SpecialImg)
 
 	self.type = itemID.type 
 
-	if SpecialImg <> nil then
+	if SpecialImg ~= nil then
 		self.type.image = SpecialImg
 	end
 	
@@ -41,11 +41,11 @@ function Item:new(x, y, itemID, SpecialImg)
 	return self
 end
 
-function Item:checkcollis(x, y){
+function Item:checkcollis(x, y) 
 	if math.abs(self.x - x) <= self.r and math.abs(self.y - y) <= self.r then
 		return true
 	end
-}
+end
 
 function Item:draw()
 	local x, y = self.body:getWorldPoints(self.shape:getPoints())

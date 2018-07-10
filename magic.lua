@@ -99,8 +99,12 @@ function Magic:new(x, y, vx, vy, type, dmg)
 	self.image = self.type.image
 	self.shader = self.type.shader
 	
+	if self.type.Init ~= nil then self.type.Init() end 
+	
 	self.body:applyLinearImpulse(self.type.ImpulseCoef*vx, self.type.ImpulseCoef*vy)
 	self.body:setAngle(45)
+	
+	self.body:setUserData(self)
 	
 	return self
 end
