@@ -144,7 +144,7 @@ end
 function love.load(arg)
 	-----------RESOURCES LOAD----------------------------------
 	
-	shad = love.graphics.newShader[[
+	FireShader = love.graphics.newShader[[
 		extern number time;
 	
 		vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords ){
@@ -163,7 +163,7 @@ function love.load(arg)
 	PlayerImg = love.graphics.newImage("Wizard.jpg")
 	EnemyImg  = love.graphics.newImage("Enemy.png")
 	FireballImg = love.graphics.newImage("Fireball.png")
-	PalkaImg = love.graqphics.newImage("palka.png")
+	PalkaImg = love.graphics.newImage("palka.png")
 	-- by now there will be only one kind of enemies
 	
 	--------------------------------------------------------------
@@ -260,6 +260,6 @@ function love.draw()
 	love.graphics.setColor(1, 1, 1)
 	enem:draw()
 	
-	shad:send("time", love.timer.getTime()*20)
+	FireShader:send("time", love.timer.getTime()*20)
 	bullets:CheckDraw()
 end
