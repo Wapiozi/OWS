@@ -92,7 +92,7 @@ function Enemy:randomGen(red)
 	red[w] = math.random(0,3)
 	red[a] = math.random(0,3)
 
-	if red[f] + red[e] + red[w] + red[a] < 3 then
+	if red[f] + red[e] + red[w] + red[a] < 3 and red[f] + red[e] + red[w] + red[a] > 8 then
 		self:randomGen(red)
 	end 
 end
@@ -100,9 +100,9 @@ end
 function Enemy:applyMagic(Dmg_fire, Dmg_water, Dmg_earth, Dmg_air)
 	-- check for special agil. of enemy , if no, then --> 
 	f = Dmg_fire  * self.fire_r
-	f = Dmg_water * self.water_r
-	f = Dmg_earth * self.earth_r
-	f = Dmg_air   * self.air_r
+	w = Dmg_water * self.water_r
+	e = Dmg_earth * self.earth_r
+	a = Dmg_air   * self.air_r
 	dmg = f + w + e + a
 	self.hp = self.hp - dmg
 
