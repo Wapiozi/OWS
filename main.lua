@@ -162,6 +162,7 @@ function love.load(arg)
 	-- Sprites
 	PlayerImg = love.graphics.newImage("Wizard.jpg")
 	EnemyImg  = love.graphics.newImage("Enemy.png")
+	FireballImg = love.graphics.newImage("Fireball.png")
 	-- by now there will be only one kind of enemies
 	
 	--------------------------------------------------------------
@@ -180,6 +181,8 @@ function love.load(arg)
 	wall.fixture = love.physics.newFixture(wall.body, wall.shape)
 	
 	bullets = MagicCont:new()
+	
+	Magic:init()
 	
 	player1 = Player:new(100, 100, 500)
 	enem = Enemy:new(500, 1000, 500)
@@ -215,7 +218,7 @@ function love.update(dt)
 			elseif gesture[i] == 7 then 
 				player1.body:applyLinearImpulse(0, -6000)
 			elseif gesture[i] == 2 then 
-				bullets:add(Magic:new(player1.body:getX()+30, player1.body:getY()-40, 50, 1, "ss"))
+				bullets:add(Magic:new(player1.body:getX()+30, player1.body:getY()-40, 50, 1, MagicTypeFire))
 			end
 			i = i+1
 		end

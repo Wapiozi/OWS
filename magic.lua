@@ -1,28 +1,44 @@
 Magic = {}
 Magic.__index = Magic
 
+function Magic:init()
+	MagicTypeFire = {
+		image = FireballImg,
+		shader = shad,
+		size = 20,
+		Restitution = 0,
+		Friction = 0.1,
+		Damage = 10,
+		ImpulseCoef = 1000,
+		mass = 1,
+		Init = nil,  --magic type function. Is called when created
+		Collis = nil --magic type function. Is called when collided with anything else
+	}
+end
+
 function Magic:new(x, y, vx, vy, type, dmg)
 	self = setmetatable({}, self)
 	
+	self.type = type
+	
 	self.body = love.physics.newBody(world, x, y, "dynamic")
-	self.body:setMass(1)
+	self.body:setMass(type.mass)
 	self.body:setBullet(true)
 	
 	
-	self.shape = love.physics.newRectangleShape(20, 20)
+	self.shape = love.physics.newRectangleShape(type.size, type.size)
 	self.fixture = love.physics.newFixture(self.body, self.shape)
-	self.fixture:setRestitution(0)
-	self.fixture:setFriction(0.1)
+	self.fixture:setRestitution(type.Restitution)
+	self.fixture:setFriction(type.Friction)
 	
-	self.type = type
-	self.damage = dmg
+	self.damage = self.type.Damage
 	
-	self.image = love.graphics.newImage("Fireball.png")
+	self.image = type.image
+	self.shader = self.type.shader
 	
-	self.shader = shad
-	
-	self.body:applyLinearImpulse(1000*vx, 1000*vy)
+	self.body:applyLinearImpulse(self.type.ImpulseCoef*vx, self.type.ImpulseCoef*vy)
 	self.body:setAngle(45)
+	
 	return self
 end
 
