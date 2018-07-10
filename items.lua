@@ -23,8 +23,9 @@ function Item:new(x, y, itemID, SpecialImg)
 
 	self.type = itemID.type 
 
-	if SpecialImg <> 0 then
+	if SpecialImg <> nil then
 		self.type.image = SpecialImg
+	end
 	
 	self.body = love.physics.newBody(world, x, y, "dynamic")
 	self.body:setMass(type.mass)
