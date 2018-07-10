@@ -21,7 +21,7 @@ function Item:new(x, y, itemID, SpecialImg)
 
 	self.x = x
 	self.y = y
-	self.r = 5
+	--self.r = 5
 
 	self.type = itemID.type 
 
@@ -38,14 +38,20 @@ function Item:new(x, y, itemID, SpecialImg)
 	self.image = self.type.image
 
 	self.body:setAngle(45)
+	self:body:setUserData(self)
 	return self
 end
 
-function Item:checkcollis(x, y) 
+--[[  look in main
+function Item:checkcollis(x, y)
+>>>>>>> 8f38de3b019bb08551a06734ffc39c2953474395
 	if math.abs(self.x - x) <= self.r and math.abs(self.y - y) <= self.r then
 		return true
 	end
 end
+<<<<<<< HEAD
+=======
+--]]
 
 function Item:draw()
 	local x, y = self.body:getWorldPoints(self.shape:getPoints())
