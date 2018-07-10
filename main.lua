@@ -120,6 +120,25 @@ function Enemy:draw()
 	love.graphics.draw(EnemyImg, x, y)
 end	
 
+--------------WORLD CALLBACK--------------------------------------
+
+function beginContact(body_a, body_b, collision)
+ 
+end
+ 
+function endContact(body_a, body_b, collision)
+ 
+end
+ 
+function preSolve(body_a, body_b, collision)
+ 
+end
+ 
+function postSolve(body_a, body_b, collision, normalimpulse, tangentimpulse)
+ 
+end
+
+
 -- Standart ------------------------------------------------------------
 
 function love.load(arg)
@@ -147,8 +166,8 @@ function love.load(arg)
 	
 	--------------------------------------------------------------
 	
-	bullets = MagicCont:new()
 	world = love.physics.newWorld(0, 9.81*100) --we need the whole world
+	world:setCallbacks(beginContact, endContact, preSolve, postSolve)
 	
 	ground = {}
 	ground.shape = love.physics.newRectangleShape(10000, 10)
@@ -160,7 +179,7 @@ function love.load(arg)
 	wall.body = love.physics.newBody(world, 1280, 0, "static")
 	wall.fixture = love.physics.newFixture(wall.body, wall.shape)
 	
-	
+	bullets = MagicCont:new()
 	
 	player1 = Player:new(100, 100, 500)
 	enem = Enemy:new(500, 1000, 500)
