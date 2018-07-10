@@ -129,11 +129,29 @@ end
 --------------WORLD CALLBACK--------------------------------------
 
 function beginContact(body_a, body_b, collision)
-	if body_a == "player"
+	body1 = body_a:getUserData()
+	body2 = body_b:getUserData()
+
+	if body1.type == 'player' or body2.type == 'player' then
+		
+		if body1.type == 'item' or body2.type == 'item' then
+			CanBeTaken = true
+		end
+
+	end
 end
  
 function endContact(body_a, body_b, collision)
- 
+ 	body1 = body_a:getUserData()
+	body2 = body_b:getUserData()
+
+	if body1.type == 'player' or body2.type == 'player' then
+		
+		if body1.type == 'item' or body2.type == 'item' then
+			CanBeTaken = false
+		end
+
+	end
 end
  
 function preSolve(body_a, body_b, collision)
