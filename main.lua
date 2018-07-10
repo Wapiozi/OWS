@@ -146,6 +146,21 @@ function love.load(arg)
 	
 	
 	love.window.setMode(1280, 720)
+	
+	shad = love.graphics.newShader[[
+		extern number time;
+	
+		vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords ){
+			
+			vec4 col = Texel(texture, texture_coords);
+			
+			float coef = cos((texture_coords.x - texture_coords.y + sin(time))*8);
+			
+			col = vec4( abs(sin(time))*col.rg*coef, col.ba);
+			
+			return col;
+		}
+	]]
 end
 
 
@@ -173,7 +188,7 @@ function love.update(dt)
 			elseif gesture[i] == 7 then 
 				player1.body:applyLinearImpulse(0, -6000)
 			elseif gesture[i] == 2 then 
-				bullets:add(Magic:new(player1.body:getX(), player1.body:getY()-120, 50, 1, "ss"))
+				bullets:add(Magic:new(player1.body:getX()+30, player1.body:getY()-40, 50, 1, "ss"))
 			end
 			i = i+1
 		end
@@ -214,6 +229,12 @@ function love.draw()
 	love.graphics.setColor(1, 1, 1)
 	enem:draw()
 	
+	shad:send("time", love.timer.getTime()*20)
+	love.graphics.setShader(shad)
 	bullets:CheckDraw()
+	love.graphics.setShader()
+	
+	
+	
 	
 end

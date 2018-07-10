@@ -17,13 +17,18 @@ function Magic:new(x, y, vx, vy, type, dmg)
 	self.type = type
 	self.damage = dmg
 	
+	self.image = love.graphics.newImage("Fireball.png")
+	
 	self.body:applyLinearImpulse(1000*vx, 1000*vy)
 	return self
 end
 
 function Magic:draw()
-	love.graphics.setColor(0.8, 1, 0.01)
-	love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
+	local x, y = self.body:getWorldPoints(self.shape:getPoints())
+	--local x, y = self.body:getPosition()
+	love.graphics.draw(self.image, x, y, self.body:getAngle())
+	--love.graphics.setColor(0.8, 1, 0.01)
+	--love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
 end
 
 MagicCont = {}
