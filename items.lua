@@ -44,13 +44,10 @@ end
 
 --[[  look in main
 function Item:checkcollis(x, y)
->>>>>>> 8f38de3b019bb08551a06734ffc39c2953474395
 	if math.abs(self.x - x) <= self.r and math.abs(self.y - y) <= self.r then
 		return true
 	end
 end
-<<<<<<< HEAD
-=======
 --]]
 
 function Item:draw()

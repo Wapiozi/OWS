@@ -135,7 +135,7 @@ function beginContact(body_a, body_b, collision)
 	if body1.type == 'player' or body2.type == 'player' then
 		
 		if body1.type == 'item' or body2.type == 'item' then
-			CanBeTaken = true
+			ItemCanBeTaken = true
 		end
 
 	end
@@ -148,7 +148,7 @@ function endContact(body_a, body_b, collision)
 	if body1.type == 'player' or body2.type == 'player' then
 		
 		if body1.type == 'item' or body2.type == 'item' then
-			CanBeTaken = false
+			ItemCanBeTaken = false
 		end
 
 	end
