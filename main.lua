@@ -163,6 +163,10 @@ function love.load(arg)
 	PlayerImg = love.graphics.newImage("Wizard.jpg")
 	EnemyImg  = love.graphics.newImage("Enemy.png")
 	FireballImg = love.graphics.newImage("Fireball.png")
+	WaterballImg = love.graphics.newImage("Fireball.png")
+	AirballImg = love.graphics.newImage("Fireball.png")
+	IceballImg = love.graphics.newImage("Fireball.png")
+	GroundballImg = love.graphics.newImage("Fireball.png")
 	PalkaImg = love.graphics.newImage("palka.png")
 	-- by now there will be only one kind of enemies
 	
