@@ -1,5 +1,6 @@
 mgest = require("mgesture")
 libmagic = require("magic")
+
 local Player, Field, Enemy, Mana, AKM -- smth like place 4 drawing
 world = nil
 
@@ -163,7 +164,7 @@ function love.load(arg)
 	PlayerImg = love.graphics.newImage("Wizard.jpg")
 	EnemyImg  = love.graphics.newImage("Enemy.png")
 	FireballImg = love.graphics.newImage("Fireball.png")
-	PalkaImg = love.graphics.newImage("palka.png")
+	WandSdImg = love.graphics.newImage("palka.png")
 	-- by now there will be only one kind of enemies
 	
 	--------------------------------------------------------------
