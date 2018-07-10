@@ -24,6 +24,7 @@ function Item:new(x, y, itemID, SpecialImg)
 	--self.r = 5
 
 	self.type = itemID.type 
+	self.name = "item"
 
 	if SpecialImg ~= nil then
 		self.type.image = SpecialImg
@@ -38,7 +39,7 @@ function Item:new(x, y, itemID, SpecialImg)
 	self.image = self.type.image
 
 	self.body:setAngle(45)
-	self:body:setUserData(self)
+	self.body:setUserData(self)
 	return self
 end
 

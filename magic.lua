@@ -82,6 +82,7 @@ function Magic:new(x, y, vx, vy, type, dmg)
 	self = setmetatable({}, self)
 	
 	self.type = type
+	self.name = "magic"
 	
 	self.body = love.physics.newBody(world, x, y, "dynamic")
 	self.body:setMass(type.mass)

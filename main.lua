@@ -32,6 +32,8 @@ function Player:new(mana, x, y)
 	self.magic_air   = Mana[air] or 0
 	self.magic_earth = Mana[earth] or 0
 	
+	self.name = "player"
+	
 	self.movDirection = 0    --   1 right      -1 left      0 no
 	
 	self.body = love.physics.newBody(world, x, y, "dynamic")  --create new dynamic body in world
@@ -44,7 +46,7 @@ function Player:new(mana, x, y)
 	self.fixture:setRestitution(0.1)
 	self.fixture:setFriction(5)
 
-	self:body:setUserData(self)
+	self.body:setUserData(self)
 	
 	return self;
 end
@@ -86,7 +88,7 @@ function Enemy:new(hp, x, y) -- + class of enemy, warior, magician..
 	self.air_r   = red[a]
 	]]--
 	
-	self:body:setUserData(self)
+	self.body:setUserData(self)
 
 	return self
 end
@@ -129,15 +131,28 @@ end
 --------------WORLD CALLBACK--------------------------------------
 
 function beginContact(body_a, body_b, collision)
-	obj1 = body_a:getUserData()
-	obj2 = body_b:getUserData()
+	local obj1 = body_a:getUserData()
+	local obj2 = body_b:getUserData()
 
-	if obj1.type == 'player' or obj2.type == 'player' then
-		
-		if obj1.type == 'item' or obj2.type == 'item' then
-			ItemCanBeTaken = true
+	print(obj1, obj2)
+	
+	if (obj1 ~= nil) and (obj2 ~= nil) then 
+		print("fuck this shit")
+		if obj1.name == "player" or obj2.name == "player" then
+			
+			if obj1.name == "item" or obj2.name == "item" then
+				ItemCanBeTaken = true
+			end
+
+			if obj1.name == "magic" then 
+				obj2.hp = obj2.hp - obj1.damage
+				print("fuck this shit")
+			elseif obj2.name == "magic" then 
+				obj1.hp = obj1.hp - obj2.damage
+				print("fuck this shit")
+			end
+
 		end
-
 	end
 end
  
@@ -145,12 +160,16 @@ function endContact(body_a, body_b, collision)
  	obj1 = body_a:getUserData()
 	obj2 = body_b:getUserData()
 
-	if obj1.type == 'player' or obj2.type == 'player' then
-		
-		if obj1.type == 'item' or obj2.type == 'item' then
-			ItemCanBeTaken = false
-		end
+	
 
+	if (obj1 ~= nil) and (obj2 ~= nil) then 
+		if obj1.type == 'player' or obj2.type == 'player' then
+			
+			if obj1.type == 'item' or obj2.type == 'item' then
+				ItemCanBeTaken = false
+			end
+
+		end
 	end
 end
  
@@ -202,6 +221,7 @@ function love.load(arg)
 	ground = {}
 	ground.shape = love.physics.newRectangleShape(10000, 10)
 	ground.body = love.physics.newBody(world, 0, 720, "static")
+	ground.body:setUserData("ground")
 	ground.fixture = love.physics.newFixture(ground.body, ground.shape)
 	
 	wall = {}
