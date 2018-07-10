@@ -4,15 +4,77 @@ Magic.__index = Magic
 function Magic:init()
 	MagicTypeFire = {
 		image = FireballImg,
-		shader = shad,
+		shader = FireShader,
+		psystem = nil, --ParticleSystem
 		size = 20,
 		Restitution = 0,
 		Friction = 0.1,
 		Damage = 10,
+		Reload = 2,
 		ImpulseCoef = 1000,
 		mass = 1,
 		Init = nil,  --magic type function. Is called when created
 		Collis = nil --magic type function. Is called when collided with anything else
+	}
+	
+	MagicTypeWater = {
+		image = WaterballImg,
+		shader = WaterShader,
+		psystem = nil,
+		size = 30,
+		Restitution = 0,
+		Friction = 100,
+		Damage = 25,
+		Reload = 3,
+		ImpulseCoef = 100,
+		mass = 5,
+		Init = nil,
+		Collis = nil
+	}
+	
+	MagicTypeAir = {
+		image = AirbollImg,
+		shader = AirShader,
+		psystem = nil,
+		size = 30,
+		Restitution = 0,
+		Friction = 0.01,
+		Damage = 5,
+		Reload = 0.5,
+		ImpulseCoef = 10000,
+		mass = 0.1,
+		Init = nil,
+		Collis = nil
+	}
+	
+	MagicTypeIce = {
+		image = IceballImg,
+		shader = nil,
+		psystem = nil,
+		size = 15,
+		Restitution = 0.7,
+		Friction = 0.01,
+		Damage = 15,
+		Reload = 1,
+		ImpulseCoef = 2000,
+		mass = 2,
+		Init = nil,
+		Collis = nil
+	}
+	
+	MagicTypeGround = {
+		image = GroundballImg,
+		shader = nil,
+		psystem = nil,
+		size = 25,
+		Restitution = 0.4,
+		Friction = 4,
+		Damage = 40,
+		Reload = 4,
+		ImpulseCoef = 500,
+		mass = 20,
+		Init = nil,
+		Collis = nil
 	}
 end
 
@@ -32,8 +94,9 @@ function Magic:new(x, y, vx, vy, type, dmg)
 	self.fixture:setFriction(type.Friction)
 	
 	self.damage = self.type.Damage
+	self.reload = self.type.Reload
 	
-	self.image = type.image
+	self.image = self.type.image
 	self.shader = self.type.shader
 	
 	self.body:applyLinearImpulse(self.type.ImpulseCoef*vx, self.type.ImpulseCoef*vy)
