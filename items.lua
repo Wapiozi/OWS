@@ -5,14 +5,12 @@ function Item:init()
 	WandObj{			
 		image = WandSdImg -- Wand standart image 
 		size = ItemSize
-		mass = 1
 		init = nil
 	}
 
 	ClothObj{
 		image = ClothSdImg --Clothes standart image
 		size = ItemSize
-		mass = 1
 		init = nil
 	}
 	-- more to add
