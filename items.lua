@@ -35,5 +35,11 @@ function Item:new(x, y, itemID, SpecialImg)
 
 	self.image = self.type.image
 
+	self.body:setAngle(45)
 	return self
+end
+
+function Item:draw()
+	local x, y = self.body:getWorldPoints(self.shape:getPoints())
+    love.graphics.draw(self.image, x, y, self.body:getAngle())
 end

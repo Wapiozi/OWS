@@ -1,5 +1,6 @@
 mgest = require("mgesture")
 libmagic = require("magic")
+libitems = require("items")
 
 local Player, Field, Enemy, Mana, AKM -- smth like place 4 drawing
 world = nil
