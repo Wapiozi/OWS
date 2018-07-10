@@ -33,7 +33,7 @@ function Magic:init()
 	}
 	
 	MagicTypeAir = {
-		image = AirbollImg,
+		image = AirballImg,
 		shader = AirShader,
 		psystem = nil,
 		size = 30,
@@ -49,7 +49,7 @@ function Magic:init()
 	
 	MagicTypeIce = {
 		image = IceballImg,
-		shader = nil,
+		shader = IceShader,
 		psystem = nil,
 		size = 15,
 		Restitution = 0.7,
@@ -133,7 +133,7 @@ function MagicCont:CheckDraw()
 	
 	
 	while tmp ~= nil do 
-		love.graphics.setShader(tmp.value.shader)
+		if tmp.value.shader ~= nil then love.graphics.setShader(tmp.value.shader) end
 		tmp.value:draw()
 		love.graphics.setShader()
 		tmp = tmp.next
