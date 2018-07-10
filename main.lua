@@ -129,12 +129,12 @@ end
 --------------WORLD CALLBACK--------------------------------------
 
 function beginContact(body_a, body_b, collision)
-	body1 = body_a:getUserData()
-	body2 = body_b:getUserData()
+	obj1 = body_a:getUserData()
+	obj2 = body_b:getUserData()
 
-	if body1.type == 'player' or body2.type == 'player' then
+	if obj1.type == 'player' or obj2.type == 'player' then
 		
-		if body1.type == 'item' or body2.type == 'item' then
+		if obj1.type == 'item' or obj2.type == 'item' then
 			ItemCanBeTaken = true
 		end
 
@@ -142,12 +142,12 @@ function beginContact(body_a, body_b, collision)
 end
  
 function endContact(body_a, body_b, collision)
- 	body1 = body_a:getUserData()
-	body2 = body_b:getUserData()
+ 	obj1 = body_a:getUserData()
+	obj2 = body_b:getUserData()
 
-	if body1.type == 'player' or body2.type == 'player' then
+	if obj1.type == 'player' or obj2.type == 'player' then
 		
-		if body1.type == 'item' or body2.type == 'item' then
+		if obj1.type == 'item' or obj2.type == 'item' then
 			ItemCanBeTaken = false
 		end
 
