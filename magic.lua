@@ -78,10 +78,13 @@ function Magic:init()
 	}
 	
 	MagicTypeFire.Collis = function(x, y)
-		partSys = love.graphics.newParticleSystem(FireballImg, 200)
-		partSys:setParticleLifetime(0.5, 1)
-		partSys:setEmissionRate(30)
-		partSys:setSizeVariation(5)
+		partSys = love.graphics.newParticleSystem(FireballImg, 1000)
+		partSys:setParticleLifetime(0.1, 0.3)
+		partSys:setEmissionRate(300)
+		partSys:setSizeVariation(0.01)
+		partSys:setLinearAcceleration(-2000, -2000, 2000, 2000)
+		partSys:setColors(255, 255, 255, 255, 255, 255, 127, 255)
+		partSys:setPosition(x, y)
 	end
 end
 
@@ -107,6 +110,10 @@ function Magic:new(x, y, vx, vy, type, dmg, owner)
 	
 	self.image = self.type.image
 	self.shader = self.type.shader
+	
+	self.Collis = function()
+		self.type.Collis(self.body:getX(), self.body:getY())
+	end
 	
 	if self.type.Init ~= nil then self.type.Init() end 
 	
