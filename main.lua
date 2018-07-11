@@ -4,9 +4,8 @@ libitems = require("items")
 libinven = require("inventory")
 libenemy = require("enemy")
 libplayer = require("player")
-
+libcamera = require("camera")
 world = nil
-
 --[[
 	Player - is a magician
 	Field - is a background and all obstacles mot AI      --and is useless
@@ -29,7 +28,7 @@ Mana = {fire = 1, water = 2, air = 3, earth = 4}
 function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 	obj1 = f1:getUserData()
 	obj2 = f2:getUserData()
-	
+
 	if (obj1 ~= nil) and (obj2 ~= nil) then 
 		if obj1.name == "player" or obj2.name == "player" then
 			
@@ -120,7 +119,6 @@ function love.load(arg)
 	-- by now there will be only one kind of enemies
 	
 	--------------------------------------------------------------
-	
 	world = love.physics.newWorld(0, 9.81*100) --we need the whole world
 	world:setCallbacks(beginContact, endContact, preSolve, postSolve)
 	
@@ -132,27 +130,29 @@ function love.load(arg)
 	
 	wall = {}
 	wall.shape = love.physics.newRectangleShape(10, 10000)
-	wall.body = love.physics.newBody(world, 1280, 0, "static")
+	wall.body = love.physics.newBody(world, 2560+5, 0, "static")
 	wall.fixture = love.physics.newFixture(wall.body, wall.shape)
 	
 	bullets = MagicCont:new()
 	
 	Magic:init()
-	
 	player1 = Player:new(100, 100, 500)
 	enem = Enemy:new(500, 1000, 500)
-	
-	
+
 	love.window.setMode(1280, 720)
-	
+
+	width = love.graphics.getWidth()
+	height = love.graphics.getHeight()
+	print(width,camera._x)
+	camera:setBounds(0, 0, width  , height)
+	camera:setPosition(0,width/2)
 	
 end
 
 
 
 function love.update(dt)
-	
-	
+
 	----------------PROCESSING GESTURE----------------------
 	gesture = getLastMovement()
 	local i = 1
@@ -171,15 +171,16 @@ function love.update(dt)
 		end
 	end
 	-------------------------------------------------------
-	
-	
+
+
 	player1:updateSpeed()
-			
-	
+	camera:setPosition(player1.body:getX() - width / 2, player1.body:getY() - height / 2)
 	world:update(dt) --update the whole world
 end
 
 function love.draw()
+	camera:set()
+
 	loadMovement()
 	--so this is game
 	--this game is not shit
@@ -187,13 +188,18 @@ function love.draw()
 	love.graphics.setColor(0.5, 0.9, 0.1)
 	love.graphics.polygon("fill", ground.body:getWorldPoints(ground.shape:getPoints()))
 	love.graphics.polygon("fill", wall.body:getWorldPoints(wall.shape:getPoints()))
-	
 	love.graphics.setColor(0.1, 0.2, 0.9)
 	player1:draw()
-	
 	love.graphics.setColor(1, 1, 1)
 	enem:draw()
 	
 	FireShader:send("time", love.timer.getTime()*20)
 	bullets:CheckDraw()
+
+	camera:unset()
+
+end
+
+function math.clamp(x, min, max)
+	return x < min and min or (x > max and max or x)
 end
