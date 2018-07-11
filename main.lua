@@ -15,7 +15,7 @@ world = nil
 
 -- Player implementation --------------------------------------------------------
 
-Mana = {fire = 1, water = 2, air = 3, earth = 4}
+
 
 Player = {}
 Player.__index = Player
@@ -24,11 +24,15 @@ Player.type = 'player'
 function Player:new(mana, x, y)
 	self = setmetatable({}, self)
 	
+	--[[
 	self.magic_delay = md or 1
 	self.magic_fire  = Mana[fire] or 0
 	self.magic_water = Mana[water] or 0
 	self.magic_air   = Mana[air] or 0
 	self.magic_earth = Mana[earth] or 0
+	]]--
+	
+	self.image = love.graphics.newImage("Wizard.jpg")
 	
 	self.movDirection = 0    --   1 right      -1 left      0 no
 	
@@ -41,6 +45,8 @@ function Player:new(mana, x, y)
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setRestitution(0.1)
 	self.fixture:setFriction(5)
+	
+	
 	
 	return self;
 end
@@ -69,6 +75,8 @@ function Enemy:new(hp, x, y) -- + class of enemy, warior, magician..
 	self.fixture:setFriction(5)
 	
 	self.hp = hp
+	
+	self.image = love.graphics.newImage("Enemy.png")
 
 	 -- also, there should be some agilities of different classes
 	 -- for ex. immortal, reduce fire dmg or smth like that
@@ -117,7 +125,7 @@ function Enemy:draw()
 	--love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
 	
 	local x, y = self.body:getWorldPoints(self.shape:getPoints())
-	love.graphics.draw(EnemyImg, x, y)
+	love.graphics.draw(self.image, x, y)
 end	
 
 -- Standart ------------------------------------------------------------
@@ -135,11 +143,6 @@ function love.load(arg)
 	wall.shape = love.physics.newRectangleShape(10, 10000)
 	wall.body = love.physics.newBody(world, 1280, 0, "static")
 	wall.fixture = love.physics.newFixture(wall.body, wall.shape)
-	
-	-- Sprites
-	PlayerImg = love.graphics.newImage("Wizard.jpg")
-	EnemyImg  = love.graphics.newImage("Enemy.png")
-	-- by now there will be only one kind of enemies
 	
 	player1 = Player:new(100, 100, 500)
 	enem = Enemy:new(500, 1000, 500)
@@ -173,7 +176,7 @@ function love.update(dt)
 			elseif gesture[i] == 7 then 
 				player1.body:applyLinearImpulse(0, -6000)
 			elseif gesture[i] == 2 then 
-				bullets:add(Magic:new(player1.body:getX(), player1.body:getY()-120, 50, 1, "ss"))
+				bullets:add(Magic:new(player1.body:getX()+50, player1.body:getY()-30, 50, 1, "ss"))
 			end
 			i = i+1
 		end
