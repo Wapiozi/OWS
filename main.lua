@@ -7,6 +7,7 @@ libplayer = require("player")
 libcamera = require("camera")
 libbrick = require("brick")
 libcont = require("container")
+libparticles = require("particles")
 
 world = nil
 --[[
@@ -167,12 +168,13 @@ function love.load(arg)
 	bullets = Container:new()
 	walls = Container:new()
 	enemies = Container:new()
+	particles = Container:new()
 	
 	Magic:init()
 	Item:init()
 	
 	walls:add(Brick:new(0, 1, 200, 0.02))
-	walls:add(Brick:new(16/9, 0, 0.02, 200))
+	walls:add(Brick:new(16/9*2, 0, 0.02, 200))
 	
 	player1 = Player:new(100, 0.2, 0.8)
 	enemies:add(Enemy:new(500, 1.5, 0.8))
@@ -215,6 +217,7 @@ function love.update(dt)
 	player1:updateSpeed()
 	camera:setPosition(player1.body:getX() - width / 2, player1.body:getY() - height / 2)
 	world:update(dt) --update the whole world
+	particles:update(dt)
 	if partSys ~= nil then partSys:update(dt) end
 end
 
@@ -233,15 +236,10 @@ function love.draw()
 	FireShader:send("time", love.timer.getTime()*20)
 	bullets:CheckDraw()
 
-	
-
 	enemies:CheckDraw()
 	walls:CheckDraw()
-	
-	love.graphics.setColor(1, 1, 1)
-	
-	if partSys ~= nil then love.graphics.draw(partSys) end
-	
+	particles:CheckDraw()
+
 	camera:unset()
 end
 

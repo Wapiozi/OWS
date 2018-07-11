@@ -49,3 +49,15 @@ function Container:CheckDraw()
 		tmp = tmp.next
 	end
 end
+
+function Container:update(dt)
+	local tmp = self.list
+	
+	while tmp ~= nil do 
+		if tmp.value.update ~= nil then
+			tmp.value:update(dt)
+		end
+	
+		tmp = tmp.next
+	end
+end

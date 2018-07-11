@@ -82,14 +82,8 @@ function Magic:init()
 		Collis = nil
 	}
 	
-	MagicTypeFire.Collis = function(x, y)
-		partSys = love.graphics.newParticleSystem(FireballImg, 1000)
-		partSys:setParticleLifetime(0.1, 0.3)
-		partSys:setEmissionRate(300)
-		partSys:setSizeVariation(0.01)
-		partSys:setLinearAcceleration(-2000, -2000, 2000, 2000)
-		partSys:setColors(255, 255, 255, 255, 255, 255, 127, 255)
-		partSys:setPosition(x, y)
+	MagicTypeFire.Collis = function(px, py)
+		particles:add(Particle:new(px, py, 0.1, 0.3, FireballImg))
 	end
 end
 
