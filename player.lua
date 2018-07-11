@@ -24,7 +24,7 @@ function Player:new(mana, x, y)
 	self.body:setAngle(0)
 	self.body:setFixedRotation(true)
 	
-	self.shape = love.physics.newRectangleShape(80, 120)      --wizard figure
+	self.shape = love.physics.newRectangleShape(plen(0.1), plen(0.17))      --wizard figure
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setRestitution(0.1)
 	self.fixture:setFriction(5)

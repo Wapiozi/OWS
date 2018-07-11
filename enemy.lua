@@ -13,6 +13,8 @@ function Enemy:new(hp, x, y) -- + class of enemy, warior, magician..
 	self.body:setAngle(0)
 	self.body:setFixedRotation(true)
 	
+	self.name = "enemy"
+	
 	self.shape = love.physics.newRectangleShape(80, 120)
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setRestitution(0.1)

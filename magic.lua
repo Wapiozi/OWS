@@ -119,7 +119,7 @@ function Magic:new(x, y, vx, vy, type, dmg, owner)
 	self.shader = self.type.shader
 	
 	self.Collis = function()
-		self.type.Collis(self.body:getX(), self.body:getY())
+		if not self.canDelete then self.type.Collis(self.body:getX(), self.body:getY()) end
 	end
 	
 	if self.type.Init ~= nil then self.type.Init() end 
@@ -128,6 +128,8 @@ function Magic:new(x, y, vx, vy, type, dmg, owner)
 	self.body:setAngle(45)
 	
 	self.fixture:setUserData(self)
+	
+	self.canDelete = false
 	
 	return self
 end
@@ -138,6 +140,13 @@ function Magic:draw()
 	love.graphics.draw(self.image, x, y, self.body:getAngle())
 	--love.graphics.setColor(0.8, 1, 0.01)
 	--love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
+end
+
+function Magic:delete()
+	self.canDelete = true
+	self.fixture:destroy()
+	self.shape:release()
+	self.body:destroy()
 end
 
 
@@ -162,11 +171,25 @@ end
 function MagicCont:CheckDraw()
 	local tmp = self.list
 	
+	while (tmp ~= nil) and (tmp.value.canDelete)  do
+		tmp = tmp.next
+		self.list.value = nil
+		self.list = nil
+		self.list = tmp
+	end
 	
 	while tmp ~= nil do 
 		if tmp.value.shader ~= nil then love.graphics.setShader(tmp.value.shader) end
 		tmp.value:draw()
 		love.graphics.setShader()
+		
+		if tmp.next ~= nil and tmp.next.value.canDelete then
+			local tmnext = tmp.next.next
+			tmp.next.value = nil
+			tmp.next = nil
+			tmp.next = tmnext
+		end
+		
 		tmp = tmp.next
 	end
 end

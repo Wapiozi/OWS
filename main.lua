@@ -79,6 +79,15 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 		end
 	end
 
+	if (obj1 ~= nil) and (obj1.name == "magic") then
+		obj1:delete()
+	end
+	if (obj2 ~= nil) and (obj2.name == "magic") then 
+		obj2:delete()
+	end
+
+	
+
 end
  
 function endContact(f1, f2, cont)
