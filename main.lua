@@ -219,9 +219,10 @@ function love.update(dt)
 end
 
 function love.draw()
+	loadMovement()
+	
 	camera:set()
 
-	loadMovement()
 	--so this is game
 	--this game is not shit
 	
