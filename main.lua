@@ -49,8 +49,10 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 
 			if (obj1.name == "magic") and (obj1.owner ~= "player") then 
 				obj2.hp = obj2.hp - obj1.damage
+				if obj1.Collis ~= nil then obj1.Collis() end
 			elseif (obj2.name == "magic") and (obj2.owner ~= "player") then 
 				obj1.hp = obj1.hp - obj2.damage
+				if obj2.Collis ~= nil then obj2.Collis() end
 			end
 
 		end
@@ -59,8 +61,10 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 			
 			if (obj1.name == "magic") and (obj1.owner ~= "enemy") then 
 				obj2.hp = obj2.hp - obj1.damage
+				if obj1.Collis ~= nil then obj1.Collis() end
 			elseif (obj2.name == "magic") and (obj2.owner ~= "enemy") then 
 				obj1.hp = obj1.hp - obj2.damage
+				if obj2.Collis ~= nil then obj2.Collis() end
 			end
 
 		end
@@ -187,6 +191,7 @@ function love.update(dt)
 			
 	
 	world:update(dt) --update the whole world
+	if partSys ~= nil then partSys:update(dt) end
 end
 
 function love.draw()
@@ -206,4 +211,6 @@ function love.draw()
 	
 	FireShader:send("time", love.timer.getTime()*20)
 	bullets:CheckDraw()
+	
+	if partSys ~= nil then love.graphics.draw(partSys) end
 end
