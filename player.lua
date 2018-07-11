@@ -5,6 +5,8 @@ Player.type = 'player'
 function Player:new(mana, x, y)
 	self = setmetatable({}, self)
 	
+	x, y = pcoords(x, y)
+	
 	self.magic_delay = md or 1
 	self.magic_fire  = Mana[fire] or 0
 	self.magic_water = Mana[water] or 0
@@ -22,7 +24,7 @@ function Player:new(mana, x, y)
 	self.body:setAngle(0)
 	self.body:setFixedRotation(true)
 	
-	self.shape = love.physics.newRectangleShape(80, 120)      --wizard figure
+	self.shape = love.physics.newRectangleShape(plen(0.1), plen(0.17))      --wizard figure
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setRestitution(0.1)
 	self.fixture:setFriction(5)
@@ -70,4 +72,9 @@ function Player:updateSpeed()
 			self.body:applyForce(10000, 0)
 		end
 	end
+end
+
+function Player:getCoords()
+	local x, y = self.body:getPosition()
+	return fcoords(x, y)
 end

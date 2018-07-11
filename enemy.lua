@@ -5,10 +5,15 @@ Enemy.type = 'enemy'
 
 function Enemy:new(hp, x, y) -- + class of enemy, warior, magician..
 	self = setmetatable({}, self)
+	
+	x, y = pcoords(x, y)
+	
 	self.body = love.physics.newBody(world, x, y, "dynamic")
 	self.body:setMass(70)
 	self.body:setAngle(0)
 	self.body:setFixedRotation(true)
+	
+	self.name = "enemy"
 	
 	self.shape = love.physics.newRectangleShape(80, 120)
 	self.fixture = love.physics.newFixture(self.body, self.shape)
@@ -68,3 +73,8 @@ function Enemy:draw()
 	local x, y = self.body:getWorldPoints(self.shape:getPoints())
 	love.graphics.draw(EnemyImg, x, y)
 end	
+
+function Enemy:getCoords()
+	local x, y = self.body:getPosition()
+	return fcoords(x, y)
+end

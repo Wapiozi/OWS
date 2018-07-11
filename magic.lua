@@ -1,3 +1,8 @@
+Mana = {fire = 1, water = 2, air = 3, earth = 4}
+
+
+------------------Magic----------------------------------------------------
+
 Magic = {}
 Magic.__index = Magic
 
@@ -76,10 +81,22 @@ function Magic:init()
 		Init = nil,
 		Collis = nil
 	}
+	
+	MagicTypeFire.Collis = function(x, y)
+		partSys = love.graphics.newParticleSystem(FireballImg, 1000)
+		partSys:setParticleLifetime(0.1, 0.3)
+		partSys:setEmissionRate(300)
+		partSys:setSizeVariation(0.01)
+		partSys:setLinearAcceleration(-2000, -2000, 2000, 2000)
+		partSys:setColors(255, 255, 255, 255, 255, 255, 127, 255)
+		partSys:setPosition(x, y)
+	end
 end
 
 function Magic:new(x, y, vx, vy, type, dmg, owner)
 	self = setmetatable({}, self)
+	
+	x, y = pcoords(x, y)
 	
 	self.type = type
 	self.name = "magic"
@@ -101,12 +118,18 @@ function Magic:new(x, y, vx, vy, type, dmg, owner)
 	self.image = self.type.image
 	self.shader = self.type.shader
 	
+	self.Collis = function()
+		if not self.canDelete then self.type.Collis(self.body:getX(), self.body:getY()) end
+	end
+	
 	if self.type.Init ~= nil then self.type.Init() end 
 	
 	self.body:applyLinearImpulse(self.type.ImpulseCoef*vx, self.type.ImpulseCoef*vy)
 	self.body:setAngle(45)
 	
 	self.fixture:setUserData(self)
+	
+	self.canDelete = false
 	
 	return self
 end
@@ -119,29 +142,12 @@ function Magic:draw()
 	--love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
 end
 
-MagicCont = {}
-MagicCont.__index = MagicCont
-
-function MagicCont:new()
-	self = setmetatable({}, self)
-	
-	self.list = nil
-	
-	return self
+function Magic:delete()
+	self.canDelete = true
+	self.fixture:destroy()
+	self.shape:release()
+	self.body:destroy()
 end
 
-function MagicCont:add(val)
-	self.list = {next = self.list, value = val}
-end
 
-function MagicCont:CheckDraw()
-	local tmp = self.list
-	
-	
-	while tmp ~= nil do 
-		if tmp.value.shader ~= nil then love.graphics.setShader(tmp.value.shader) end
-		tmp.value:draw()
-		love.graphics.setShader()
-		tmp = tmp.next
-	end
-end
+
