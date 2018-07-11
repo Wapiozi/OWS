@@ -58,10 +58,8 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 
 			if (obj1.name == "magic") and (obj1.owner ~= "player") then 
 				obj2.hp = obj2.hp - obj1.damage
-				if obj1.Collis ~= nil then obj1.Collis() end
 			elseif (obj2.name == "magic") and (obj2.owner ~= "player") then 
 				obj1.hp = obj1.hp - obj2.damage
-				if obj2.Collis ~= nil then obj2.Collis() end
 			end
 
 		end
@@ -70,10 +68,10 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 			
 			if (obj1.name == "magic") and (obj1.owner ~= "enemy") then 
 				obj2.hp = obj2.hp - obj1.damage
-				if obj1.Collis ~= nil then obj1.Collis() end
+				
 			elseif (obj2.name == "magic") and (obj2.owner ~= "enemy") then 
 				obj1.hp = obj1.hp - obj2.damage
-				if obj2.Collis ~= nil then obj2.Collis() end
+				
 			end
 
 		end
@@ -81,8 +79,10 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 
 	if (obj1 ~= nil) and (obj1.name == "magic") then
 		obj1:delete()
+		if obj1.Collis ~= nil then obj1.Collis() end
 	end
 	if (obj2 ~= nil) and (obj2.name == "magic") then 
+		if obj2.Collis ~= nil then obj2.Collis() end
 		obj2:delete()
 	end
 
