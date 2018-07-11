@@ -29,17 +29,18 @@ function Item:new(x, y, itemID, SpecialImg)
 	if SpecialImg ~= nil then
 		self.type.image = SpecialImg
 	end
-	
+	self.ItemCanBeTaken = false
 	self.body = love.physics.newBody(world, x, y, "dynamic")
 	self.body:setMass(type.mass)
 	
 	self.shape = love.physics.newRectangleShape(type.size, type.size)
 	self.fixture = love.physics.newFixture(self.body, self.shape)
+	self.fixture:setSensor = true
 
 	self.image = self.type.image
 
 	self.body:setAngle(45)
-	self.body:setUserData(self)
+	self.fixture:setUserData(self)
 	return self
 end
 
@@ -50,6 +51,16 @@ function Item:checkcollis(x, y)
 	end
 end
 --]]
+function Item:spawn(x, y)
+	self.x = x
+	self.y = y
+
+	return self
+end
+
+function Item:destroy()
+	self:release()
+end
 
 function Item:draw()
 	local x, y = self.body:getWorldPoints(self.shape:getPoints())

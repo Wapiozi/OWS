@@ -46,7 +46,7 @@ function Player:new(mana, x, y)
 	self.fixture:setRestitution(0.1)
 	self.fixture:setFriction(5)
 
-	self.body:setUserData(self)
+	self.fixture:setUserData(self)
 	
 	return self;
 end
@@ -88,7 +88,7 @@ function Enemy:new(hp, x, y) -- + class of enemy, warior, magician..
 	self.air_r   = red[a]
 	]]--
 	
-	self.body:setUserData(self)
+	self.fixture:setUserData(self)
 
 	return self
 end
@@ -130,45 +130,49 @@ end
 
 --------------WORLD CALLBACK--------------------------------------
 
-function beginContact(body_a, body_b, collision)
-	local obj1 = body_a:getUserData()
-	local obj2 = body_b:getUserData()
+function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
+	obj1 = f1:getUserData()
+	obj2 = f2:getUserData()
 
 	print(obj1, obj2)
 	
 	if (obj1 ~= nil) and (obj2 ~= nil) then 
-		print("fuck this shit")
+		--print("fuck this shit")
 		if obj1.name == "player" or obj2.name == "player" then
 			
-			if obj1.name == "item" or obj2.name == "item" then
-				ItemCanBeTaken = true
-			end
+			if obj1.name == 'item' then
+				obj1.ItemCanBeTaken = true
+			elseif obj2.name == 'item' then
+				obj2.ItemCanBeTaken = true
+			end	
 
 			if obj1.name == "magic" then 
 				obj2.hp = obj2.hp - obj1.damage
-				print("fuck this shit")
+				--print("fuck this shit")
 			elseif obj2.name == "magic" then 
 				obj1.hp = obj1.hp - obj2.damage
-				print("fuck this shit")
+				--print("fuck this shit")
 			end
 
 		end
 	end
+
 end
  
-function endContact(body_a, body_b, collision)
- 	obj1 = body_a:getUserData()
-	obj2 = body_b:getUserData()
+function endContact(f1, f2, cont)
+ 	obj1 = f1:getUserData()
+	obj2 = f2:getUserData()
 
 	
 
 	if (obj1 ~= nil) and (obj2 ~= nil) then 
-		if obj1.type == 'player' or obj2.type == 'player' then
+		if obj1.name == 'player' or obj2.name == 'player' then
 			
-			if obj1.type == 'item' or obj2.type == 'item' then
-				ItemCanBeTaken = false
-			end
-
+			if obj1.name == 'item' then
+				obj1.ItemCanBeTaken = false
+			elseif obj2.name == 'item' then
+				obj2.ItemCanBeTaken = false
+			end	
 		end
 	end
 end
