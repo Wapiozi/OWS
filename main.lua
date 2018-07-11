@@ -17,7 +17,15 @@ world = nil
 	world - is main world
 ]]--
 
--- Player implementation --------------------------------------------------------
+function pcoords(fx, fy)    --real coordinates to pixel coordinates
+	local px, py = fx*screenHeight, fy*screenHeight
+	return px, py
+end
+
+function fcoords(px, py)    --pixel coordinates to real coordinates
+	local fx, fy = px/screenHeight, py/screenHeight
+	return fx, fy
+end
 
 Mana = {fire = 1, water = 2, air = 3, earth = 4}
 
@@ -106,6 +114,8 @@ function love.load(arg)
 			return col;
 		}
 	]]
+	
+	screenWidth, screenHeight = love.graphics.getDimensions()
 	
 	-- Sprites
 	PlayerImg = love.graphics.newImage("Wizard.jpg")
