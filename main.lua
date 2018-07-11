@@ -5,7 +5,6 @@ libinven = require("inventory")
 libenemy = require("enemy")
 libplayer = require("player")
 
-local Player, Field, Enemy, Mana, AKM -- smth like place 4 drawing
 world = nil
 
 --[[
@@ -174,7 +173,7 @@ function love.update(dt)
 	-------------------------------------------------------
 	
 	
-	player1.updateSpeed()
+	player1:updateSpeed()
 			
 	
 	world:update(dt) --update the whole world
