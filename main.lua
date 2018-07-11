@@ -164,25 +164,15 @@ function love.load(arg)
 	world = love.physics.newWorld(0, 9.81*100) --we need the whole world
 	world:setCallbacks(beginContact, endContact, preSolve, postSolve)
 	
-	ground = {}
-	ground.shape = love.physics.newRectangleShape(10000, 10)
-	local x, y = pcoords(0, 1)
-	ground.body = love.physics.newBody(world, x, y, "static")
-	ground.body:setUserData("ground")
-	ground.fixture = love.physics.newFixture(ground.body, ground.shape)
-	
-	wall = {}
-	wall.shape = love.physics.newRectangleShape(10, 10000)
-	local x, y = pcoords(16/9, 0)
-	wall.body = love.physics.newBody(world, x, y, "static")
-	wall.fixture = love.physics.newFixture(wall.body, wall.shape)
-	
 	bullets = Container:new()
 	walls = Container:new()
 	enemies = Container:new()
 	
 	Magic:init()
 	Item:init()
+	
+	walls:add(Brick:new(0, 1, 200, 0.02))
+	walls:add(Brick:new(16/9, 0, 0.02, 200))
 	
 	player1 = Player:new(100, 0.2, 0.8)
 	enemies:add(Enemy:new(500, 1.5, 0.8))
@@ -227,10 +217,6 @@ function love.draw()
 	--so this is game
 	--this game is not shit
 	
-	love.graphics.setColor(0.5, 0.9, 0.1)
-	love.graphics.polygon("fill", ground.body:getWorldPoints(ground.shape:getPoints()))
-	love.graphics.polygon("fill", wall.body:getWorldPoints(wall.shape:getPoints()))
-	
 	love.graphics.setColor(0.1, 0.2, 0.9)
 	player1:draw()
 	
@@ -240,6 +226,8 @@ function love.draw()
 	bullets:CheckDraw()
 	enemies:CheckDraw()
 	walls:CheckDraw()
+	
+	love.graphics.setColor(1, 1, 1)
 	
 	if partSys ~= nil then love.graphics.draw(partSys) end
 end
