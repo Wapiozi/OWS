@@ -4,6 +4,8 @@ libitems = require("items")
 libinven = require("inventory")
 libenemy = require("enemy")
 libplayer = require("player")
+libbrick = require("brick")
+libcont = require("container")
 
 world = nil
 
@@ -175,12 +177,15 @@ function love.load(arg)
 	wall.body = love.physics.newBody(world, x, y, "static")
 	wall.fixture = love.physics.newFixture(wall.body, wall.shape)
 	
-	bullets = MagicCont:new()
+	bullets = Container:new()
+	walls = Container:new()
+	enemies = Container:new()
 	
 	Magic:init()
+	Item:init()
 	
 	player1 = Player:new(100, 0.2, 0.8)
-	enem = Enemy:new(500, 1.5, 0.8)
+	enemies:add(Enemy:new(500, 1.5, 0.8))
 	
 end
 
@@ -202,7 +207,7 @@ function love.update(dt)
 				player1:jump()
 			elseif gesture[i] == 2 then 
 				local x, y = player1:getCoords()
-				bullets:add(Magic:new(x+0.09, y-0.04, 50, 1, MagicTypeFire, "player"))
+				bullets:add(Magic:new(x+0.1, y-0.04, 50, 1, MagicTypeFire, "player"))
 			end
 			i = i+1
 		end
@@ -230,10 +235,11 @@ function love.draw()
 	player1:draw()
 	
 	love.graphics.setColor(1, 1, 1)
-	enem:draw()
 	
 	FireShader:send("time", love.timer.getTime()*20)
 	bullets:CheckDraw()
+	enemies:CheckDraw()
+	walls:CheckDraw()
 	
 	if partSys ~= nil then love.graphics.draw(partSys) end
 end
