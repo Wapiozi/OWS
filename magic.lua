@@ -78,11 +78,12 @@ function Magic:init()
 	}
 end
 
-function Magic:new(x, y, vx, vy, type, dmg)
+function Magic:new(x, y, vx, vy, type, dmg, owner)
 	self = setmetatable({}, self)
 	
 	self.type = type
 	self.name = "magic"
+	self.owner = owner
 	
 	self.body = love.physics.newBody(world, x, y, "dynamic")
 	self.body:setMass(type.mass)
@@ -105,7 +106,7 @@ function Magic:new(x, y, vx, vy, type, dmg)
 	self.body:applyLinearImpulse(self.type.ImpulseCoef*vx, self.type.ImpulseCoef*vy)
 	self.body:setAngle(45)
 	
-	self.body:setUserData(self)
+	self.fixture:setUserData(self)
 	
 	return self
 end
