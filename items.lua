@@ -20,6 +20,8 @@ end
 
 function Item:new(x, y, itemID, SpecialImg)
 	self = setmetatable({}, self)
+	
+	x, y = pcoords(x, y)
 
 	self.type = itemID.type 
 	self.name = "item"
@@ -67,4 +69,9 @@ function Item:draw()
 		local x, y = self.body:getWorldPoints(self.shape:getPoints())
 		love.graphics.draw(self.image, x, y, self.body:getAngle())
 	end
+end
+
+function Item:getCoords()
+	local x, y = self.body:getPosition()
+	return fcoords(x, y)
 end

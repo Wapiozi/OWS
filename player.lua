@@ -5,6 +5,8 @@ Player.type = 'player'
 function Player:new(mana, x, y)
 	self = setmetatable({}, self)
 	
+	x, y = pcoords(x, y)
+	
 	self.magic_delay = md or 1
 	self.magic_fire  = Mana[fire] or 0
 	self.magic_water = Mana[water] or 0
@@ -70,4 +72,9 @@ function Player:updateSpeed()
 			self.body:applyForce(10000, 0)
 		end
 	end
+end
+
+function Player:getCoords()
+	local x, y = self.body:getPosition()
+	return fcoords(x, y)
 end

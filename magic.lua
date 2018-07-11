@@ -96,6 +96,8 @@ end
 function Magic:new(x, y, vx, vy, type, dmg, owner)
 	self = setmetatable({}, self)
 	
+	x, y = pcoords(x, y)
+	
 	self.type = type
 	self.name = "magic"
 	self.owner = owner

@@ -18,13 +18,25 @@ world = nil
 ]]--
 
 function pcoords(fx, fy)    --real coordinates to pixel coordinates
-	local px, py = fx*screenHeight, fy*screenHeight
+	local px = fx*screenHeight 
+	local py = fy*screenHeight
 	return px, py
 end
 
 function fcoords(px, py)    --pixel coordinates to real coordinates
-	local fx, fy = px/screenHeight, py/screenHeight
+	local fx = px/screenHeight 
+	local fy = py/screenHeight
 	return fx, fy
+end
+
+function plen(fval)
+	local pval = fval*screenHeight
+	return pval
+end
+
+function flen(pval)
+	local fval = pval/screenHeight
+	return fval
 end
 
 
@@ -116,7 +128,8 @@ function love.load(arg)
 		}
 	]]
 	
-	screenWidth, screenHeight = love.graphics.getDimensions()
+	
+	
 	
 	-- Sprites
 	PlayerImg = love.graphics.newImage("Wizard.jpg")
@@ -132,30 +145,33 @@ function love.load(arg)
 	
 	--------------------------------------------------------------
 	
+	love.window.setMode(1280, 720)
+	--screenWidth, screenHeight = love.graphics.getDimensions()
+	screenWidth, screenHeight = love.window.getMode()
+	
+	
 	world = love.physics.newWorld(0, 9.81*100) --we need the whole world
 	world:setCallbacks(beginContact, endContact, preSolve, postSolve)
 	
 	ground = {}
 	ground.shape = love.physics.newRectangleShape(10000, 10)
-	ground.body = love.physics.newBody(world, 0, 720, "static")
+	local x, y = pcoords(0, 1)
+	ground.body = love.physics.newBody(world, x, y, "static")
 	ground.body:setUserData("ground")
 	ground.fixture = love.physics.newFixture(ground.body, ground.shape)
 	
 	wall = {}
 	wall.shape = love.physics.newRectangleShape(10, 10000)
-	wall.body = love.physics.newBody(world, 1280, 0, "static")
+	local x, y = pcoords(16/9, 0)
+	wall.body = love.physics.newBody(world, x, y, "static")
 	wall.fixture = love.physics.newFixture(wall.body, wall.shape)
 	
 	bullets = MagicCont:new()
 	
 	Magic:init()
 	
-	player1 = Player:new(100, 100, 500)
-	enem = Enemy:new(500, 1000, 500)
-	
-	
-	love.window.setMode(1280, 720)
-	
+	player1 = Player:new(100, 0.2, 0.8)
+	enem = Enemy:new(500, 1.5, 0.8)
 	
 end
 
@@ -172,11 +188,12 @@ function love.update(dt)
 			if gesture[i] == 1 then 
 				player1:moveRight()
 			elseif gesture[i] == 5 then 
-				player1.moveLeft()
+				player1:moveLeft()
 			elseif gesture[i] == 7 then 
 				player1:jump()
 			elseif gesture[i] == 2 then 
-				bullets:add(Magic:new(player1.body:getX()+30, player1.body:getY()-40, 50, 1, MagicTypeFire, "player"))
+				local x, y = player1:getCoords()
+				bullets:add(Magic:new(x+0.09, y-0.04, 50, 1, MagicTypeFire, "player"))
 			end
 			i = i+1
 		end
