@@ -12,11 +12,13 @@ function Brick:new(x, y, sizex, sizey, angle, image)
 	
 	self.body = love.physics.newBody(world, x, y, "static")
 	self.body:setAngle(angle or 0)
-	self.shape = love.physics.newShape(sizex, sizey)
+	self.shape = love.physics.newRectangleShape(sizex, sizey)
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	
 	self.image = image
 	self.shader = nil
+	
+	return self
 end
 
 function Brick:draw()

@@ -1,3 +1,14 @@
+--[[
+	If object contains field "canDelete" which is set to true this 
+	object will be deleted on next CheckDraw()
+	
+	Container can hold any objects
+	
+	Storable object must have method draw() optionally can have field
+	with shader
+
+]]--
+
 Container = {}
 Container.__index = Container
 
@@ -16,7 +27,7 @@ end
 function Container:CheckDraw()
 	local tmp = self.list
 	
-	while (tmp ~= nil) and (tmp.value.canDelete)  do
+	while (tmp ~= nil) and (tmp.value ~= nil) and (tmp.value.canDelete)  do
 		tmp = tmp.next
 		self.list.value = nil
 		self.list = nil
