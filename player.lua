@@ -70,8 +70,8 @@ end
 function Player:updateSpeed()
 	local xveloc, yveloc = self.body:getLinearVelocity()
 	
-	if (xveloc < 180) and (self.movDirection == 1) then self.body:applyForce(100000, 0) 
-	elseif (xveloc > -180) and (self.movDirection == -1) then self.body:applyForce(-100000, 0) 
+	if (xveloc < 300) and (self.movDirection == 1) then self.body:applyForce(100000, 0) 
+	elseif (xveloc > -300) and (self.movDirection == -1) then self.body:applyForce(-100000, 0) 
 	elseif (self.movDirection == 0) then
 		if (xveloc > 3) then 
 			self.body:applyForce(-10000, 0)
