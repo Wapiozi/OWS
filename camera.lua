@@ -18,8 +18,12 @@ function camera:unset()
 end
 
 function camera:move(dx, dy)
+    if ((self._x + love.graphics.getWidth()) <= self._bounds.x2 and dx<0) or ((self._x ) >= self._bounds.x1 and dx>0) then
     self._x = self._x - (dx or 0)
+    end
+    --if ((self._y + love.graphics.getHeight()) <= self._bounds.y2 and dy<0) or ((self._y ) >= self._bounds.y1 and dy>0) then
     self._y = self._y - (dy or 0)
+    --end
 end
 
 function camera:rotate(dr)
