@@ -42,7 +42,13 @@ function flen(pval)
 	return fval
 end
 
-
+function imageProps(height, img)
+	local wid, hig = img:getDimensions()
+	local scal = plen(height)/hig
+	local fwid, fhig = flen(wid*scal), flen(hig*scal)
+	
+	return scal, fwid, fhig
+end
 
 --------------WORLD CALLBACK--------------------------------------
 
@@ -144,7 +150,7 @@ function love.load(arg)
 
 
 	-- Sprites
-	PlayerImg = love.graphics.newImage("Wizard.jpg")
+	PlayerImg = love.graphics.newImage("Player.png")
 	EnemyImg  = love.graphics.newImage("Enemy.png")
 	FireballImg = love.graphics.newImage("Fireball.png")
 	WaterballImg = love.graphics.newImage("Fireball.png")
@@ -205,8 +211,8 @@ function love.update(dt)
 			elseif gesture[i] == 7 then 
 				player1:jump()
 			elseif gesture[i] == 2 then 
-				local x, y = player1:getCoords()
-				bullets:add(Magic:new(x+0.1, y-0.04, 50, 1, MagicTypeFire, "player"))
+				local x, y = player1:getMagicCoords()
+				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeFire, "player"))
 			end
 			i = i+1
 		end
@@ -229,9 +235,10 @@ function love.draw()
 	--so this is game
 	--this game is not shit
 	
-	love.graphics.setColor(0.1, 0.2, 0.9)
-	player1:draw()
+	
 	love.graphics.setColor(1, 1, 1)
+	
+	player1:draw()
 	
 	FireShader:send("time", love.timer.getTime()*20)
 	bullets:CheckDraw()

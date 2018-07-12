@@ -8,19 +8,25 @@ function Enemy:new(hp, x, y) -- + class of enemy, warior, magician..
 	
 	x, y = pcoords(x, y)
 	
+	self.image = EnemyImg
+	self.scale, self.width, self.height = imageProps(0.17, self.image)
+	
 	self.body = love.physics.newBody(world, x, y, "dynamic")
-	self.body:setMass(70)
 	self.body:setAngle(0)
 	self.body:setFixedRotation(true)
 	
 	self.name = "enemy"
 	
-	self.shape = love.physics.newRectangleShape(80, 120)
+	self.shape = love.physics.newRectangleShape(pcoords(self.width, self.height))
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setRestitution(0.1)
 	self.fixture:setFriction(5)
 	
+	self.body:setMass(70)
+	
 	self.hp = hp
+	
+	self.side = 1
 
 	 -- also, there should be some agilities of different classes
 	 -- for ex. immortal, reduce fire dmg or smth like that
@@ -71,7 +77,11 @@ function Enemy:draw()
 	--love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
 	
 	local x, y = self.body:getWorldPoints(self.shape:getPoints())
-	love.graphics.draw(EnemyImg, x, y)
+	if self.side == 1 then 
+		love.graphics.draw(self.image, x, y, 0, self.scale, self.scale)
+	elseif self.side == -1 then
+		love.graphics.draw(self.image, x+plen(self.width), y, 0, self.scale*self.side, self.scale)
+	end
 end	
 
 function Enemy:getCoords()
