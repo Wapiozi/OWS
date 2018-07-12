@@ -189,7 +189,7 @@ function love.load(arg)
 	width = love.graphics.getWidth()
 	height = love.graphics.getHeight()
 	print(width,camera._x)
-	camera:setBounds(0, 0, width  , height)
+	camera:setBounds(0, 0, width * 2  , height)
 	camera:setPosition(0,width/2)
 
 
@@ -223,8 +223,8 @@ function love.update(dt)
 	local dy = camera._y + height / 2 - player1.body:getY()
 
 	player1:updateSpeed()
-	camera:setPosition(player1.body:getX() - width / 2, player1.body:getY() - height / 2) --camera movement with bounds
-	--camera:move(dx*dt,dy*dt)  --smooth camera movement without bounds
+	--camera:setPosition(player1.body:getX() - width / 2, player1.body:getY() - height / 2) --camera movement with bounds
+	camera:move(dx*4*dt,dy*10*dt)  --smooth camera movement with bounds
 
 	world:update(dt) --update the whole world
 	particles:update(dt)
