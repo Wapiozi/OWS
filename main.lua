@@ -124,7 +124,25 @@ function postSolve(body_a, body_b, collision, normalimpulse, tangentimpulse)
 
 end
 
+------------------------KEYBOARD---------------------------------------
 
+function love.keypressed(key)
+	if (key == "d") and (player1.movDirection == 0) then 
+		player1:moveRight()
+	elseif (key == "a") and (player1.movDirection == 0) then 
+		player1:moveLeft()
+	end
+	
+	if (key == "w") then
+		player1:jump()
+	end
+end
+
+function love.keyreleased(key)
+	if (key == "d") or (key == "a") then 
+		player1.movDirection = 0
+	end
+end
 
 -- Standart ------------------------------------------------------------
 
@@ -206,14 +224,26 @@ function love.update(dt)
 	if gesture ~= nil then
 		while gesture[i] ~= 10 do   --check for end code
 			if gesture[i] == 1 then
-				player1:moveRight()
-			elseif gesture[i] == 5 then
-				player1:moveLeft()
-			elseif gesture[i] == 7 then
-				player1:jump()
+
 			elseif gesture[i] == 2 then
 				local x, y = player1:getMagicCoords()
+				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeGround, "player"))
+			elseif gesture[i] == 3 then
+				local x, y = player1:getMagicCoords()
+				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeWater, "player"))
+			elseif gesture[i] == 4 then
+				local x, y = player1:getMagicCoords()
 				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeFire, "player"))
+			elseif gesture[i] == 5 then
+			
+			elseif gesture[i] == 6 then
+				local x, y = player1:getMagicCoords()
+				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeAir, "player"))
+			elseif gesture[i] == 7 then	
+			
+			elseif gesture[i] == 8 then	
+				local x, y = player1:getMagicCoords()
+				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeIce, "player"))
 			end
 			i = i+1
 		end

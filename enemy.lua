@@ -20,7 +20,7 @@ function Enemy:new(hp, x, y) -- + class of enemy, warior, magician..
 	self.shape = love.physics.newRectangleShape(pcoords(self.width, self.height))
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setRestitution(0.1)
-	self.fixture:setFriction(0)
+	self.fixture:setFriction(5)
 	
 	self.body:setMass(70)
 	

@@ -85,6 +85,18 @@ function Magic:init()
 	MagicTypeFire.Collis = function(px, py)
 		particles:add(Particle:new(px, py, 0.1, 0.3, FireballImg))
 	end
+	MagicTypeWater.Collis = function(px, py)
+		particles:add(Particle:new(px, py, 0.1, 0.3, WaterballImg))
+	end
+	MagicTypeAir.Collis = function(px, py)
+		particles:add(Particle:new(px, py, 0.1, 0.3, AirballImg))
+	end
+	MagicTypeIce.Collis = function(px, py)
+		particles:add(Particle:new(px, py, 0.1, 0.3, IceballImg))
+	end
+	MagicTypeGround.Collis = function(px, py)
+		particles:add(Particle:new(px, py, 0.1, 0.3, GroundballImg))
+	end
 end
 
 function Magic:new(x, y, vx, vy, type, dmg, owner)
@@ -115,7 +127,7 @@ function Magic:new(x, y, vx, vy, type, dmg, owner)
 	self.shader = self.type.shader
 	
 	self.Collis = function()
-		if not self.canDelete then self.type.Collis(self.body:getX(), self.body:getY()) end
+		if (not self.canDelete) and (self.type.Collis ~= nil) then self.type.Collis(self.body:getX(), self.body:getY()) end
 	end
 	
 	if self.type.Init ~= nil then self.type.Init() end 

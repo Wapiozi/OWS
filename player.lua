@@ -50,10 +50,8 @@ function Player:moveRight()
 	if self.movDirection >= 0 then 
 		self.movDirection = 1
 		self.side = 1
-		self.body:setLinearVelocity(plen(0.45), 0)
 	else
 		self.movDirection = 0
-		self.body:setLinearVelocity(0, 0)
 	end
 end
 
@@ -61,10 +59,8 @@ function Player:moveLeft()
 	if self.movDirection <= 0 then 
 		self.movDirection = -1
 		self.side = -1
-		self.body:setLinearVelocity(-plen(0.45), 0)
 	else
 		self.movDirection = 0
-		self.body:setLinearVelocity(0, 0)
 	end
 end
 
@@ -74,16 +70,16 @@ end
 
 function Player:updateSpeed()
 	local xveloc, yveloc = self.body:getLinearVelocity()
-	--[[
-	if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:applyForce(100000, 0) 
-	elseif (xveloc > -plen(0.45)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0) 
+	
+	if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:applyForce(1000000, 0) 
+	elseif (xveloc > -plen(0.45)) and (self.movDirection == -1) then self.body:applyForce(-1000000, 0) 
 	elseif (self.movDirection == 0) then
-		if (xveloc > 3) then 
-			self.body:applyForce(-10000, 0)
-		elseif (xveloc < -3) then 
-			self.body:applyForce(10000, 0)
+		if (xveloc > 5) then 
+			self.body:applyForce(-100000, 0)
+		elseif (xveloc < -5) then 
+			self.body:applyForce(100000, 0)
 		end
-	end]]--
+	end
 	
 end
 
