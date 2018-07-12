@@ -65,7 +65,9 @@ function Player:moveLeft()
 end
 
 function Player:jump()
-	self.body:applyLinearImpulse(0, -45000)
+	local vx, vy = self.body:getLinearVelocity()
+	if vy ~= 0 then self.body:setLinearVelocity(vx, 0) end 
+	self.body:applyLinearImpulse(0, -30000)
 end
 
 function Player:updateSpeed()
