@@ -180,8 +180,8 @@ function love.load(arg)
 	Magic:init()
 	Item:init()
 
-	walls:add(Brick:new(0, 1, 200, 0.02))
-	walls:add(Brick:new(16/9*2, 0, 0.02, 200))
+	walls:add(Brick:new(0, 1, 200, 0.1))
+	walls:add(Brick:new(16/9*2, 0, 0.1, 200))
 
 	player1 = Player:new(100, 0.2, 0.8)
 	enemies:add(Enemy:new(500, 1.5, 0.8))
