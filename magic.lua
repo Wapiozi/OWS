@@ -139,6 +139,8 @@ function Magic:new(x, y, vx, vy, type, owner)
 	
 	self.canDelete = false
 	
+	lights:add(flen(x), flen(y), 0.5, false, self.body)
+	
 	return self
 end
 

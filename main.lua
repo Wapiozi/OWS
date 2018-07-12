@@ -8,6 +8,7 @@ libcamera = require("camera")
 libbrick = require("brick")
 libcont = require("container")
 libparticles = require("particles")
+liblighting = require("lighting")
 
 world = nil
 --[[
@@ -194,6 +195,9 @@ function love.load(arg)
 	walls = Container:new()
 	enemies = Container:new()
 	particles = Container:new()
+	lights = Lights:create()
+	
+	lights:add(0.1, 0.1, 2, true)
 
 	Magic:init()
 	Item:init()
@@ -268,7 +272,8 @@ function love.draw()
 	player1:drawHP()
 
 	camera:set()
-
+	
+	lights:draw(camera._x, camera._y)
 	--so this is game
 	--this game is not shit
 
@@ -284,6 +289,8 @@ function love.draw()
 	particles:CheckDraw()
 	enemies:CheckDraw()
 	player1:draw()
+	
+	lights:endDraw()
 	
 	camera:unset()
 end
