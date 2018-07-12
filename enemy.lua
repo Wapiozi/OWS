@@ -20,11 +20,11 @@ function Enemy:new(hp, x, y) -- + class of enemy, warior, magician..
 	self.shape = love.physics.newRectangleShape(pcoords(self.width, self.height))
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setRestitution(0.1)
-	self.fixture:setFriction(5)
+	self.fixture:setFriction(0)
 	
 	self.body:setMass(70)
 	
-	self.hp = hp
+	self.hp, self.maxHP = hp, hp
 	
 	self.side = 1
 
@@ -70,6 +70,20 @@ function Enemy:applyMagic(Dmg_fire, Dmg_water, Dmg_earth, Dmg_air)
 	end
 end
 
+function Enemy:drawHP()
+	local len = self.hp/self.maxHP
+	
+	local x, y, x1, y1 = self.body:getWorldPoints(self.shape:getPoints())
+	
+	love.graphics.setColor(0, 0.5, 0)
+	love.graphics.rectangle("fill", x, y-plen(0.01), x1-x, plen(0.01))
+
+	love.graphics.setColor(0, 1, 0)
+	love.graphics.rectangle("fill", x, y-plen(0.01), (x1-x)*len, plen(0.01))
+
+	love.graphics.setColor(1, 1, 1)
+end
+
 function Enemy:draw()
 	-- there should be more enemies sprites
 	-- self:choose_sprite(red) 
@@ -82,9 +96,24 @@ function Enemy:draw()
 	elseif self.side == -1 then
 		love.graphics.draw(self.image, x+plen(self.width), y, 0, self.scale*self.side, self.scale)
 	end
+	
+	self:drawHP()
 end	
 
 function Enemy:getCoords()
 	local x, y = self.body:getPosition()
 	return fcoords(x, y)
 end
+
+function Enemy:destroy()
+	self.canDelete = true
+	self.fixture:destroy()
+	self.shape:release()
+	self.body:destroy()
+end
+
+function Enemy:getDamage(dmg, magic)
+	self.hp = self.hp-dmg
+	if self.hp < 0 then self:destroy() end
+end
+

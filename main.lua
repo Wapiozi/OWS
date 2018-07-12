@@ -66,9 +66,9 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 			end
 
 			if (obj1.name == "magic") and (obj1.owner ~= "player") then
-				obj2.hp = obj2.hp - obj1.damage
+				obj2:getDamage(obj1.damage)
 			elseif (obj2.name == "magic") and (obj2.owner ~= "player") then
-				obj1.hp = obj1.hp - obj2.damage
+				obj1:getDamage(obj2.damage)
 			end
 
 		end
@@ -76,10 +76,10 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 		if obj1.name == "enemy" or obj2.name == "enemy" then
 
 			if (obj1.name == "magic") and (obj1.owner ~= "enemy") then
-				obj2.hp = obj2.hp - obj1.damage
+				obj2:getDamage(obj1.damage)
 
 			elseif (obj2.name == "magic") and (obj2.owner ~= "enemy") then
-				obj1.hp = obj1.hp - obj2.damage
+				obj1:getDamage(obj2.damage)
 
 			end
 
@@ -184,7 +184,7 @@ function love.load(arg)
 	walls:add(Brick:new(16/9*2, 0, 0.1, 200))
 
 	player1 = Player:new(100, 0.2, 0.8)
-	enemies:add(Enemy:new(500, 1.5, 0.8))
+	enemies:add(Enemy:new(200, 1.5, 0.8))
 
 
 	width = love.graphics.getWidth()
@@ -234,6 +234,8 @@ end
 
 function love.draw()
 	loadMovement()
+	
+	player1:drawHP()
 
 	camera:set()
 
@@ -243,15 +245,16 @@ function love.draw()
 
 	love.graphics.setColor(1, 1, 1)
 
-	player1:draw()
+	
 
 	FireShader:send("time", love.timer.getTime()*20)
 	bullets:CheckDraw()
 
-	enemies:CheckDraw()
 	walls:CheckDraw()
 	particles:CheckDraw()
-
+	enemies:CheckDraw()
+	player1:draw()
+	
 	camera:unset()
 end
 

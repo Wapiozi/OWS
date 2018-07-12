@@ -18,6 +18,7 @@ function Player:new(mana, x, y)
 	
 	self.name = "player"
 	self.hp = 200
+	self.maxHP = 200
 	self.movDirection = 0    --   1 right      -1 left      0 no
 	self.side = 1            --   1 right      -1 left
 	
@@ -27,7 +28,7 @@ function Player:new(mana, x, y)
 	self.shape = love.physics.newRectangleShape(pcoords(self.width, self.height))      --wizard figure
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setRestitution(0.1)
-	self.fixture:setFriction(5)
+	self.fixture:setFriction(0)
 	self.body:setMass(70) -- 70kg wizard
 	self.fixture:setUserData(self)
 	
@@ -46,20 +47,24 @@ function Player:draw()
 end
 
 function Player:moveRight()
-	if player1.movDirection >= 0 then 
-		player1.movDirection = 1
+	if self.movDirection >= 0 then 
+		self.movDirection = 1
 		self.side = 1
+		self.body:setLinearVelocity(plen(0.45), 0)
 	else
-		player1.movDirection = 0
+		self.movDirection = 0
+		self.body:setLinearVelocity(0, 0)
 	end
 end
 
 function Player:moveLeft()
-	if player1.movDirection <= 0 then 
-		player1.movDirection = -1
+	if self.movDirection <= 0 then 
+		self.movDirection = -1
 		self.side = -1
+		self.body:setLinearVelocity(-plen(0.45), 0)
 	else
-		player1.movDirection = 0
+		self.movDirection = 0
+		self.body:setLinearVelocity(0, 0)
 	end
 end
 
@@ -69,7 +74,7 @@ end
 
 function Player:updateSpeed()
 	local xveloc, yveloc = self.body:getLinearVelocity()
-	
+	--[[
 	if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:applyForce(100000, 0) 
 	elseif (xveloc > -plen(0.45)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0) 
 	elseif (self.movDirection == 0) then
@@ -78,7 +83,8 @@ function Player:updateSpeed()
 		elseif (xveloc < -3) then 
 			self.body:applyForce(10000, 0)
 		end
-	end
+	end]]--
+	
 end
 
 function Player:getCoords()
@@ -91,4 +97,30 @@ function Player:getMagicCoords()
 	x = x + (self.width/2 + 0.03)*self.side
 	y = y - self.height/2 + 0.05
 	return x, y
+end
+
+function Player:drawHP()
+	local len = self.hp/self.maxHP
+	
+	local x, y, x1 = plen(0.02), plen(0.05), plen(0.2)
+	
+	love.graphics.setColor(0, 0.5, 0)
+	love.graphics.rectangle("fill", x, y-plen(0.01), x1-x, plen(0.01))
+
+	love.graphics.setColor(0, 1, 0)
+	love.graphics.rectangle("fill", x, y-plen(0.01), (x1-x)*len, plen(0.01))
+
+	love.graphics.setColor(1, 1, 1)
+end
+
+function Player:destroy()
+	self.canDelete = true
+	self.fixture:destroy()
+	self.shape:release()
+	self.body:destroy()
+end
+
+function Player:getDamage(dmg, magic)
+	self.hp = self.hp-dmg
+	if self.hp < 0 then self:destroy() end
 end
