@@ -99,7 +99,7 @@ function Magic:init()
 	end
 end
 
-function Magic:new(x, y, vx, vy, type, dmg, owner)
+function Magic:new(x, y, vx, vy, type, owner)
 	self = setmetatable({}, self)
 	
 	x, y = pcoords(x, y)
