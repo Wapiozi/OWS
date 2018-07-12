@@ -11,7 +11,7 @@ function Magic:init()
 		image = FireballImg,
 		shader = FireShader,
 		psystem = nil, --ParticleSystem
-		size = 20,
+		size = 0.028,
 		Restitution = 0,
 		Friction = 0.1,
 		Damage = 10,
@@ -26,7 +26,7 @@ function Magic:init()
 		image = WaterballImg,
 		shader = WaterShader,
 		psystem = nil,
-		size = 30,
+		size = 0.0417,
 		Restitution = 0,
 		Friction = 100,
 		Damage = 25,
@@ -41,7 +41,7 @@ function Magic:init()
 		image = AirballImg,
 		shader = AirShader,
 		psystem = nil,
-		size = 30,
+		size = 0.0417,
 		Restitution = 0,
 		Friction = 0.01,
 		Damage = 5,
@@ -56,7 +56,7 @@ function Magic:init()
 		image = IceballImg,
 		shader = IceShader,
 		psystem = nil,
-		size = 15,
+		size = 0.02,
 		Restitution = 0.7,
 		Friction = 0.01,
 		Damage = 15,
@@ -71,7 +71,7 @@ function Magic:init()
 		image = GroundballImg,
 		shader = nil,
 		psystem = nil,
-		size = 25,
+		size = 0.0347,
 		Restitution = 0.4,
 		Friction = 4,
 		Damage = 40,
@@ -96,20 +96,22 @@ function Magic:new(x, y, vx, vy, type, dmg, owner)
 	self.name = "magic"
 	self.owner = owner
 	
+	self.image = self.type.image
+	self.scale, self.width, self.height = imageProps(self.type.size, self.image)
+	
 	self.body = love.physics.newBody(world, x, y, "dynamic")
-	self.body:setMass(type.mass)
 	self.body:setBullet(true)
 	
-	
-	self.shape = love.physics.newRectangleShape(type.size, type.size)
+	self.shape = love.physics.newRectangleShape(pcoords(self.width, self.height))
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setRestitution(type.Restitution)
 	self.fixture:setFriction(type.Friction)
 	
+	self.body:setMass(type.mass)
+	
 	self.damage = self.type.Damage
 	self.reload = self.type.Reload
 	
-	self.image = self.type.image
 	self.shader = self.type.shader
 	
 	self.Collis = function()
@@ -131,7 +133,7 @@ end
 function Magic:draw()
 	local x, y = self.body:getWorldPoints(self.shape:getPoints())
 	--local x, y = self.body:getPosition()
-	love.graphics.draw(self.image, x, y, self.body:getAngle())
+	love.graphics.draw(self.image, x, y, self.body:getAngle(), self.scale)
 	--love.graphics.setColor(0.8, 1, 0.01)
 	--love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
 end
