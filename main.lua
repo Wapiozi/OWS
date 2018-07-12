@@ -15,8 +15,8 @@ world = nil
 	Field - is a background and all obstacles mot AI      --and is useless
 	Enemy - is an obstacle with special power and defense agil.
 	Mana - is a value of different kinds magic elements for ex Earth, Water...
-	AKM - all kind of magic, all possible magic shit	
-	
+	AKM - all kind of magic, all possible magic shit
+
 	world - is main world
 ]]--
 
@@ -46,7 +46,7 @@ function imageProps(height, img)
 	local wid, hig = img:getDimensions()
 	local scal = plen(height)/hig
 	local fwid, fhig = flen(wid*scal), flen(hig*scal)
-	
+
 	return scal, fwid, fhig
 end
 
@@ -56,26 +56,26 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 	obj1 = f1:getUserData()
 	obj2 = f2:getUserData()
 
-	if (obj1 ~= nil) and (obj2 ~= nil) then 
+	if (obj1 ~= nil) and (obj2 ~= nil) then
 		if obj1.name == "player" or obj2.name == "player" then
-			
+
 			if obj1.name == 'item' then
 				obj1.ItemCanBeTaken = true
 			elseif obj2.name == 'item' then
 				obj2.ItemCanBeTaken = true
-			end	
+			end
 
-			if (obj1.name == "magic") and (obj1.owner ~= "player") then 
+			if (obj1.name == "magic") and (obj1.owner ~= "player") then
 				obj2.hp = obj2.hp - obj1.damage
-			elseif (obj2.name == "magic") and (obj2.owner ~= "player") then 
+			elseif (obj2.name == "magic") and (obj2.owner ~= "player") then
 				obj1.hp = obj1.hp - obj2.damage
 			end
 
 		end
-		
+
 		if obj1.name == "enemy" or obj2.name == "enemy" then
-			
-			if (obj1.name == "magic") and (obj1.owner ~= "enemy") then 
+
+			if (obj1.name == "magic") and (obj1.owner ~= "enemy") then
 				obj2.hp = obj2.hp - obj1.damage
 
 			elseif (obj2.name == "magic") and (obj2.owner ~= "enemy") then
@@ -98,30 +98,30 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 
 
 end
- 
+
 function endContact(f1, f2, cont)
  	obj1 = f1:getUserData()
 	obj2 = f2:getUserData()
 
 
-	if (obj1 ~= nil) and (obj2 ~= nil) then 
+	if (obj1 ~= nil) and (obj2 ~= nil) then
 		if obj1.name == 'player' or obj2.name == 'player' then
-			
+
 			if obj1.name == 'item' then
 				obj1.ItemCanBeTaken = false
 			elseif obj2.name == 'item' then
 				obj2.ItemCanBeTaken = false
-			end	
+			end
 		end
 	end
 end
- 
+
 function preSolve(body_a, body_b, collision)
- 
+
 end
- 
+
 function postSolve(body_a, body_b, collision, normalimpulse, tangentimpulse)
- 
+
 end
 
 
@@ -130,22 +130,22 @@ end
 
 function love.load(arg)
 	-----------RESOURCES LOAD----------------------------------
-	
+
 	FireShader = love.graphics.newShader[[
 		extern number time;
-	
+
 		vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords ){
-			
+
 			vec4 col = Texel(texture, texture_coords);
-			
+
 			float coef = cos((texture_coords.x - texture_coords.y + sin(time))*8);
-			
+
 			col = vec4( abs(sin(time))*col.rg*coef, col.ba);
-			
+
 			return col;
 		}
 	]]
-	
+
 
 
 
@@ -160,7 +160,7 @@ function love.load(arg)
 	WandSdImg = love.graphics.newImage("palka.png")
 	ClothSdImg = love.graphics.newImage("palka.png")
 	-- by now there will be only one kind of enemies
-	
+
 	--------------------------------------------------------------
 
 	love.window.setMode(1280, 720)
@@ -170,18 +170,18 @@ function love.load(arg)
 
 	world = love.physics.newWorld(0, 9.81*100) --we need the whole world
 	world:setCallbacks(beginContact, endContact, preSolve, postSolve)
-	
+
 	bullets = Container:new()
 	walls = Container:new()
 	enemies = Container:new()
 	particles = Container:new()
-	
+
 	Magic:init()
 	Item:init()
-	
+
 	walls:add(Brick:new(0, 1, 200, 0.02))
 	walls:add(Brick:new(16/9*2, 0, 0.02, 200))
-	
+
 	player1 = Player:new(100, 0.2, 0.8)
 	enemies:add(Enemy:new(500, 1.5, 0.8))
 
@@ -192,7 +192,7 @@ function love.load(arg)
 	camera:setBounds(0, 0, width  , height)
 	camera:setPosition(0,width/2)
 
-	
+
 end
 
 
@@ -202,15 +202,15 @@ function love.update(dt)
 	----------------PROCESSING GESTURE----------------------
 	gesture = getLastMovement()
 	local i = 1
-	if gesture ~= nil then 
+	if gesture ~= nil then
 		while gesture[i] ~= 10 do   --check for end code
-			if gesture[i] == 1 then 
+			if gesture[i] == 1 then
 				player1:moveRight()
-			elseif gesture[i] == 5 then 
+			elseif gesture[i] == 5 then
 				player1:moveLeft()
-			elseif gesture[i] == 7 then 
+			elseif gesture[i] == 7 then
 				player1:jump()
-			elseif gesture[i] == 2 then 
+			elseif gesture[i] == 2 then
 				local x, y = player1:getMagicCoords()
 				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeFire, "player"))
 			end
@@ -219,9 +219,13 @@ function love.update(dt)
 	end
 	-------------------------------------------------------
 
+	local dx = camera._x + width / 2 - player1.body:getX()
+	local dy = camera._y + height / 2 - player1.body:getY()
 
 	player1:updateSpeed()
-	camera:setPosition(player1.body:getX() - width / 2, player1.body:getY() - height / 2)
+	camera:setPosition(player1.body:getX() - width / 2, player1.body:getY() - height / 2) --camera movement with bounds
+	--camera:move(dx*dt,dy*dt)  --smooth camera movement without bounds
+
 	world:update(dt) --update the whole world
 	particles:update(dt)
 	if partSys ~= nil then partSys:update(dt) end
@@ -229,17 +233,17 @@ end
 
 function love.draw()
 	loadMovement()
-	
+
 	camera:set()
 
 	--so this is game
 	--this game is not shit
-	
-	
+
+
 	love.graphics.setColor(1, 1, 1)
-	
+
 	player1:draw()
-	
+
 	FireShader:send("time", love.timer.getTime()*20)
 	bullets:CheckDraw()
 

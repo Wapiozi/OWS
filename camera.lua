@@ -5,6 +5,7 @@ camera.scaleX = 1
 camera.scaleY = 1
 camera.rotation = 0
 
+
 function camera:set()
     love.graphics.push()
     love.graphics.rotate(-self.rotation)
@@ -17,8 +18,8 @@ function camera:unset()
 end
 
 function camera:move(dx, dy)
-    self._x = self._x + (dx or 0)
-    self._y = self._y + (dy or 0)
+    self._x = self._x - (dx or 0)
+    self._y = self._y - (dy or 0)
 end
 
 function camera:rotate(dr)
