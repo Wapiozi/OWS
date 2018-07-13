@@ -1,3 +1,8 @@
+Mana = {fire = 1, water = 2, air = 3, earth = 4}
+
+
+------------------Magic----------------------------------------------------
+
 Magic = {}
 Magic.__index = Magic
 
@@ -6,7 +11,7 @@ function Magic:init()
 		image = FireballImg,
 		shader = FireShader,
 		psystem = nil, --ParticleSystem
-		size = 20,
+		size = 0.028,
 		Restitution = 0,
 		Friction = 0.1,
 		Damage = 10,
@@ -21,7 +26,7 @@ function Magic:init()
 		image = WaterballImg,
 		shader = WaterShader,
 		psystem = nil,
-		size = 30,
+		size = 0.0417,
 		Restitution = 0,
 		Friction = 100,
 		Damage = 25,
@@ -36,7 +41,7 @@ function Magic:init()
 		image = AirballImg,
 		shader = AirShader,
 		psystem = nil,
-		size = 30,
+		size = 0.0417,
 		Restitution = 0,
 		Friction = 0.01,
 		Damage = 5,
@@ -51,7 +56,7 @@ function Magic:init()
 		image = IceballImg,
 		shader = IceShader,
 		psystem = nil,
-		size = 15,
+		size = 0.02,
 		Restitution = 0.7,
 		Friction = 0.01,
 		Damage = 15,
@@ -66,7 +71,7 @@ function Magic:init()
 		image = GroundballImg,
 		shader = nil,
 		psystem = nil,
-		size = 25,
+		size = 0.0347,
 		Restitution = 0.4,
 		Friction = 4,
 		Damage = 40,
@@ -76,29 +81,54 @@ function Magic:init()
 		Init = nil,
 		Collis = nil
 	}
+	
+	MagicTypeFire.Collis = function(px, py)
+		particles:add(Particle:new(px, py, 0.1, 0.3, FireballImg))
+	end
+	MagicTypeWater.Collis = function(px, py)
+		particles:add(Particle:new(px, py, 0.1, 0.3, WaterballImg))
+	end
+	MagicTypeAir.Collis = function(px, py)
+		particles:add(Particle:new(px, py, 0.1, 0.3, AirballImg))
+	end
+	MagicTypeIce.Collis = function(px, py)
+		particles:add(Particle:new(px, py, 0.1, 0.3, IceballImg))
+	end
+	MagicTypeGround.Collis = function(px, py)
+		particles:add(Particle:new(px, py, 0.1, 0.3, GroundballImg))
+	end
 end
 
-function Magic:new(x, y, vx, vy, type, dmg)
+function Magic:new(x, y, vx, vy, type, owner)
 	self = setmetatable({}, self)
+	
+	x, y = pcoords(x, y)
 	
 	self.type = type
 	self.name = "magic"
+	self.owner = owner
+	
+	self.image = self.type.image
+	self.scale, self.width, self.height = imageProps(self.type.size, self.image)
 	
 	self.body = love.physics.newBody(world, x, y, "dynamic")
-	self.body:setMass(type.mass)
 	self.body:setBullet(true)
 	
-	
-	self.shape = love.physics.newRectangleShape(type.size, type.size)
+	self.shape = love.physics.newRectangleShape(pcoords(self.width, self.height))
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setRestitution(type.Restitution)
 	self.fixture:setFriction(type.Friction)
 	
+	self.body:setMass(type.mass)
+	
 	self.damage = self.type.Damage
 	self.reload = self.type.Reload
 	
-	self.image = self.type.image
 	self.shader = self.type.shader
+	
+	self.Collis = function()
+		if (not self.canDelete) and (self.type.Collis ~= nil) then self.type.Collis(self.body:getX(), self.body:getY()) end
+	end
 	
 	if self.type.Init ~= nil then self.type.Init() end 
 	
@@ -106,6 +136,13 @@ function Magic:new(x, y, vx, vy, type, dmg)
 	self.body:setAngle(45)
 	
 	self.fixture:setUserData(self)
+<<<<<<< HEAD
+=======
+	
+	self.canDelete = false
+	
+	lights:add(flen(x), flen(y), 0.5, false, self.body)
+>>>>>>> 7699505751f5cbc834331d9ea0ab904b96524d6e
 	
 	return self
 end
@@ -113,34 +150,17 @@ end
 function Magic:draw()
 	local x, y = self.body:getWorldPoints(self.shape:getPoints())
 	--local x, y = self.body:getPosition()
-	love.graphics.draw(self.image, x, y, self.body:getAngle())
+	love.graphics.draw(self.image, x, y, self.body:getAngle(), self.scale)
 	--love.graphics.setColor(0.8, 1, 0.01)
 	--love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
 end
 
-MagicCont = {}
-MagicCont.__index = MagicCont
-
-function MagicCont:new()
-	self = setmetatable({}, self)
-	
-	self.list = nil
-	
-	return self
+function Magic:delete()
+	self.canDelete = true
+	self.fixture:destroy()
+	self.shape:release()
+	self.body:destroy()
 end
 
-function MagicCont:add(val)
-	self.list = {next = self.list, value = val}
-end
 
-function MagicCont:CheckDraw()
-	local tmp = self.list
-	
-	
-	while tmp ~= nil do 
-		if tmp.value.shader ~= nil then love.graphics.setShader(tmp.value.shader) end
-		tmp.value:draw()
-		love.graphics.setShader()
-		tmp = tmp.next
-	end
-end
+
