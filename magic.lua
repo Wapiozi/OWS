@@ -105,7 +105,7 @@ function Magic:new(x, y, vx, vy, type, dmg)
 	self.body:applyLinearImpulse(self.type.ImpulseCoef*vx, self.type.ImpulseCoef*vy)
 	self.body:setAngle(45)
 	
-	self.body:setUserData(self)
+	self.fixture:setUserData(self)
 	
 	return self
 end
