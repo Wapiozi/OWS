@@ -11,6 +11,7 @@ libparticles = require("particles")
 liblighting = require("lighting")
 
 world = nil
+inventoryOpen = false
 --[[
 	Player - is a magician
 	Field - is a background and all obstacles mot AI      --and is useless
@@ -137,6 +138,16 @@ function love.keypressed(key)
 	if (key == "w") then
 		player1:jump()
 	end
+
+	if (key == "i") then
+		if inventoryOpen then
+			inventoryOpen = false
+			-- inventory:hide() by now it doesnt work :P
+		elseif not inventoryOpen then
+			inventoryOpen = true
+			inventory:draw()
+		end
+	end
 end
 
 function love.keyreleased(key)
@@ -179,6 +190,7 @@ function love.load(arg)
 	WandSdImg = love.graphics.newImage("palka.png")
 	ClothSdImg = love.graphics.newImage("palka.png")
 	BrickImg = love.graphics.newImage("brick.png")
+	MinecraftInv = love.graphics.newImage("minecraft.png")
 	-- by now there will be only one kind of enemies
 
 	--------------------------------------------------------------
@@ -202,10 +214,12 @@ function love.load(arg)
 
 	Magic:init()
 	Item:init()
+	Inventory:init()
 
 	walls:add(Brick:new(0, 1, 200, 0.1))
 	walls:add(Brick:new(16/9*2, 0, 0.1, 200))
 
+	inventory = Inventory:new()
 	player1 = Player:new(100, 0.2, 0.8)
 	enemies:add(Enemy:new(200, 1.5, 0.8))
 
@@ -289,7 +303,7 @@ function love.draw()
 	particles:CheckDraw()
 	enemies:CheckDraw()
 	items:CheckDraw()
-	
+
 	player1:draw()
 	
 	lights:endDraw()
