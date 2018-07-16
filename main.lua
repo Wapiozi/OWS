@@ -179,6 +179,7 @@ function love.load(arg)
 	WandSdImg = love.graphics.newImage("palka.png")
 	ClothSdImg = love.graphics.newImage("palka.png")
 	BrickImg = love.graphics.newImage("brick.png")
+	FireImg = love.graphics.newImage("fire.png")
 	-- by now there will be only one kind of enemies
 
 	--------------------------------------------------------------
@@ -262,12 +263,15 @@ function love.update(dt)
 	camera:move(dx*4*dt,dy*10*dt)  --smooth camera movement with bounds
 
 	world:update(dt) --update the whole world
+	bullets:update(dt)
 	particles:update(dt)
 	if partSys ~= nil then partSys:update(dt) end
 end
 
 function love.draw()
 	loadMovement()
+	
+	love.graphics.print(tostring(love.timer.getFPS( )), 10, 10)
 	
 	player1:drawHP()
 

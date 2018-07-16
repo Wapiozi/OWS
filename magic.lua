@@ -137,6 +137,15 @@ function Magic:new(x, y, vx, vy, type, owner)
 	
 	self.fixture:setUserData(self)
 	
+	self.partic = love.graphics.newParticleSystem(FireImg, 1000)
+	self.partic:setParticleLifetime(0.1, 0.3)
+	self.partic:setEmissionRate(300)
+	self.partic:setSizeVariation(0.01)
+	self.partic:setLinearAcceleration(-2000, -2000, 2000, 2000)
+	self.partic:setColors(255, 255, 255, 255, 255, 255, 127, 255)
+	self.partic:setPosition(x, y)
+	self.partic:setRelativeRotation(true)
+	
 	self.canDelete = false
 	
 	lights:add(flen(x), flen(y), 0.5, false, self.body)
@@ -145,9 +154,15 @@ function Magic:new(x, y, vx, vy, type, owner)
 end
 
 function Magic:draw()
+
 	local x, y = self.body:getWorldPoints(self.shape:getPoints())
 	--local x, y = self.body:getPosition()
 	love.graphics.draw(self.image, x, y, self.body:getAngle(), self.scale)
+	
+	
+	local x, y = 
+	self.partic:setPosition(self.body:getPosition())
+	love.graphics.draw(self.partic, nil, nil, nil, nil)
 	--love.graphics.setColor(0.8, 1, 0.01)
 	--love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
 end
@@ -157,7 +172,9 @@ function Magic:delete()
 	self.fixture:destroy()
 	self.shape:release()
 	self.body:destroy()
+	self.partic = nil
 end
 
-
-
+function Magic:update(dt)
+	if self.partic ~= nil then self.partic:update(dt) end
+end

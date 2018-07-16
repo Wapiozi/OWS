@@ -50,7 +50,7 @@ function Lights:draw(camx, camy)
 end
 
 function Lights:endDraw()
-	love.graphics.setShader(self.shader)
+	love.graphics.setShader()
 end
 
 function Lights:setLightPosition(ind, x, y)
