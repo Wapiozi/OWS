@@ -74,7 +74,7 @@ function Item:destroy()
 end
 
 function Item:draw()
-	if self.body:isActive() then
+	if self.body ~= nil then  --Haha, classic
 		local x, y = self.body:getWorldPoints(self.shape:getPoints())
 		love.graphics.draw(self.image, x, y, self.body:getAngle())
 	end

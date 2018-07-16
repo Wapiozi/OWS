@@ -49,15 +49,15 @@ end
 
 function Inventory:drawItem(x, y, item1)
     -- for items
-    love.graphics.draw(item1.image, x, y, item1.body:getAngle(), item1.scale)
+    love.graphics.draw(item1.image, x, y, 0, item1.scale)
 end
 
 function Inventory:draw()
 	-- there should be some pojebenj
 	local x, y = lastInventoryPoint[x], lastInventoryPoint[y]
-	love.graphics.draw(self.image, x, y, self.body:getAngle(), self.scale)
+	love.graphics.draw(self.image, x, y, 0, self.scale)
 
-	local x1, y1 = x + 14, y + 143
+	local x1, y1 = x + 14, y + 143    --какого куя тут пиксельные координаты? юзать flen() plen()
 	for i = 0, self.height-1 do
 		for j = 0, self.length-1 do
 			if self.slot[i*9+j] ~= nil then
