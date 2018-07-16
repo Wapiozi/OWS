@@ -16,7 +16,7 @@ vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords 
 		dist = max(dist, abs( min( len(screen_coords+camPos - lights[i].xy)/lights[i].w, 1) - 1));
 	}
 	
-	col.xyz = col.xyz*min(pow(dist, 10)*1000, 1);
+	col.rgb = col.rgb*max(min(pow(dist, 10)*1000, 1), 0.005);
 	
 	return col;
 }

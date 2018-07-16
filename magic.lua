@@ -136,13 +136,10 @@ function Magic:new(x, y, vx, vy, type, owner)
 	self.body:setAngle(45)
 	
 	self.fixture:setUserData(self)
-<<<<<<< HEAD
-=======
 	
 	self.canDelete = false
 	
 	lights:add(flen(x), flen(y), 0.5, false, self.body)
->>>>>>> 7699505751f5cbc834331d9ea0ab904b96524d6e
 	
 	return self
 end

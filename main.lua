@@ -197,7 +197,7 @@ function love.load(arg)
 	particles = Container:new()
 	lights = Lights:create()
 	
-	lights:add(0.1, 0.1, 2, true)
+	lights:add(1, 0.1, 2, true)
 
 	Magic:init()
 	Item:init()
