@@ -1,7 +1,7 @@
 Item = {}
 Item.__index = Item
 
-ItemSize = 5
+ItemSize = 0.02
 
 function Item:init() 
 	WandObj = {			
@@ -26,9 +26,13 @@ function Item:new(x, y, itemID, SpecialImg)
 	self.type = itemID.type 
 	self.name = "item"
 
+	self.image = self.type.image
 	if SpecialImg ~= nil then
 		self.type.image = SpecialImg
 	end
+
+	self.scale, self.width, self.height = imageProps(self.type.size, self.image)
+
 	self.ItemCanBeTaken = false
 	self.body = love.physics.newBody(world, x, y, "dynamic")
 	self.body:setMass(type.mass)
@@ -38,6 +42,7 @@ function Item:new(x, y, itemID, SpecialImg)
 	self.fixture:setSensor(true)
 
 	self.image = self.type.image
+	self.canDelete = false
 
 	self.body:setAngle(45)
 	self.fixture:setUserData(self)
@@ -61,6 +66,10 @@ function Item:despawn()
 end
 
 function Item:destroy()
+	self.canDelete = true
+	self.fixture:destroy()
+	self.shape:release()
+	self.body:destroy()
 	self:release()
 end
 
