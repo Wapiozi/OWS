@@ -35,9 +35,9 @@ function Container:CheckDraw()
 	end
 	
 	while tmp ~= nil do 
-		if tmp.value.shader ~= nil then love.graphics.setShader(tmp.value.shader) end
+--		if tmp.value.shader ~= nil then love.graphics.setShader(tmp.value.shader) end
 		tmp.value:draw()
-		love.graphics.setShader()
+--		love.graphics.setShader(tmp.value.shader)
 		
 		if tmp.next ~= nil and tmp.next.value.canDelete then
 			local tmnext = tmp.next.next
