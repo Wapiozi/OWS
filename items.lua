@@ -38,6 +38,7 @@ function Item:new(x, y, itemID, SpecialImg)
 	self.fixture:setSensor(true)
 
 	self.image = self.type.image
+	self.canDelete = false
 
 	self.body:setAngle(45)
 	self.fixture:setUserData(self)
@@ -56,11 +57,17 @@ function Item:spawn(x, y)
 	self.body:setActive(true)
 end
 
+--[[
 function Item:despawn()
 	self.body:setActive(false)
 end
+]]--
 
 function Item:destroy()
+	self.canDelete = true
+	self.fixture:destroy()
+	self.shape:release()
+	self.body:destroy()
 	self:release()
 end
 

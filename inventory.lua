@@ -50,5 +50,4 @@ end
 
 function Inventory:draw()
 	-- there should be some pojebenj
-
 end

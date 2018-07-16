@@ -195,8 +195,9 @@ function love.load(arg)
 	walls = Container:new()
 	enemies = Container:new()
 	particles = Container:new()
+	items = Container:new()
+
 	lights = Lights:create()
-	
 	lights:add(1, 0.1, 2, true)
 
 	Magic:init()
@@ -284,10 +285,11 @@ function love.draw()
 
 	FireShader:send("time", love.timer.getTime()*20)
 	bullets:CheckDraw()
-
 	walls:CheckDraw()
 	particles:CheckDraw()
 	enemies:CheckDraw()
+	items:CheckDraw()
+	
 	player1:draw()
 	
 	lights:endDraw()
