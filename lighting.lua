@@ -16,7 +16,7 @@ function Lights:create()
 	end
 	
 	self.count = 0
-	self.shader = love.graphics.newShader("lights.frag", "lights.vs")
+	self.shader = love.graphics.newShader("lights.frag", "lights.vert")
 	return self
 end
 
