@@ -1,205 +1,300 @@
 mgest = require("mgesture")
-local Player, Field, Enemy, Mana, AKM -- smth like place 4 drawing
-world = null
+libmagic = require("magic")
+libitems = require("items")
+libinven = require("inventory")
+libenemy = require("enemy")
+libplayer = require("player")
+libcamera = require("camera")
+libbrick = require("brick")
+libcont = require("container")
+libparticles = require("particles")
+liblighting = require("lighting")
 
+world = nil
 --[[
 	Player - is a magician
 	Field - is a background and all obstacles mot AI      --and is useless
 	Enemy - is an obstacle with special power and defense agil.
 	Mana - is a value of different kinds magic elements for ex Earth, Water...
-	AKM - all kind of magic, all possible magic shit	
-	
+	AKM - all kind of magic, all possible magic shit
+
 	world - is main world
 ]]--
 
--- Player implementation --------------------------------------------------------
-
-Mana = {fire = 1, water = 2, air = 3, earth = 4}
-
-Player = {}
-Player.__index = Player
-Player.type = 'player'
-
-function Player:new(mana, x, y)
-	self = setmetatable({}, self)
-	
-	self.magic_delay = md or 1
-	self.magic_fire  = Mana[fire] or 0
-	self.magic_water = Mana[water] or 0
-	self.magic_air   = Mana[air] or 0
-	self.magic_earth = Mana[earth] or 0
-	
-	self.movDirection = 0    --   1 right      -1 left      0 no
-	
-	self.body = love.physics.newBody(world, x, y, "dynamic")  --create new dynamic body in world
-	self.body:setMass(70) -- 70kg wizard
-	self.body:setAngle(0)
-	self.body:setFixedRotation(true)
-	
-	self.shape = love.physics.newRectangleShape(80, 120)      --wizard figure
-	self.fixture = love.physics.newFixture(self.body, self.shape)
-	self.fixture:setRestitution(0.1)
-	self.fixture:setFriction(5)
-	
-	return self;
+function pcoords(fx, fy)    --real coordinates to pixel coordinates
+	local px = fx*screenHeight
+	local py = fy*screenHeight
+	return px, py
 end
 
-function Player:draw()
-	--love.graphics.draw(PlayerImg, 100, 100)
-	-- by now, it is only like that :P
-	love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
+function fcoords(px, py)    --pixel coordinates to real coordinates
+	local fx = px/screenHeight
+	local fy = py/screenHeight
+	return fx, fy
 end
 
--- Enemy Implementation --------------------------------------------
-Enemy = {}
-Enemy.__index = Enemy
-Enemy.type = 'enemy'
-
-function Enemy:new(hp, x, y) -- + class of enemy, warior, magician..
-	self = setmetatable({}, self)
-	self.body = love.physics.newBody(world, x, y, "dynamic")
-	self.body:setMass(70)
-	self.body:setAngle(0)
-	self.body:setFixedRotation(true)
-	
-	self.shape = love.physics.newRectangleShape(80, 120)
-	self.fixture = love.physics.newFixture(self.body, self.shape)
-	self.fixture:setRestitution(0.1)
-	self.fixture:setFriction(5)
-	
-	self.hp = hp
-
-	 -- also, there should be some agilities of different classes
-	 -- for ex. immortal, reduce fire dmg or smth like that
-	 
-	--[[
-	red = {}
-	self:randomGen(red)  --WTF IS THAT???????
-	self.fire_r  = red[f] -- if red[f] = 0 then fire cant affect
-	self.earth_r = red[e]
-	self.water_r = red[w]
-	self.air_r   = red[a]
-	]]--
-	
-	return self
+function plen(fval)
+	local pval = fval*screenHeight
+	return pval
 end
 
-function Enemy:randomGen(red)
-	red[f] = math.random(0,3)
-	red[e] = math.random(0,3)
-	red[w] = math.random(0,3)
-	red[a] = math.random(0,3)
-
-	if red[f] + red[e] + red[w] + red[a] < 3 then
-		self:randomGen(red)
-	end 
+function flen(pval)
+	local fval = pval/screenHeight
+	return fval
 end
 
-function Enemy:applyMagic(Dmg_fire, Dmg_water, Dmg_earth, Dmg_air)
-	-- check for special agil. of enemy , if no, then --> 
-	f = Dmg_fire  * self.fire_r
-	f = Dmg_water * self.water_r
-	f = Dmg_earth * self.earth_r
-	f = Dmg_air   * self.air_r
-	dmg = f + w + e + a
-	self.hp = self.hp - dmg
+function imageProps(height, img)
+	local wid, hig = img:getDimensions()
+	local scal = plen(height)/hig
+	local fwid, fhig = flen(wid*scal), flen(hig*scal)
 
-	if self.hp < 0 then
-		-- add score
+	return scal, fwid, fhig
+end
+
+--------------WORLD CALLBACK--------------------------------------
+
+function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
+	obj1 = f1:getUserData()
+	obj2 = f2:getUserData()
+
+	if (obj1 ~= nil) and (obj2 ~= nil) then
+		if obj1.name == "player" or obj2.name == "player" then
+
+			if obj1.name == 'item' then
+				obj1.ItemCanBeTaken = true
+			elseif obj2.name == 'item' then
+				obj2.ItemCanBeTaken = true
+			end
+
+			if (obj1.name == "magic") and (obj1.owner ~= "player") then
+				obj2:getDamage(obj1.damage)
+			elseif (obj2.name == "magic") and (obj2.owner ~= "player") then
+				obj1:getDamage(obj2.damage)
+			end
+
+		end
+
+		if obj1.name == "enemy" or obj2.name == "enemy" then
+
+			if (obj1.name == "magic") and (obj1.owner ~= "enemy") then
+				obj2:getDamage(obj1.damage)
+
+			elseif (obj2.name == "magic") and (obj2.owner ~= "enemy") then
+				obj1:getDamage(obj2.damage)
+
+			end
+
+		end
+	end
+
+	if (obj1 ~= nil) and (obj1.name == "magic") then
+		obj1:delete()
+		if obj1.Collis ~= nil then obj1.Collis() end
+	end
+	if (obj2 ~= nil) and (obj2.name == "magic") then
+		if obj2.Collis ~= nil then obj2.Collis() end
+		obj2:delete()
+	end
+
+
+
+end
+
+function endContact(f1, f2, cont)
+ 	obj1 = f1:getUserData()
+	obj2 = f2:getUserData()
+
+
+	if (obj1 ~= nil) and (obj2 ~= nil) then
+		if obj1.name == 'player' or obj2.name == 'player' then
+
+			if obj1.name == 'item' then
+				obj1.ItemCanBeTaken = false
+			elseif obj2.name == 'item' then
+				obj2.ItemCanBeTaken = false
+			end
+		end
 	end
 end
 
-function Enemy:draw()
-	-- there should be more enemies sprites
-	-- self:choose_sprite(red) 
-	-- 		find max red[] and choose a sprite 
-	--love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
+function preSolve(body_a, body_b, collision)
+
+end
+
+function postSolve(body_a, body_b, collision, normalimpulse, tangentimpulse)
+
+end
+
+------------------------KEYBOARD---------------------------------------
+
+function love.keypressed(key)
+	if (key == "d") and (player1.movDirection == 0) then 
+		player1:moveRight()
+	elseif (key == "a") and (player1.movDirection == 0) then 
+		player1:moveLeft()
+	end
 	
-	local x, y = self.body:getWorldPoints(self.shape:getPoints())
-	love.graphics.draw(EnemyImg, x, y)
-end	
+	if (key == "w") then
+		player1:jump()
+	end
+end
+
+function love.keyreleased(key)
+	if (key == "d") or (key == "a") then 
+		player1.movDirection = 0
+	end
+end
 
 -- Standart ------------------------------------------------------------
 
 function love.load(arg)
-	world = love.physics.newWorld(0, 9.81*100) --we need the whole world
-	
-	ground = {}
-	ground.shape = love.physics.newRectangleShape(10000, 10)
-	ground.body = love.physics.newBody(world, 0, 500, "static")
-	ground.fixture = love.physics.newFixture(ground.body, ground.shape)
-	
+	-----------RESOURCES LOAD----------------------------------
+
+	FireShader = love.graphics.newShader[[
+		extern number time;
+
+		vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords ){
+
+			vec4 col = Texel(texture, texture_coords);
+
+			float coef = cos((texture_coords.x - texture_coords.y + sin(time))*8);
+
+			col = vec4( abs(sin(time))*col.rg*coef, col.ba);
+
+			return col;
+		}
+	]]
+
+
+
+
 	-- Sprites
-	PlayerImg = love.graphics.newImage("Wizard.jpg")
+	PlayerImg = love.graphics.newImage("Player.png")
 	EnemyImg  = love.graphics.newImage("Enemy.png")
+	FireballImg = love.graphics.newImage("Fireball.png")
+	WaterballImg = love.graphics.newImage("Fireball.png")
+	AirballImg = love.graphics.newImage("Fireball.png")
+	IceballImg = love.graphics.newImage("Fireball.png")
+	GroundballImg = love.graphics.newImage("Fireball.png")
+	WandSdImg = love.graphics.newImage("palka.png")
+	ClothSdImg = love.graphics.newImage("palka.png")
+	BrickImg = love.graphics.newImage("brick.png")
 	-- by now there will be only one kind of enemies
+
+	--------------------------------------------------------------
+
+	love.window.setMode(1280, 720)
+	--screenWidth, screenHeight = love.graphics.getDimensions()
+	screenWidth, screenHeight = love.window.getMode()
+
+
+	world = love.physics.newWorld(0, 9.81*100) --we need the whole world
+	world:setCallbacks(beginContact, endContact, preSolve, postSolve)
+
+	bullets = Container:new()
+	walls = Container:new()
+	enemies = Container:new()
+	particles = Container:new()
+	lights = Lights:create()
 	
-	player1 = Player:new(100, 100, 500)
-	enem = Enemy:new(500, 100, 500)
-	
-	
-	love.window.setMode(1600, 500)
+	lights:add(0.1, 0.1, 2, true)
+
+	Magic:init()
+	Item:init()
+
+	walls:add(Brick:new(0, 1, 200, 0.1))
+	walls:add(Brick:new(16/9*2, 0, 0.1, 200))
+
+	player1 = Player:new(100, 0.2, 0.8)
+	enemies:add(Enemy:new(200, 1.5, 0.8))
+
+
+	width = love.graphics.getWidth()
+	height = love.graphics.getHeight()
+	print(width,camera._x)
+	camera:setBounds(0, 0, width * 2  , height)
+	camera:setPosition(0,width/2)
+
+
 end
 
+
+
 function love.update(dt)
-	
-	
+
 	----------------PROCESSING GESTURE----------------------
 	gesture = getLastMovement()
 	local i = 1
-	if gesture ~= nil then 
+	if gesture ~= nil then
 		while gesture[i] ~= 10 do   --check for end code
-			if gesture[i] == 1 then 
-				if player1.movDirection >= 0 then 
-					player1.movDirection = 1
-				else
-					player1.movDirection = 0
-				end
-			elseif gesture[i] == 5 then 
-				if player1.movDirection <= 0 then 
-					player1.movDirection = -1
-				else
-					player1.movDirection = 0
-				end
-			elseif gesture[i] == 7 then 
-				player1.body:applyLinearImpulse(0, -6000)
+			if gesture[i] == 1 then
+
+			elseif gesture[i] == 2 then
+				local x, y = player1:getMagicCoords()
+				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeGround, "player"))
+			elseif gesture[i] == 3 then
+				local x, y = player1:getMagicCoords()
+				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeWater, "player"))
+			elseif gesture[i] == 4 then
+				local x, y = player1:getMagicCoords()
+				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeFire, "player"))
+			elseif gesture[i] == 5 then
+			
+			elseif gesture[i] == 6 then
+				local x, y = player1:getMagicCoords()
+				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeAir, "player"))
+			elseif gesture[i] == 7 then	
+			
+			elseif gesture[i] == 8 then	
+				local x, y = player1:getMagicCoords()
+				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeIce, "player"))
 			end
 			i = i+1
 		end
 	end
 	-------------------------------------------------------
-	
-	
-	-----------set speed-----------------------------------
-	local xveloc, yveloc = player1.body:getLinearVelocity()
-	
-	if (xveloc < 180) and (player1.movDirection == 1) then player1.body:applyForce(100000, 0) 
-	elseif (xveloc > -180) and (player1.movDirection == -1) then player1.body:applyForce(-100000, 0) 
-	elseif (player1.movDirection == 0) then
-		if (xveloc > 3) then 
-			player1.body:applyForce(-10000, 0)
-		elseif (xveloc < -3) then 
-			player1.body:applyForce(10000, 0)
-		end
-	end
-	------------------------------------------------------
-			
-	
+
+	local dx = camera._x + width / 2 - player1.body:getX()
+	local dy = camera._y + height / 2 - player1.body:getY()
+
+	player1:updateSpeed()
+	--camera:setPosition(player1.body:getX() - width / 2, player1.body:getY() - height / 2) --camera movement with bounds
+	camera:move(dx*4*dt,dy*10*dt)  --smooth camera movement with bounds
+
 	world:update(dt) --update the whole world
+	particles:update(dt)
+	if partSys ~= nil then partSys:update(dt) end
 end
 
 function love.draw()
 	loadMovement()
+	
+	player1:drawHP()
+
+	camera:set()
+	
+	lights:draw(camera._x, camera._y)
 	--so this is game
 	--this game is not shit
+
+
+	love.graphics.setColor(1, 1, 1)
+
 	
-	love.graphics.setColor(0.5, 0.9, 0.1)
-	love.graphics.polygon("fill", ground.body:getWorldPoints(ground.shape:getPoints()))
-	
-	love.graphics.setColor(0.1, 0.2, 0.9)
+
+	FireShader:send("time", love.timer.getTime()*20)
+	bullets:CheckDraw()
+
+	walls:CheckDraw()
+	particles:CheckDraw()
+	enemies:CheckDraw()
 	player1:draw()
 	
-	love.graphics.setColor(1, 1, 1)
-	enem:draw()
+	lights:endDraw()
 	
+	camera:unset()
+end
+
+function math.clamp(x, min, max)
+	return x < min and min or (x > max and max or x)
 end
