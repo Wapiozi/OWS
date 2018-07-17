@@ -287,10 +287,7 @@ end
 function love.draw()
 	loadMovement()
 	
-	if inventoryOpen then
-		inventory1:draw()
-		--love.graphics.draw(MinecraftInv, 240, 20)
-	end
+	
 	love.graphics.print(tostring(love.timer.getFPS( )), 10, 10)
 	
 	player1:drawHP()
@@ -318,6 +315,10 @@ function love.draw()
 	lights:endDraw()
 	
 	camera:unset()
+	if inventoryOpen then
+		inventory1:draw()
+		--love.graphics.draw(MinecraftInv, 240, 20)
+	end
 end
 
 function math.clamp(x, min, max)
