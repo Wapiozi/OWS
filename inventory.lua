@@ -1,5 +1,5 @@
 Inventory = {}
-Inventory.__index = Item
+Inventory.__index = Inventory
 
 function Inventory:init()
 	-- X3
@@ -54,7 +54,6 @@ end
 
 function Inventory:draw()
 	-- there should be some pojebenj
-	love.event.quit()
 	local x, y = self.lastInventoryPoint[x], self.lastInventoryPoint[y]
 	love.graphics.draw(self.image, x, y)
 	local x1, y1 = x + 14, y + 143    --какого куя тут пиксельные координаты? юзать flen() plen()
