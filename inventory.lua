@@ -42,7 +42,7 @@ end
 
 function Inventory:loseItem(ind, player_x, player_y)
 	item1 = self.slot[ind].id
-	self.slot.i{id = nil}
+	self.slot[i] = nil
 
 	item1:spawn(player_x+50, player_y)
 end
