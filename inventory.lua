@@ -2,7 +2,6 @@ Inventory = {}
 Inventory.__index = Item
 
 function Inventory:init()
-	lastInventoryPoint={x = 240, y = 20}
 	-- X3
 end
 
@@ -11,6 +10,7 @@ function Inventory:new(size, len, height)
 	self.size = 27 or size or 50
 	self.length = 9 or len or (size / 5)
 	self.height = 3
+	self.lastInventoryPoint={x = 240, y = 20}
 	self.image = MinecraftInv
 
 	self.slot = {}
@@ -55,7 +55,7 @@ end
 function Inventory:draw()
 	-- there should be some pojebenj
 	love.event.quit()
-	local x, y = lastInventoryPoint[x], lastInventoryPoint[y]
+	local x, y = self.lastInventoryPoint[x], self.lastInventoryPoint[y]
 	love.graphics.draw(self.image, x, y)
 	local x1, y1 = x + 14, y + 143    --какого куя тут пиксельные координаты? юзать flen() plen()
 	for i = 0, self.height-1 do
