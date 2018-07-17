@@ -145,7 +145,8 @@ function love.keypressed(key)
 			-- inventory:hide() by now it doesnt work :P
 		elseif not inventoryOpen then
 			inventoryOpen = true
-			inventory:draw()
+			--inventory:draw()
+			--love.event.quit()
 		end
 	end
 end
@@ -220,7 +221,7 @@ function love.load(arg)
 	walls:add(Brick:new(0, 1, 200, 0.1))
 	walls:add(Brick:new(16/9*2, 0, 0.1, 200))
 
-	inventory = Inventory:new()
+	inventory1 = Inventory:new()
 	player1 = Player:new(100, 0.2, 0.8)
 	enemies:add(Enemy:new(200, 1.5, 0.8))
 
@@ -286,6 +287,10 @@ end
 function love.draw()
 	loadMovement()
 	
+	if inventoryOpen then
+		inventory1:draw()
+		--love.graphics.draw(MinecraftInv, 240, 20)
+	end
 	love.graphics.print(tostring(love.timer.getFPS( )), 10, 10)
 	
 	player1:drawHP()
