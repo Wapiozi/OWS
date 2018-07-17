@@ -56,14 +56,14 @@ function Inventory:draw()
 	-- there should be some pojebenj
 	local x, y = self.lastInventoryPoint.x, self.lastInventoryPoint.y
 	love.graphics.draw(self.image, x, y)
-	local x1, y1 = x + 14, y + 143    --какого куя тут пиксельные координаты? юзать flen() plen()
+	local x1, y1 = flen(x + 14), flen(y + 143)    --какого куя тут пиксельные координаты? юзать flen() plen()
 	for i = 0, self.height-1 do
 		for j = 0, self.length-1 do
 			if self.slot[i*9+j] ~= nil then
 				self:drawItem(x1, y1, self.slot[i*9+j])
 			end
-			x1 = x1 + 30 
+			x1 = flen( plen(x1) + 30) 
 		end 
-		y1 = y1 + 30  
+		y1 = flen( plen(y1) + 30)  
 	end
 end
