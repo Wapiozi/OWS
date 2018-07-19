@@ -8,10 +8,11 @@ end
 function Inventory:new(size, len, height)
 	self = setmetatable({}, self)
 	self.size = 27 or size or 50
-	self.length = 9 or len or (size / 5)
-	self.height = 3
-	self.lastInventoryPoint={x = 240, y = 20}
+	self.w = 9 or len or (size / 5)
+	self.h = 3
+	self.lastInventoryPoint={x = plen(0.25), y = plen(0.01)}
 	self.image = MinecraftInv
+	self.scale, self.width, self.height = imageProps(0.4, self.image)
 
 	self.slot = {}
 	
@@ -49,21 +50,45 @@ end
 
 function Inventory:drawItem(x, y, item1)
     -- for items
-    love.graphics.draw(item1.image, x, y)
+    local img = imageProps(0.01 * self.scale, item1.image)
+    love.graphics.draw(item1.image, x, y, 0, img)
+end
+
+function Inventory:dragging()
+	--
+end
+
+function Inventory:pcord(fcrd, ch)
+	if ch == "x" then
+		fcrd = pcrd / (self.width / 300)
+	elseif ch == "y" then
+		fcrd = pcrd / (self.height / 283)
+	end
+	return fcrd
+end
+
+function Inventory:fcord(pcrd, ch)
+	if ch == "x" then
+		fcrd = pcrd * (self.width / 300)
+	elseif ch == "y" then
+		fcrd = pcrd * (self.height / 283)
+	end
+	return fcrd
 end
 
 function Inventory:draw()
 	-- there should be some pojebenj
 	local x, y = self.lastInventoryPoint.x, self.lastInventoryPoint.y
-	love.graphics.draw(self.image, x, y)
-	local x1, y1 = flen(x + 14), flen(y + 143)    --какого куя тут пиксельные координаты? юзать flen() plen()
-	for i = 0, self.height-1 do
-		for j = 0, self.length-1 do
+	--love.graphics.draw(self.image, x, y)
+	love.graphics.draw(self.image, x, y, 0, self.scale)
+	local x1, y1 = x + self:fcord(14,"x"), y + self:fcord(143,"y")    --какого куя тут пиксельные координаты? юзать flen() plen()
+	for i = 0, self.h-1 do
+		for j = 0, self.w-1 do
 			if self.slot[i*9+j] ~= nil then
 				self:drawItem(x1, y1, self.slot[i*9+j])
 			end
-			x1 = flen( plen(x1) + 30) 
+			x1 = x1 + self:fcord(30,"x") 
 		end 
-		y1 = flen( plen(y1) + 30)  
+		y1 = y1 + self:fcord(30,"y")  
 	end
 end
