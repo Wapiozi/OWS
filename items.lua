@@ -18,12 +18,12 @@ function Item:init()
 	-- more to add
 end
 
-function Item:new(x, y, itemID, SpecialImg)
+function Item:new(x, y, typeobj, ID, SpecialImg)
 	self = setmetatable({}, self)
 	
 	x, y = pcoords(x, y)
 
-	self.type = itemID.type 
+	self.type = typeobj 
 	self.name = "item"
 
 	self.image = self.type.image
@@ -35,13 +35,14 @@ function Item:new(x, y, itemID, SpecialImg)
 
 	self.ItemCanBeTaken = false
 	self.body = love.physics.newBody(world, x, y, "dynamic")
-	self.body:setMass(type.mass)
+	--self.body:setMass(self.type.mass)
 	
-	self.shape = love.physics.newRectangleShape(type.size, type.size)
+	self.shape = love.physics.newRectangleShape(20,20)--love.physics.newRectangleShape(type.size, type.size)
 	self.fixture = love.physics.newFixture(self.body, self.shape)
-	self.fixture:setSensor(true)
+	self.fixture:setFriction(10)
+	--self.fixture:setSensor(true)
 
-	self.image = self.type.image
+	--self.image = self.type.image
 	self.canDelete = false
 
 	self.body:setAngle(45)
