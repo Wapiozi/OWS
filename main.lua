@@ -225,6 +225,7 @@ function love.load(arg)
 	player1 = Player:new(100, 0.2, 0.8)
 	enemies:add(Enemy:new(200, 1.5, 0.8))
 
+	items:add(Item:new(0.5,0.8,WandObj))
 
 	width = love.graphics.getWidth()
 	height = love.graphics.getHeight()
