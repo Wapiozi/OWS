@@ -8,27 +8,29 @@ function Item:init()
 		image = WandSdImg, -- Wand standart image 
 		size = ItemSize,
 		init = nil,
+		size = 0.1,
 	}
 
 	ClothObj = {
 		image = ClothSdImg, --Clothes standart image
 		size = ItemSize,
 		init = nil,
+		size = 0.1,
 	}
 	-- more to add
 end
 
-function Item:new(x, y, typeobj, ID, SpecialImg)
+function Item:new(x, y, type, ID, SpecialImg)
 	self = setmetatable({}, self)
 	
 	x, y = pcoords(x, y)
 
-	self.type = typeobj 
+	self.type = type 
 	self.name = "item"
 
 	self.image = self.type.image
 	if SpecialImg ~= nil then
-		self.type.image = SpecialImg
+		self.image = SpecialImg
 	end
 
 	self.scale, self.width, self.height = imageProps(self.type.size, self.image)
@@ -37,9 +39,10 @@ function Item:new(x, y, typeobj, ID, SpecialImg)
 	self.body = love.physics.newBody(world, x, y, "dynamic")
 	--self.body:setMass(self.type.mass)
 	
-	self.shape = love.physics.newRectangleShape(20,20)--love.physics.newRectangleShape(type.size, type.size)
+	self.shape = love.physics.newRectangleShape(pcoords(self.width, self.height))
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setFriction(10)
+	self.fixture:setRestitution(0.4)
 	--self.fixture:setSensor(true)
 
 	--self.image = self.type.image
@@ -77,7 +80,7 @@ end
 function Item:draw()
 	if self.body ~= nil then  --Haha, classic
 		local x, y = self.body:getWorldPoints(self.shape:getPoints())
-		love.graphics.draw(self.image, x, y, self.body:getAngle())
+		love.graphics.draw(self.image, x, y, self.body:getAngle(), self.scale)
 	end
 end
 
