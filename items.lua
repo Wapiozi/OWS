@@ -1,21 +1,17 @@
 Item = {}
 Item.__index = Item
 
-ItemSize = 0.02
-
 function Item:init() 
 	WandObj = {			
 		image = WandSdImg, -- Wand standart image 
-		size = ItemSize,
 		init = nil,
-		size = 0.1,
+		size = 0.05,
 	}
 
 	ClothObj = {
 		image = ClothSdImg, --Clothes standart image
-		size = ItemSize,
 		init = nil,
-		size = 0.1,
+		size = 0.05,
 	}
 	-- more to add
 end
