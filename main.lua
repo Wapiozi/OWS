@@ -315,7 +315,7 @@ function love.update(dt)
 
 		while tmp ~= nil do
 			if tmp.value.ItemCanBeTaken == true and inventory1:getFirstEmpty() ~= -1 then
-				inventory1:addItem(tmp.value.fixture:getUserData())
+				inventory1:addItem(tmp.value)
 				tmp.value:despawn()
 				tmp.value:destroy()
 			end
