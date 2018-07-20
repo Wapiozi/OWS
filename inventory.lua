@@ -87,8 +87,9 @@ function Inventory:draw()
 			if self.slot[i*9+j] ~= nil then
 				self:drawItem(x1, y1, self.slot[i*9+j])
 			end
-			x1 = x1 + self:fcord(30,"x") 
+			x1 = x1 + self:fcord(30.5,"x") 
 		end 
+		x1 = x + self:fcord(14,"x")
 		y1 = y1 + self:fcord(30,"y")  
 	end
 end
