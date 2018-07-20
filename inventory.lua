@@ -23,7 +23,7 @@ function Inventory:new(size, len, height)
 end
 
 function Inventory:getFirstEmpty()
-	for i = 0, self.size do
+	for i = 1, self.size do
 		if self.slot[i] == nil then 
 			return i
 		end
@@ -59,17 +59,15 @@ function Inventory:dragging()
 end
 
 function Inventory:pcord(fcrd, ch)
-	local pcrd
 	if ch == "x" then
-		pcrd = fcrd / (plen(self.width) / 300)
+		fcrd = pcrd / (plen(self.width) / 300)
 	elseif ch == "y" then
-		pcrd = fcrd / (plen(self.height) / 283)
+		fcrd = pcrd / (plen(self.height) / 283)
 	end
-	return pcrd
+	return fcrd
 end
 
 function Inventory:fcord(pcrd, ch)
-	local fcrd
 	if ch == "x" then
 		fcrd = pcrd * (plen(self.width) / 300)
 	elseif ch == "y" then
@@ -83,9 +81,9 @@ function Inventory:draw()
 	local x, y = self.lastInventoryPoint.x, self.lastInventoryPoint.y
 	--love.graphics.draw(self.image, x, y)
 	love.graphics.draw(self.image, x, y, 0, self.scale)
-	local x1, y1 = x + self:fcord(14,"x"), y + self:fcord(143,"y")    
+	local x1, y1 = x + self:fcord(14,"x"), y + self:fcord(143,"y")    --какого куя тут пиксельные координаты? юзать flen() plen()  -- x = 14 y = 143
 	for i = 0, self.h-1 do
-		for j = 0, self.w-1 do
+		for j = 1, self.w do
 			if self.slot[i*9+j] ~= nil then
 				self:drawItem(x1, y1, self.slot[i*9+j])
 			end
