@@ -67,10 +67,10 @@ end
 
 function Item:destroy()
 	self.canDelete = true
-	self.fixture:destroy()
-	self.shape:release()
-	self.body:destroy()
-	self:release()
+	--self.fixture:destroy()
+	--self.shape:release()
+	--self.body:destroy()
+	--self:release()
 end
 
 function Item:draw()

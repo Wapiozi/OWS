@@ -35,8 +35,8 @@ function Inventory:addItem(item1)
 	if item1.ItemCanBeTaken then
 		local place = self:getFirstEmpty()
 		if place ~= -1 then
-			self.slot[i] = item1
-			item1:despawn()
+			self.slot[place] = item1
+			--item1:despawn()
 		end
 	end
 end
@@ -50,7 +50,7 @@ end
 
 function Inventory:drawItem(x, y, item1)
     -- for items
-    local img = imageProps(0.01 * self.scale, item1.image)
+    local img,a,b = imageProps(0.038, item1.image)
     love.graphics.draw(item1.image, x, y, 0, img)
 end
 
@@ -60,18 +60,18 @@ end
 
 function Inventory:pcord(fcrd, ch)
 	if ch == "x" then
-		fcrd = pcrd / (self.width / 300)
+		fcrd = pcrd / (plen(self.width) / 300)
 	elseif ch == "y" then
-		fcrd = pcrd / (self.height / 283)
+		fcrd = pcrd / (plen(self.height) / 283)
 	end
 	return fcrd
 end
 
 function Inventory:fcord(pcrd, ch)
 	if ch == "x" then
-		fcrd = pcrd * (self.width / 300)
+		fcrd = pcrd * (plen(self.width) / 300)
 	elseif ch == "y" then
-		fcrd = pcrd * (self.height / 283)
+		fcrd = pcrd * (plen(self.height) / 283)
 	end
 	return fcrd
 end
@@ -81,7 +81,7 @@ function Inventory:draw()
 	local x, y = self.lastInventoryPoint.x, self.lastInventoryPoint.y
 	--love.graphics.draw(self.image, x, y)
 	love.graphics.draw(self.image, x, y, 0, self.scale)
-	local x1, y1 = x + self:fcord(14,"x"), y + self:fcord(143,"y")    --какого куя тут пиксельные координаты? юзать flen() plen()
+	local x1, y1 = x + self:fcord(14,"x"), y + self:fcord(143,"y")    --какого куя тут пиксельные координаты? юзать flen() plen()  -- x = 14 y = 143
 	for i = 0, self.h-1 do
 		for j = 0, self.w-1 do
 			if self.slot[i*9+j] ~= nil then

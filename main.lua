@@ -226,6 +226,7 @@ function love.load(arg)
 	enemies:add(Enemy:new(200, 1.5, 0.8))
 
 	items:add(Item:new(0.5,0.8,WandObj))
+	items:add(Item:new(0.7,0.8,WandObj))
 
 	width = love.graphics.getWidth()
 	height = love.graphics.getHeight()
@@ -278,6 +279,20 @@ function love.update(dt)
 	player1:updateSpeed()
 	--camera:setPosition(player1.body:getX() - width / 2, player1.body:getY() - height / 2) --camera movement with bounds
 	camera:move(dx*4*dt,dy*10*dt)  --smooth camera movement with bounds
+
+	if love.keyboard.isDown("e") then
+		local tmp = items.list
+
+		while tmp ~= nil do
+			if tmp.value.ItemCanBeTaken == true then
+				inventory1:addItem(tmp.value.fixture:getUserData())
+				tmp.value:despawn()
+				tmp.value:destroy()
+			end
+
+			tmp = tmp.next
+		end
+	end
 
 	world:update(dt) --update the whole world
 	bullets:update(dt)
