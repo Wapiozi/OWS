@@ -4,12 +4,14 @@ Item.__index = Item
 function Item:init() 
 	WandObj = {			
 		image = WandSdImg, -- Wand standart image 
+		imageData = "palka.png",
 		init = nil,
 		size = 0.05,
 	}
 
 	ClothObj = {
 		image = ClothSdImg, --Clothes standart image
+		imageData = "majka.png",
 		init = nil,
 		size = 0.05,
 	}
@@ -24,6 +26,7 @@ function Item:new(x, y, type, ID, SpecialImg)
 	self.type = type 
 	self.name = "item"
 
+	self.imageData = self.type.imageData
 	self.image = self.type.image
 	if SpecialImg ~= nil then
 		self.image = SpecialImg

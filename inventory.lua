@@ -51,24 +51,35 @@ end
 function Inventory:dragging(mx, my)
 	x1, y1, i1, j1= self:findWindow(mx,my)
 	if x1 ~= -1 then
-  		cursor = self.slot[i1*9+j1]
-  		local scl, w, h = imageProps(0.038, cursor.image)
-  		love.mouse.setVisible(false)
+		released = false
+  		item1 = self.slot[i1*9+j1]
+  		--local scl, w, h = imageProps(0.038, item1.image)
+  		if item1 ~= nil then love.mouse.setCursor(love.mouse.newCursor(item1.imageData, 0, 0)) end
+  		--love.mouse.setVisible(false)
  		--love.mouse.setGrab(true)	
-		while love.mouse.isDown(1) do
-			love.graphics.draw(cursor.image, love.mouse.getX(), love.mouse.getY(), 0, scl)
-		end
-		mouse_x, mouse_y = love.mouse.getPosition()
-		x2, y2, i2, j2= self:findWindow(mx,my)
-		love.mouse.setVisible(true)
- 		--love.mouse.setGrab(false)
- 		if x2 ~= -1 then
- 			self.slot[i1*9+j1] = self.slot[i2*9+j2]
- 			self.slot[i2*9+j2] = cursor
- 		else
- 			--drop on the floor
- 		end
+		--while love.mouse.isDown(1) do
+			--love.graphics.draw(cursor.image, love.mouse.getX(), love.mouse.getY(), 0, scl)
+		--end
+		return x1, y1, i1, j1, item1
 	end
+end
+
+function Inventory:draggingEnd(x1, y1, i1, j1, item1)
+	mouse_x, mouse_y = love.mouse.getPosition()
+	x2, y2, i2, j2= self:findWindow(mouse_x,mouse_y)
+	love.mouse.setCursor()
+	--love.mouse.setVisible(true)
+ 	--love.mouse.setGrab(false)
+ 	if x2 ~= -1 then
+ 		self.slot[i1*9+j1] = self.slot[i2*9+j2]
+ 		self.slot[i2*9+j2] = item1
+ 	else
+ 		--drop on the floor
+ 		self.slot[i1*9+j1] = nil
+
+ 		local px, py = player1.body:getWorldPoints(player1.shape:getPoints())
+ 		items:add(Item:new(flen(px) + 0.15,flen(py) ,item1.type))
+ 	end
 end
 	
 function Inventory:findWindow(mx, my)
@@ -95,8 +106,9 @@ function Inventory:checkInventoryMode(mx, my)
 		y1 = y1 - self:fcord(0.1,"y")
 		local scl,h,w = imageProps(0.039,InvborderImg)
 		love.graphics.draw(InvborderImg, x1, y1, 0, scl)
-		if love.mouse.isDown(1) then
-			self:dragging(mx, my)
+		if love.mouse.isDown(1) and released then
+			self.x1, self.y1, self.i1, self.j1, self.item1 = self:dragging(mx, my)
+			--self:draggingEnd(x1, y1, i1, j1, item1)
 		end
 	end
 end

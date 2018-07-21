@@ -6,6 +6,9 @@ function Player:new(mana, x, y)
 	self = setmetatable({}, self)
 	
 	x, y = pcoords(x, y)
+
+	self.x = x
+	self.y = y
 	
 	self.image = PlayerImg
 	self.scale, self.width, self.height = imageProps(0.17, self.image)
@@ -32,7 +35,7 @@ function Player:new(mana, x, y)
 	self.body:setMass(70) -- 70kg wizard
 	self.fixture:setUserData(self)
 	lights:add(flen(x), flen(y), 1, false, self.body)
-	return self;
+	return self
 end
 
 function Player:draw()

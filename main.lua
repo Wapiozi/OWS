@@ -157,6 +157,15 @@ function love.keyreleased(key)
 	end
 end
 
+function love.mousereleased(x, y, button)
+	if inventoryOpen then
+	   if button == 1 and released == false then
+	    	inventory1:draggingEnd(inventory1.x1, inventory1.y1, inventory1.i1, inventory1.j1, inventory1.item1)
+			released = true
+	   end
+	end
+end
+
 -- Standart ------------------------------------------------------------
 
 function love.load(arg)
@@ -224,6 +233,7 @@ function love.load(arg)
 
 	inventory1 = Inventory:new()
 	inventoryMode = false
+	released = true
 	player1 = Player:new(100, 0.2, 0.8)
 	enemies:add(Enemy:new(200, 1.5, 0.8))
 
