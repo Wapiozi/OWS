@@ -257,7 +257,10 @@ end
 
 
 function love.update(dt)
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9a10b9d15697c25a9e6592f873a497957bd5c158
 	----------------PROCESSING GESTURE----------------------
 	gesture = getLastMovement()
 	local i = 1
@@ -349,12 +352,16 @@ function love.draw()
 	camera:unset()
 	if inventoryOpen then
 		inventory1:draw()
+<<<<<<< HEAD
 		inventory1:checkInventoryMode(mouse_x, mouse_y)
 		if cursorItem ~= nil then 
 			mx, my = love.mouse.getPosition()
 			local scl, h, w = imageProps(0.15, cursorItem)
 			love.graphics.draw(cursorItem, mx, my, 0, scl)
 		end
+=======
+		inventory1:checkInventoryMode()
+>>>>>>> 9a10b9d15697c25a9e6592f873a497957bd5c158
 		--love.graphics.draw(MinecraftInv, 240, 20)
 	else
 		cursorItem = nil
