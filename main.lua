@@ -189,7 +189,7 @@ function love.load(arg)
 	IceballImg = love.graphics.newImage("Fireball.png")
 	GroundballImg = love.graphics.newImage("Fireball.png")
 	WandSdImg = love.graphics.newImage("palka.png")
-	ClothSdImg = love.graphics.newImage("fire.png")
+	ClothSdImg = love.graphics.newImage("majka.png")
 	BrickImg = love.graphics.newImage("brick.png")
 	FireImg = love.graphics.newImage("fire.png")
 	MinecraftInv = love.graphics.newImage("minecraft.png")
@@ -197,7 +197,7 @@ function love.load(arg)
 
 	--------------------------------------------------------------
 
-	love.window.setMode(1280,800)
+	love.window.setMode(1280,720)
 	--screenWidth, screenHeight = love.graphics.getDimensions()
 	screenWidth, screenHeight = love.window.getMode()
 
