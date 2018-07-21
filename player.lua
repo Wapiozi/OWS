@@ -6,9 +6,6 @@ function Player:new(mana, x, y)
 	self = setmetatable({}, self)
 	
 	x, y = pcoords(x, y)
-
-	self.x = x
-	self.y = y
 	
 	self.image = PlayerImg
 	self.scale, self.width, self.height = imageProps(0.17, self.image)
