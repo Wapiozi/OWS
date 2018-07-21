@@ -99,8 +99,9 @@ function Inventory:findWindow(mx, my)
 	return -1
 end
 
-function Inventory:checkInventoryMode(mx, my)
-	x1, y1, i, j = self:findWindow(mx,my)
+function Inventory:checkInventoryMode()
+	local mx, my = love.mouse.getPosition()
+	x1, y1, i, j = self:findWindow(mx, my)
 	if x1 ~= -1 then 
 		x1 = x1 - self:fcord(0.1,"x")
 		y1 = y1 - self:fcord(0.1,"y")

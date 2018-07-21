@@ -257,9 +257,6 @@ end
 
 
 function love.update(dt)
-
-	mouse_x, mouse_y = love.mouse.getPosition()
-
 	----------------PROCESSING GESTURE----------------------
 	gesture = getLastMovement()
 	local i = 1
@@ -351,7 +348,7 @@ function love.draw()
 	camera:unset()
 	if inventoryOpen then
 		inventory1:draw()
-		inventory1:checkInventoryMode(mouse_x, mouse_y)
+		inventory1:checkInventoryMode()
 		--love.graphics.draw(MinecraftInv, 240, 20)
 	end
 end
