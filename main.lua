@@ -193,6 +193,7 @@ function love.load(arg)
 	BrickImg = love.graphics.newImage("brick.png")
 	FireImg = love.graphics.newImage("fire.png")
 	MinecraftInv = love.graphics.newImage("minecraft.png")
+	InvborderImg = love.graphics.newImage("inventory_border.png")
 	-- by now there will be only one kind of enemies
 
 	--------------------------------------------------------------
@@ -249,41 +250,36 @@ function love.update(dt)
 
 	mouse_x, mouse_y = love.mouse.getPosition()
 
-	inventory1:checkInventoryMode(mouse_x, mouse_y) -- check if mouse position is in inventory space
-
-	if not inventoryMode then
 	----------------PROCESSING GESTURE----------------------
-		gesture = getLastMovement()
-		local i = 1
-		if gesture ~= nil then
-			while gesture[i] ~= 10 do   --check for end code
-				if gesture[i] == 1 then
-
-				elseif gesture[i] == 2 then
-					local x, y = player1:getMagicCoords()
-					bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeGround, "player"))
-				elseif gesture[i] == 3 then
-					local x, y = player1:getMagicCoords()
-					bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeWater, "player"))
-				elseif gesture[i] == 4 then
-					local x, y = player1:getMagicCoords()
-					bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeFire, "player"))
-				elseif gesture[i] == 5 then
-				
-				elseif gesture[i] == 6 then
-					local x, y = player1:getMagicCoords()
-					bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeAir, "player"))
-				elseif gesture[i] == 7 then	
-				
-				elseif gesture[i] == 8 then	
-					local x, y = player1:getMagicCoords()
-					bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeIce, "player"))
-				end
-				i = i+1
+	gesture = getLastMovement()
+	local i = 1
+	if gesture ~= nil then
+		while gesture[i] ~= 10 do   --check for end code
+			if gesture[i] == 1 then
+			elseif gesture[i] == 2 then
+				local x, y = player1:getMagicCoords()
+				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeGround, "player"))
+			elseif gesture[i] == 3 then
+				local x, y = player1:getMagicCoords()
+				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeWater, "player"))
+			elseif gesture[i] == 4 then
+				local x, y = player1:getMagicCoords()
+				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeFire, "player"))
+			elseif gesture[i] == 5 then
+			
+			elseif gesture[i] == 6 then
+				local x, y = player1:getMagicCoords()
+				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeAir, "player"))
+			elseif gesture[i] == 7 then	
+		
+			elseif gesture[i] == 8 then	
+				local x, y = player1:getMagicCoords()
+				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeIce, "player"))
 			end
+			i = i+1
 		end
-	-------------------------------------------------------
 	end
+	-----------------------------------------------------
 
 	local dx = camera._x + width / 2 - player1.body:getX()
 	local dy = camera._y + height / 2 - player1.body:getY()
@@ -313,7 +309,7 @@ function love.update(dt)
 end
 
 function love.draw()
-	loadMovement()
+	if not inventoryOpen then loadMovement() end
 	
 	
 	love.graphics.print(tostring(love.timer.getFPS( )), 10, 10)
@@ -345,6 +341,7 @@ function love.draw()
 	camera:unset()
 	if inventoryOpen then
 		inventory1:draw()
+		inventory1:checkInventoryMode(mouse_x, mouse_y)
 		--love.graphics.draw(MinecraftInv, 240, 20)
 	end
 end

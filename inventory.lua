@@ -48,15 +48,37 @@ function Inventory:loseItem(ind, player_x, player_y)
 	item1:spawn(player_x+50, player_y)
 end
 
-function Inventory:drawItem(x, y, item1)
-    -- for items
-    local img,a,b = imageProps(0.038, item1.image)
-    love.graphics.draw(item1.image, x, y, 0, img)
-end
-
 function Inventory:dragging()
 	--
 end
+	
+function Inventory:findWindow(mx, my)
+	local x, y = self.lastInventoryPoint.x, self.lastInventoryPoint.y
+	local x1, y1 = x + self:fcord(14,"x"), y + self:fcord(143,"y")    --какого куя тут пиксельные координаты? юзать flen() plen()  -- x = 14 y = 143
+	for i = 0, self.h-1 do
+		for j = 1, self.w do
+			if  mx >= x1 and mx <= x1 + self:fcord(30.5,"x") and
+				my >= y1 and my <= y1 + self:fcord(30,"y") then
+					return x1, y1
+			end
+			x1 = x1 + self:fcord(30.5,"x") 
+		end 
+		x1 = x + self:fcord(14,"x")
+		y1 = y1 + self:fcord(30,"y")  
+	end
+	return -1
+end
+
+function Inventory:checkInventoryMode(mx, my)
+	x1, y1 = self:findWindow(mx,my)
+	if x1 ~= -1 then 
+		x1 = x1 - self:fcord(0.1,"x")
+		y1 = y1 - self:fcord(0.1,"y")
+		local scl,h,w = imageProps(0.039,InvborderImg)
+		love.graphics.draw(InvborderImg, x1, y1, 0, scl)
+	end
+end
+
 
 function Inventory:pcord(fcrd, ch)
 	if ch == "x" then
@@ -76,16 +98,10 @@ function Inventory:fcord(pcrd, ch)
 	return fcrd
 end
 
-function Inventory:checkInventoryMode(mx, my)
-	if inventoryOpen and 
-		mx >= self.lastInventoryPoint.x and
-		mx <= self.lastInventoryPoint.x + plen(self.width) and
-		my >= self.lastInventoryPoint.y and
-		my <= self.lastInventoryPoint.y + plen(self.height) then
-			inventoryMode = true		
-	else
-			inventoryMode = false
-	end
+function Inventory:drawItem(x, y, item1)
+    -- for items
+    local img,h,w = imageProps(0.038, item1.image)
+    love.graphics.draw(item1.image, x, y, 0, img)
 end
 
 function Inventory:draw()
