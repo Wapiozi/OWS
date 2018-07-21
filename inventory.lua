@@ -76,6 +76,18 @@ function Inventory:fcord(pcrd, ch)
 	return fcrd
 end
 
+function Inventory:checkInventoryMode(mx, my)
+	if inventoryOpen and 
+		mx >= self.lastInventoryPoint.x and
+		mx <= self.lastInventoryPoint.x + plen(self.width) and
+		my >= self.lastInventoryPoint.y and
+		my <= self.lastInventoryPoint.y + plen(self.height) then
+			inventoryMode = true		
+	else
+			inventoryMode = false
+	end
+end
+
 function Inventory:draw()
 	-- there should be some pojebenj
 	local x, y = self.lastInventoryPoint.x, self.lastInventoryPoint.y
