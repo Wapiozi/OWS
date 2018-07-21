@@ -48,13 +48,18 @@ function Inventory:loseItem(ind, player_x, player_y)
 	item1:spawn(player_x+50, player_y)
 end
 
-function Inventory:dragging(mx, my)
-	x1, y1, i1, j1= self:findWindow(mx,my)
+function Inventory:dragging()
+	mx, my = love.mouse.getPosition()
+	x1, y1, i1, j1= self:findWindow()
 	if x1 ~= -1 then
 		released = false
   		item1 = self.slot[i1*9+j1]
   		--local scl, w, h = imageProps(0.038, item1.image)
-  		if item1 ~= nil then love.mouse.setCursor(love.mouse.newCursor(item1.imageData, 0, 0)) end
+  		if item1 ~= nil then 
+  			love.mouse.setVisible(false)
+  			--love.mouse.setCursor(love.mouse.newCursor(item1.imageData, 0, 0))
+  			cursorItem = item1.image
+  		end
   		--love.mouse.setVisible(false)
  		--love.mouse.setGrab(true)	
 		--while love.mouse.isDown(1) do
@@ -65,9 +70,11 @@ function Inventory:dragging(mx, my)
 end
 
 function Inventory:draggingEnd(x1, y1, i1, j1, item1)
-	mouse_x, mouse_y = love.mouse.getPosition()
-	x2, y2, i2, j2= self:findWindow(mouse_x,mouse_y)
-	love.mouse.setCursor()
+	mx, my = love.mouse.getPosition()
+	x2, y2, i2, j2= self:findWindow()
+	--love.mouse.setCursor()
+	cursorItem = nil
+	love.mouse.setVisible(true)
 	--love.mouse.setVisible(true)
  	--love.mouse.setGrab(false)
  	if x2 ~= -1 then
@@ -82,7 +89,8 @@ function Inventory:draggingEnd(x1, y1, i1, j1, item1)
  	end
 end
 	
-function Inventory:findWindow(mx, my)
+function Inventory:findWindow()
+	mx, my = love.mouse.getPosition()
 	local x, y = self.lastInventoryPoint.x, self.lastInventoryPoint.y
 	local x1, y1 = x + self:fcord(14,"x"), y + self:fcord(143,"y")    --какого куя тут пиксельные координаты? юзать flen() plen()  -- x = 14 y = 143
 	for i = 0, self.h-1 do
@@ -100,14 +108,14 @@ function Inventory:findWindow(mx, my)
 end
 
 function Inventory:checkInventoryMode(mx, my)
-	x1, y1, i, j = self:findWindow(mx,my)
+	x1, y1, i, j = self:findWindow()
 	if x1 ~= -1 then 
 		x1 = x1 - self:fcord(0.1,"x")
 		y1 = y1 - self:fcord(0.1,"y")
 		local scl,h,w = imageProps(0.039,InvborderImg)
 		love.graphics.draw(InvborderImg, x1, y1, 0, scl)
 		if love.mouse.isDown(1) and released then
-			self.x1, self.y1, self.i1, self.j1, self.item1 = self:dragging(mx, my)
+			self.x1, self.y1, self.i1, self.j1, self.item1 = self:dragging()
 			--self:draggingEnd(x1, y1, i1, j1, item1)
 		end
 	end
