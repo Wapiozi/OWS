@@ -10,7 +10,7 @@ function Magic:init()
 	MagicTypeFire = {
 		image = FireballImg,
 		shader = FireShader,
-		psystem = nil, --ParticleSystem
+		psystem = FireImg, --ParticleSystem
 		size = 0.028,
 		Restitution = 0,
 		Friction = 0.1,
@@ -83,19 +83,19 @@ function Magic:init()
 	}
 	
 	MagicTypeFire.Collis = function(px, py)
-		particles:add(Particle:new(px, py, 0.1, 0.3, FireballImg))
+		
 	end
 	MagicTypeWater.Collis = function(px, py)
-		particles:add(Particle:new(px, py, 0.1, 0.3, WaterballImg))
+		
 	end
 	MagicTypeAir.Collis = function(px, py)
-		particles:add(Particle:new(px, py, 0.1, 0.3, AirballImg))
+		
 	end
 	MagicTypeIce.Collis = function(px, py)
-		particles:add(Particle:new(px, py, 0.1, 0.3, IceballImg))
+		
 	end
 	MagicTypeGround.Collis = function(px, py)
-		particles:add(Particle:new(px, py, 0.1, 0.3, GroundballImg))
+		
 	end
 end
 
@@ -137,6 +137,7 @@ function Magic:new(x, y, vx, vy, type, owner)
 	
 	self.fixture:setUserData(self)
 	
+	--[[
 	self.partic = love.graphics.newParticleSystem(FireImg, 1000)
 	self.partic:setParticleLifetime(0.1, 0.3)
 	self.partic:setEmissionRate(300)
@@ -145,10 +146,13 @@ function Magic:new(x, y, vx, vy, type, owner)
 	self.partic:setColors(255, 255, 255, 255, 255, 255, 127, 255)
 	self.partic:setPosition(x, y)
 	self.partic:setRelativeRotation(true)
+	]]--
+	
+	particles:add(Particle:new(FireImg, self.body))
 	
 	self.canDelete = false
 	
-	lights:add(flen(x), flen(y), 0.5, false, self.body)
+	lights:add(flen(x), flen(y), 5, false, self.body)
 	
 	return self
 end
@@ -160,9 +164,8 @@ function Magic:draw()
 	love.graphics.draw(self.image, x, y, self.body:getAngle(), self.scale)
 	
 	
-	local x, y = 
-	self.partic:setPosition(self.body:getPosition())
-	love.graphics.draw(self.partic, nil, nil, nil, nil)
+	--self.partic:setPosition(self.body:getPosition())
+	--love.graphics.draw(self.partic, nil, nil, nil, nil)
 	--love.graphics.setColor(0.8, 1, 0.01)
 	--love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
 end

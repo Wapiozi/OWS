@@ -22,17 +22,22 @@ bool areCrossing(vec4 line1, vec4 line2) {
 vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords ) {
 	vec4 col = Texel(texture, texture_coords);
 	
-	float dist = 0.0;
+	float dist = 1000.0;
+	float bestdist = dist;
+	float illum = 0.0;
 	
 	for (int i = 0; i < 50; i++) {
-		dist = max(dist, abs( min( len(screen_coords+camPos - lights[i].xy)/lights[i].w, 1) - 1));
+		if (lights[i] != nul) {
+			dist = len(screen_coords+camPos - lights[i].xy);
+			illum = illum + lights[i].w / pow(dist, 2);
+		}
 	}
 	
 	if (col == ful) {
-		return vec4((color.rgb*max(min(pow(dist, 10)*1000, 1), 0.005)), 1.0);
+		return vec4((color.rgb*illum), 1.0);
 	}
 	
-	col.rgb = col.rgb*max(min(pow(dist, 10)*1000, 1), 0.005);
+	col.rgb = col.rgb*illum;
 	
 	return col;
 }

@@ -222,7 +222,7 @@ function love.load(arg)
 	items = Container:new()
 
 	lights = Lights:create()
-	lights:add(1, 0.1, 2, true)
+	lights:add(1, 0.6, 50, true)
 
 	Magic:init()
 	Item:init()
