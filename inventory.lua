@@ -80,7 +80,7 @@ function Inventory:draggingEnd(x1, y1, i1, j1, item1)
  	if x2 ~= -1 then
  		self.slot[i1*9+j1] = self.slot[i2*9+j2]
  		self.slot[i2*9+j2] = item1
- 	else
+ 	elseif item1 ~= nil then
  		--drop on the floor
  		self.slot[i1*9+j1] = nil
 
