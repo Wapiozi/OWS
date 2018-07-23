@@ -158,16 +158,10 @@ function Magic:new(x, y, vx, vy, type, owner)
 end
 
 function Magic:draw()
-
-	local x, y = self.body:getWorldPoints(self.shape:getPoints())
-	--local x, y = self.body:getPosition()
-	love.graphics.draw(self.image, x, y, self.body:getAngle(), self.scale)
-	
-	
-	--self.partic:setPosition(self.body:getPosition())
-	--love.graphics.draw(self.partic, nil, nil, nil, nil)
-	--love.graphics.setColor(0.8, 1, 0.01)
-	--love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
+	if not self.canDelete then
+		local x, y = self.body:getWorldPoints(self.shape:getPoints())
+		love.graphics.draw(self.image, x, y, self.body:getAngle(), self.scale)
+	end
 end
 
 function Magic:delete()
