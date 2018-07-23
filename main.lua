@@ -138,6 +138,10 @@ function love.keypressed(key)
 	if (key == "w") then
 		player1:jump()
 	end
+	if (key == "f") then  --FOR TESTING ONLY
+		local x, y = player1:getMagicCoords()
+		bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeWater, "player"))
+	end
 
 	if (key == "i") then
 		if inventoryOpen then
@@ -222,7 +226,11 @@ function love.load(arg)
 	items = Container:new()
 
 	lights = Lights:create()
-	lights:add(1, 0.6, 50, true)
+	lights:add(0.6, 0.6, 0.06, true)
+	lights:add(0.8, 0.5, 0.08, true)
+	lights:add(1, 0.4, 0.1, true)
+	lights:add(1.2, 0.5, 0.08, true)
+	lights:add(1.4, 0.6, 0.06, true)
 
 	Magic:init()
 	Item:init()
@@ -251,6 +259,7 @@ function love.load(arg)
 	camera:setBounds(0, 0, width * 2  , height)
 	camera:setPosition(0,width/2)
 
+	backgr = love.graphics.newQuad(0, 0, 1280, 720, BrickImg:getDimensions())
 
 end
 
@@ -317,15 +326,12 @@ end
 
 function love.draw()
 	if not inventoryOpen then loadMovement() end
-	
-	
-	love.graphics.print(tostring(love.timer.getFPS( )), 10, 10)
-	
-	player1:drawHP()
 
 	camera:set()
 	
 	lights:draw(camera._x, camera._y)
+	
+	love.graphics.draw(BrickImg, backgr)
 	--so this is game
 	--this game is not shit
 
@@ -359,6 +365,10 @@ function love.draw()
 		cursorItem = nil
 		love.mouse.setVisible(true)
 	end
+	
+	love.graphics.print(tostring(love.timer.getFPS( )), 10, 10)
+	
+	player1:drawHP()
 end
 
 function math.clamp(x, min, max)
