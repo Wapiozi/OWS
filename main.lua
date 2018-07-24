@@ -236,13 +236,19 @@ function love.load(arg)
 	Item:init()
 	Inventory:init()
 
-	walls:add(Brick:new(0, 1, 200, 0.1))
+	walls:add(Brick:new(0, -10, 200, 0.1))
 	walls:add(Brick:new(16/9*2, 0, 0.1, 200))
+	walls:add(Brick:new(0, 1, 200, 0.1))
+	walls:add(Brick:new(-10, 0, 0.1, 200))
+	
+	func = lights:addBodyFunc()
+	walls:exec(func)
 
 	inventory1 = Inventory:new()
 	inventoryMode = false
 	released = true
 	player1 = Player:new(100, 0.2, 0.8)
+	lights:addBody(player1)
 	enemies:add(Enemy:new(200, 1.5, 0.8))
 
 	items:add(Item:new(0.5,0.8,WandObj))
@@ -251,6 +257,8 @@ function love.load(arg)
 	items:add(Item:new(0.8,0.8,ClothObj))
 	items:add(Item:new(0.9,0.8,ClothObj))
 	items:add(Item:new(0.2,0.8,ClothObj))
+	
+	items:exec(func)
 	
 
 	width = love.graphics.getWidth()
@@ -326,6 +334,9 @@ end
 
 function love.draw()
 	if not inventoryOpen then loadMovement() end
+	
+	local rays = love.thread.getChannel("rays"):pop()
+	local rayCnt = love.thread.getChannel("rayCnt"):pop()
 
 	camera:set()
 	
@@ -369,6 +380,8 @@ function love.draw()
 	love.graphics.print(tostring(love.timer.getFPS( )), 10, 10)
 	
 	player1:drawHP()
+	
+	
 end
 
 function math.clamp(x, min, max)

@@ -4,10 +4,22 @@ Lights.__index = Lights
 function Lights:create()
 	self = setmetatable({}, self)
 	self.lightSources = {}
+	
+	self.bodies = {}
+	self.bodCnt = 0
+	
+	self.lines = {}   --x, y, xv, yv
+	self.lineCnt = 0
+	
 	self.data = {}
 	
+	self.triGl = {}
+	self.triCnt = 0
+	
+	self.shadowThread = love.thread.newThread("lightsCalc.lua")
+	
 	for i = 1, 50 do
-		local data = {0, 0, 0, 0}
+		local data = {0, 0, 0, 0}   --{x, y, 0, bright}
 		self.lightSources[i] = data
 	end
 	for i = 1, 50 do
@@ -34,6 +46,31 @@ function Lights:add(x, y, bright, isFire, fbody)
 	self.data[place].body = fbody
 end
 
+function Lights:getLines()
+	for i = 1, self.bodCnt do 
+		local x1, y1, x2, y2, x3, y3, x4, y4 = self.bodies[i].body:getWorldPoints(self.bodies[i].shape:getPoints())
+		
+		self.lineCnt = self.lineCnt + 1
+		self.lines[self.lineCnt] = {x = x1, y = y1, xv = x2, yv = y2}
+		
+		self.lineCnt = self.lineCnt + 1
+		self.lines[self.lineCnt] = {x = x2, y = y2, xv = x3, yv = y3}
+		
+		self.lineCnt = self.lineCnt + 1
+		self.lines[self.lineCnt] = {x = x3, y = y3, xv = x4, yv = y4}
+		
+		self.lineCnt = self.lineCnt + 1
+		self.lines[self.lineCnt] = {x = x4, y = y4, xv = x1, yv = y1}
+	end
+end
+
+function Lights:addBody(obj)
+	if obj ~= nil then 
+		self.bodCnt = self.bodCnt + 1
+		self.bodies[self.bodCnt] = obj
+	end
+end
+
 function Lights:draw(camx, camy)
 	for i = 1, 50 do
 		if (self.data[i].body ~= nil) and (not self.data[i].body:isDestroyed()) then 
@@ -43,14 +80,22 @@ function Lights:draw(camx, camy)
 			self.lightSources[i] = {0, 0, 0, 0}
 		end
 	end
+	
+	self.shadowThread:wait()
+	self.lineCnt = 0
+	
+	self.triGl = love.thread.getChannel("triangles"):pop()
+	self.triCnt = love.thread.getChannel("triangCnt"):pop()
 
-	self.shader:send("lights", unpack(self.lightSources))
+	self.shader:send("lights", unpack(self.triGl or self.lightSources))
 	self.shader:send("camPos", {camx or 0, camy or 0})
 	love.graphics.setShader(self.shader)
 end
 
 function Lights:endDraw()
 	love.graphics.setShader()
+	self:getLines()
+	self.shadowThread:start(self.lines, self.lineCnt, self.lightSources)
 end
 
 function Lights:setLightPosition(ind, x, y)
@@ -58,4 +103,11 @@ function Lights:setLightPosition(ind, x, y)
 	
 	self.lightSources[ind][1] = x
 	self.lightSources[ind][2] = y
+end
+
+function Lights:addBodyFunc()
+	tabl = self
+	return function(obj)
+		if obj then tabl:addBody(obj) end
+	end
 end
