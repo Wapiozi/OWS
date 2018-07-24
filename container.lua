@@ -61,3 +61,15 @@ function Container:update(dt)
 		tmp = tmp.next
 	end
 end
+
+function Container:exec(func)   --executes function(object) for every stored object
+	local tmp = self.list
+
+	while tmp ~= nil do
+		if tmp.value ~= nil then
+			func(tmp.value)
+		end
+
+		tmp = tmp.next
+	end
+end
