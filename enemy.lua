@@ -150,8 +150,14 @@ function Enemy:standartMovement()
 end
 
 function Enemy:trigerredMovement()
+	local xveloc, yveloc = self.body:getLinearVelocity()
+	if (xveloc > 0.2) then 
+		self.body:applyForce(-100000, 0)
+	elseif (xveloc < -0.2) then 
+		self.body:applyForce(100000, 0)
+	end
 	--check for the floor (in future)
-
+	--[[
 	-- find player, decide what to do
 	local xveloc, yveloc = self.body:getLinearVelocity()
 	
@@ -164,11 +170,29 @@ function Enemy:trigerredMovement()
 			self.body:applyForce(100000, 0)
 		end
 	end
+	--]]
+end
 
+function Enemy:detect()
+	if self.behaviour.sensor.vision then
+		
+
+	end
+	if self.behaviour.sensor.smell then
+
+
+
+	end
+	if self.behaviour.sensor.noise then
+
+
+
+	end
 end
 
 function Enemy:update(dt)
 	-- every tic function
+	self:detect()
 	self.step = self.step - 1
 	if self.step == 0 then
 		self.side = self.side * -1

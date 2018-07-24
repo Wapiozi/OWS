@@ -97,12 +97,12 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 		obj2:delete()
 	end
 
-	if (obj1 ~= nil) and (obj1.name == "enemy") and (obj1.behaviour.movement == "victim") and (obj1.player_detect == false) and (obj2 ~= nil) and (obj2.name ~= "brick") then
+	if (obj1 ~= nil) and (obj1.name == "enemy") and (obj1.behaviour.movement == "victim") and (obj1.player_detect == false) and (obj2 ~= nil) and ((obj2.name ~= "brick") or (obj2.mean == "wall")) then
 		obj1.side = obj1.side * -1
 		obj1.movDirection = obj1.side * obj1.imgturn
 		obj1.step = love.math.random(1000,1000)
 	end
-	if (obj2 ~= nil) and (obj2.name == "enemy") and (obj2.behaviour.movement == "victim") and (obj2.player_detect == false) and (obj1 ~= nil) and (obj1.name ~= "brick") then
+	if (obj2 ~= nil) and (obj2.name == "enemy") and (obj2.behaviour.movement == "victim") and (obj2.player_detect == false) and (obj1 ~= nil) and ((obj1.name ~= "brick") or (obj1.mean == "wall")) then
 		obj2.side = obj2.side * -1
 		obj2.movDirection = obj2.side * obj2.imgturn
 		obj2.step = love.math.random(1000,1000)
@@ -249,8 +249,8 @@ function love.load(arg)
 	Inventory:init()
 	Enemy:init()
 
-	walls:add(Brick:new(0, 1, 200, 0.1))
-	walls:add(Brick:new(16/9*2, 0, 0.1, 200))
+	walls:add(Brick:new(0, 1, 200, 0.1, "floor"))
+	walls:add(Brick:new(16/9*2, 0, 0.1, 200, "wall"))
 
 	inventory1 = Inventory:new()
 	inventoryMode = false
