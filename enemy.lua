@@ -20,13 +20,14 @@ function Enemy:init()
 
 	EnemyTypeRat = {
 		image = EnemyRatImg,
+		imgturn = -1,
 		size = 0.028,
 		Restitution = 0,
 		Friction = 0.1,
 		Damage = 0,
 		hp = 1,
 		Reload = 0,
-		mass = 1,
+		mass = 70,
 
 		behaviour = { movement = "victim", sensor = {vision = true, smell = false, noise = true} },
 
@@ -35,22 +36,24 @@ function Enemy:init()
 	}
 	EnemyTypeMadwizard = {
 		image = EnemyMadwizardImg,
+		imgturn = 1,
 		size = 0.028,
 		Restitution = 0,
 		Friction = 0.1,
 		Damage = 0, -- later
 		hp = 0,
 		Reload = 0,
-		mass = 1,
+		mass = 70,
 
 		behaviour = { movement = "victim", sensor = {vision = true, smell = false, noise = true} },
-
-		jumping = true,
-		magic = true,
 
 		Init = nil
 	}
 	
+	EnemyTypeRat.Collis = function(px, py)
+	end
+	EnemyTypeMadwizard.Collis = function(px, py)
+	end
 end
 
 function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
@@ -60,6 +63,7 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 
 	self.type = type 
 	self.image = self.type.image
+	self.imgturn = self.type.imgturn
 	self.scale, self.width, self.height = imageProps(self.type.size, self.image)
 	
 	self.body = love.physics.newBody(world, x, y, "dynamic")
@@ -133,13 +137,13 @@ function Enemy:standartMovement()
 	--check for the floor (in future)
 	local xveloc, yveloc = self.body:getLinearVelocity()
 	
-	if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:applyForce(1000000, 0) 
-	elseif (xveloc > -plen(0.45)) and (self.movDirection == -1) then self.body:applyForce(-1000000, 0) 
+	if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:applyForce(100000, 0) 
+	elseif (xveloc > -plen(0.45)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0) 
 	elseif (self.movDirection == 0) then
-		if (xveloc > 2) then 
-			self.body:applyForce(-100000, 0)
-		elseif (xveloc < -2) then 
-			self.body:applyForce(100000, 0)
+		if (xveloc > 0.2) then 
+			self.body:applyForce(-1000, 0)
+		elseif (xveloc < -0.2) then 
+			self.body:applyForce(1000, 0)
 		end
 	end
 
@@ -151,12 +155,12 @@ function Enemy:trigerredMovement()
 	-- find player, decide what to do
 	local xveloc, yveloc = self.body:getLinearVelocity()
 	
-	if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:applyForce(1000000, 0) 
-	elseif (xveloc > -plen(0.45)) and (self.movDirection == -1) then self.body:applyForce(-1000000, 0) 
+	if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:applyForce(100000, 0) 
+	elseif (xveloc > -plen(0.45)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0) 
 	elseif (self.movDirection == 0) then
-		if (xveloc > 2) then 
+		if (xveloc > 0.2) then 
 			self.body:applyForce(-100000, 0)
-		elseif (xveloc < -2) then 
+		elseif (xveloc < -0.2) then 
 			self.body:applyForce(100000, 0)
 		end
 	end
@@ -167,14 +171,9 @@ function Enemy:update(dt)
 	-- every tic function
 	self.step = self.step - 1
 	if self.step == 0 then
-		if self.side == 1 then
-			self.side = -1
-			self.movDirection = -1
-		else
-			self.side = 1
-			self.movDirection = 1
-		end
-		self.step = love.math.random(10)
+		self.side = self.side * -1
+		self.movDirection = self.side * self.imgturn
+		self.step = love.math.random(1000,1000)
 	end
 	if self.player_detect then
 		self:trigerredMovement()
