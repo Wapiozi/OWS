@@ -195,7 +195,10 @@ function love.load(arg)
 
 	-- Sprites
 	PlayerImg = love.graphics.newImage("Player.png")
-	EnemyImg  = love.graphics.newImage("Enemy.png")
+	-- enemies
+		EnemyMadwizardImg = love.graphics.newImage("EnemyMadwizard.png")
+		EnemyRatImg = love.graphics.newImage("EnemyRat.png")
+	-- magic 
 	FireballImg = love.graphics.newImage("Fireball.png")
 	WaterballImg = love.graphics.newImage("Fireball.png")
 	AirballImg = love.graphics.newImage("Fireball.png")
@@ -235,6 +238,7 @@ function love.load(arg)
 	Magic:init()
 	Item:init()
 	Inventory:init()
+	Enemy:init()
 
 	walls:add(Brick:new(0, 1, 200, 0.1))
 	walls:add(Brick:new(16/9*2, 0, 0.1, 200))
@@ -243,7 +247,7 @@ function love.load(arg)
 	inventoryMode = false
 	released = true
 	player1 = Player:new(100, 0.2, 0.8)
-	enemies:add(Enemy:new(200, 1.5, 0.8))
+	enemies:add(Enemy:new(EnemyTypeRat, 1.5, 0.8))
 
 	items:add(Item:new(0.5,0.8,WandObj))
 	items:add(Item:new(0.6,0.8,WandObj))
@@ -301,6 +305,7 @@ function love.update(dt)
 	local dy = camera._y + height / 2 - player1.body:getY()
 
 	player1:updateSpeed()
+	enemies:update(dt)
 	--camera:setPosition(player1.body:getX() - width / 2, player1.body:getY() - height / 2) --camera movement with bounds
 	camera:move(dx*4*dt,dy*10*dt)  --smooth camera movement with bounds
 
@@ -346,6 +351,7 @@ function love.draw()
 	particles:CheckDraw()
 	enemies:CheckDraw()
 	items:CheckDraw()
+	enemies:CheckDraw()
 
 	player1:draw()
 	

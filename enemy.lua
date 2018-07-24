@@ -3,31 +3,89 @@ Enemy = {}
 Enemy.__index = Enemy
 Enemy.type = 'enemy'
 
-function Enemy:new(hp, x, y) -- + class of enemy, warior, magician..
+function Enemy:init()
+
+	--[[
+			there will be several parts of behaviour : 
+			1) movement :
+				victim  = run from player
+				stalker	= run to player
+				neutral	= do nothing
+			2) sensor : 
+				vision  = will start movement after eye contact
+				smell = will start movemnt after some time of being in same room with player
+				noise = will start movement if player run or doing smth loud
+			3) ...
+	]]--
+
+	EnemyTypeRat = {
+		image = EnemyRatImg,
+		size = 0.028,
+		Restitution = 0,
+		Friction = 0.1,
+		Damage = 0,
+		hp = 1,
+		Reload = 0,
+		mass = 1,
+
+		behaviour = { movement = "victim", sensor = {vision = true, smell = false, noise = true} },
+
+		Init = nil
+		--Collis = nil
+	}
+	EnemyTypeMadwizard = {
+		image = EnemyMadwizardImg,
+		size = 0.028,
+		Restitution = 0,
+		Friction = 0.1,
+		Damage = 0, -- later
+		hp = 0,
+		Reload = 0,
+		mass = 1,
+
+		behaviour = { movement = "victim", sensor = {vision = true, smell = false, noise = true} },
+
+		jumping = true,
+		magic = true,
+
+		Init = nil
+	}
+	
+end
+
+function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	self = setmetatable({}, self)
 	
 	x, y = pcoords(x, y)
-	
-	self.image = EnemyImg
-	self.scale, self.width, self.height = imageProps(0.17, self.image)
+
+	self.type = type 
+	self.image = self.type.image
+	self.scale, self.width, self.height = imageProps(self.type.size, self.image)
 	
 	self.body = love.physics.newBody(world, x, y, "dynamic")
 	self.body:setAngle(0)
 	self.body:setFixedRotation(true)
 	
 	self.name = "enemy"
+
+	self.movDirection = love.math.random(2)
+	if self.movDirection == 2 then self.movDirection = -1 end
+	self.side = self.movDirection
+	self.step = love.math.random(10)
+	self.player_detect = false
 	
 	self.shape = love.physics.newRectangleShape(pcoords(self.width, self.height))
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setRestitution(0.1)
 	self.fixture:setFriction(5)
 	
-	self.body:setMass(70)
+	self.body:setMass(self.type.mass)
 	
-	self.hp, self.maxHP = hp, hp
-	
-	self.side = 1
+	self.hp, self.maxHP = self.type.hp, self.type.hp
 
+	self.behaviour = self.type.behaviour
+	self.canDelete = false
+	
 	 -- also, there should be some agilities of different classes
 	 -- for ex. immortal, reduce fire dmg or smth like that
 	 
@@ -44,7 +102,7 @@ function Enemy:new(hp, x, y) -- + class of enemy, warior, magician..
 
 	return self
 end
-
+--[[
 function Enemy:randomGen(red)
 	red[f] = math.random(0,3)
 	red[e] = math.random(0,3)
@@ -55,6 +113,7 @@ function Enemy:randomGen(red)
 		self:randomGen(red)
 	end 
 end
+
 
 function Enemy:applyMagic(Dmg_fire, Dmg_water, Dmg_earth, Dmg_air)
 	-- check for special agil. of enemy , if no, then --> 
@@ -67,6 +126,60 @@ function Enemy:applyMagic(Dmg_fire, Dmg_water, Dmg_earth, Dmg_air)
 
 	if self.hp < 0 then
 		-- add score
+	end
+end
+--]]
+function Enemy:standartMovement()
+	--check for the floor (in future)
+	local xveloc, yveloc = self.body:getLinearVelocity()
+	
+	if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:applyForce(1000000, 0) 
+	elseif (xveloc > -plen(0.45)) and (self.movDirection == -1) then self.body:applyForce(-1000000, 0) 
+	elseif (self.movDirection == 0) then
+		if (xveloc > 2) then 
+			self.body:applyForce(-100000, 0)
+		elseif (xveloc < -2) then 
+			self.body:applyForce(100000, 0)
+		end
+	end
+
+end
+
+function Enemy:trigerredMovement()
+	--check for the floor (in future)
+
+	-- find player, decide what to do
+	local xveloc, yveloc = self.body:getLinearVelocity()
+	
+	if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:applyForce(1000000, 0) 
+	elseif (xveloc > -plen(0.45)) and (self.movDirection == -1) then self.body:applyForce(-1000000, 0) 
+	elseif (self.movDirection == 0) then
+		if (xveloc > 2) then 
+			self.body:applyForce(-100000, 0)
+		elseif (xveloc < -2) then 
+			self.body:applyForce(100000, 0)
+		end
+	end
+
+end
+
+function Enemy:update(dt)
+	-- every tic function
+	self.step = self.step - 1
+	if self.step == 0 then
+		if self.side == 1 then
+			self.side = -1
+			self.movDirection = -1
+		else
+			self.side = 1
+			self.movDirection = 1
+		end
+		self.step = love.math.random(10)
+	end
+	if self.player_detect then
+		self:trigerredMovement()
+	else
+		self:standartMovement()
 	end
 end
 
@@ -116,4 +229,3 @@ function Enemy:getDamage(dmg, magic)
 	self.hp = self.hp-dmg
 	if self.hp < 0 then self:destroy() end
 end
-
