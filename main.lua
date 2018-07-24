@@ -97,12 +97,12 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 		obj2:delete()
 	end
 
-	if (obj1 ~= nil) and (obj1.name == "enemy") and (obj1.behaviour.movement == "victim") and (obj1.player_detect == false) and (obj2 ~= nil) and ((obj2.name ~= "brick") or (obj2.mean == "wall")) then
+	if (obj1 ~= nil) and (obj1.name == "enemy") and (obj1.behaviour.movement == "victim") and (obj1.player_detect == false) and (obj2 ~= nil) and ((obj2.name ~= "brick") or (obj2.mean ~= "floor")) then
 		obj1.side = obj1.side * -1
 		obj1.movDirection = obj1.side * obj1.imgturn
 		obj1.step = love.math.random(1000,1000)
 	end
-	if (obj2 ~= nil) and (obj2.name == "enemy") and (obj2.behaviour.movement == "victim") and (obj2.player_detect == false) and (obj1 ~= nil) and ((obj1.name ~= "brick") or (obj1.mean == "wall")) then
+	if (obj2 ~= nil) and (obj2.name == "enemy") and (obj2.behaviour.movement == "victim") and (obj2.player_detect == false) and (obj1 ~= nil) and ((obj1.name ~= "brick") or (obj1.mean ~= "floor")) then
 		obj2.side = obj2.side * -1
 		obj2.movDirection = obj2.side * obj2.imgturn
 		obj2.step = love.math.random(1000,1000)
