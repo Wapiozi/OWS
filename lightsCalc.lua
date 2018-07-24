@@ -139,6 +139,18 @@ function raySorter:__lt(next)
 
 end
 
+triangSorter = {}
+
+function triangSorter:__lt(next)
+	if self.light.lightInd ~= next.light.lightInd then 
+		if self.light.lightInd < next.light.lightInd then return true end
+		return false
+	end
+	
+	if self.p1deg < next.p1deg then return true end
+	return false
+end
+
 for j = 1, 50 do 
 	if lights[j][4] ~= 0 then 
 		for i = 1, lineCnt do
@@ -152,6 +164,7 @@ for j = 1, 50 do
 				p1deg = getDirection({x = lights[j][1], y = lights[j][2]}, {x = lines[i].x, y = lines[i].y}),
 				p2deg = getDirection({x = lights[j][1], y = lights[j][2]}, {x = lines[i].xv, y = lines[i].yv})
 			}
+			setmetatable(triangles[triangCnt], triangSorter)
 			
 			--add rays of triangle
 			rayCnt = rayCnt + 1
@@ -210,6 +223,7 @@ for i = 2, cur do
 					p1deg = getDirection(triangles[curtri].light, point2),
 					p2deg = getDirection(triangles[curtri].light, tmppoint)
 				}
+				setmetatable(triangles[triangCnt], triangSorter)
 			elseif point1 then 
 				triangles[curtri].p2 = point1
 			elseif point2 then 
@@ -236,6 +250,7 @@ for i = 2, cur do
 					p1deg = getDirection(triangles[rays[i].trianInd].light, point2),
 					p2deg = getDirection(triangles[rays[i].trianInd].light, tmppoint)
 				}
+				setmetatable(triangles[triangCnt], triangSorter)
 			elseif point1 then 
 				triangles[rays[i].trianInd].p2 = point1
 			elseif point2 then 
@@ -247,16 +262,26 @@ for i = 2, cur do
 	end
 end
 
+table.sort(triangles)
+
+local i, cur = 1, 1
+
+for i = 2, triangCnt do --count triangle lightsources
+	if triangles[i].light.lightInd ~= cur then
+		lights[cur][3] = i-1
+		cur = cur + 1
+	end
+end
+lights[cur][3] = triangCnt
+
 triGl = {}
-j = 1
 
 for i = 1, triangCnt do 
-	triGl[j] = {triangles[i].light.x, triangles[i].light.y, lights[triangles[i].light.lightInd][3], triangles[i].light.bright}
-	triGl[j+1] = {triangles[i].p1.x, triangles[i].p1.y, triangles[i].p2.x, triangles[i].p2.y}
-	j = j+2
+	triGl[i] = {triangles[i].p1.x, triangles[i].p1.y, triangles[i].p2.x, triangles[i].p2.y}
 end
 
 love.thread.getChannel("triangles"):push(triGl)
-love.thread.getChannel("triangCnt"):push(j-2)
+love.thread.getChannel("triangCnt"):push(triangCnt)
+love.thread.getChannel("lights"):push(lights)
 
 

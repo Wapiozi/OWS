@@ -227,19 +227,19 @@ function love.load(arg)
 
 	lights = Lights:create()
 	lights:add(0.6, 0.6, 0.06, true)
-	lights:add(0.8, 0.5, 0.08, true)
+	--lights:add(0.8, 0.5, 0.08, true)
 	lights:add(1, 0.4, 0.1, true)
-	lights:add(1.2, 0.5, 0.08, true)
-	lights:add(1.4, 0.6, 0.06, true)
+	--lights:add(1.2, 0.5, 0.08, true)
+	--lights:add(1.4, 0.6, 0.06, true)
 
 	Magic:init()
 	Item:init()
 	Inventory:init()
 
-	walls:add(Brick:new(0, -10, 200, 0.1))
-	walls:add(Brick:new(16/9*2, 0, 0.1, 200))
-	walls:add(Brick:new(0, 1, 200, 0.1))
-	walls:add(Brick:new(-10, 0, 0.1, 200))
+	walls:add(Brick:new(0, -10, 20, 0.1))
+	walls:add(Brick:new(16/9*2, 0, 0.1, 20))
+	walls:add(Brick:new(0, 1, 20, 0.1))
+	walls:add(Brick:new(-10, 0, 0.1, 20))
 	
 	func = lights:addBodyFunc()
 	walls:exec(func)
@@ -258,7 +258,7 @@ function love.load(arg)
 	items:add(Item:new(0.9,0.8,ClothObj))
 	items:add(Item:new(0.2,0.8,ClothObj))
 	
-	items:exec(func)
+	--items:exec(func)
 	
 
 	width = love.graphics.getWidth()
@@ -334,9 +334,6 @@ end
 
 function love.draw()
 	if not inventoryOpen then loadMovement() end
-	
-	local rays = love.thread.getChannel("rays"):pop()
-	local rayCnt = love.thread.getChannel("rayCnt"):pop()
 
 	camera:set()
 	
@@ -361,6 +358,18 @@ function love.draw()
 	player1:draw()
 	
 	lights:endDraw()
+	
+	if lights.triGl ~= nil and lights.lightSources ~= nil then 
+		j = 1
+		prev = 1
+		while lights.lightSources[j][4] > 0 do 
+			for i = prev, lights.lightSources[j][3] do 
+				love.graphics.polygon("line", lights.triGl[i][1], lights.triGl[i][2], lights.triGl[i][3], lights.triGl[i][4], lights.lightSources[j][1], lights.lightSources[j][2])
+			end
+			prev = lights.lightSources[j][3]+1
+			j = j+1
+		end
+	end
 	
 	camera:unset()
 	if inventoryOpen then

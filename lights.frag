@@ -1,4 +1,5 @@
 extern vec4[200] lights;
+extern vec4[200] triangles;
 extern vec2 camPos;
 vec4 nul = vec4(0, 0, 0, 0);
 vec4 ful = vec4(1, 1, 1, 1);
@@ -24,18 +25,23 @@ vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords 
 	float bestdist = dist;
 	float illum = 0.0;
 	float gamma = 1.1;
+	float atten = 0.0;
 	int nex = 0;
+	int j = 0;
+	int prev = 0;
 	
-	for (int i = 0; i < 200; i += 2) {
-		if (inTriang(lights[i+1], lights[i], screen_coords+camPos)) {
-			dist = len(screen_coords+camPos - lights[i].xy);
-			float atten = 1.0/(0.0 + 0.5*dist + 0.001*pow(dist, 2));
-			illum = illum + lights[i].w*atten;
-			nex = int(lights[i][3]*2);
-			/*if ((nex >= 0) && (nex < 200)) {
-				i = nex;
-			}*/
+	
+	while (lights[j].w > 0.0) {
+		for (int i = prev; i <= int(lights[j].z); i++) {
+			if (inTriang(triangles[i], lights[j], screen_coords+camPos)) {
+				dist = len(screen_coords+camPos - lights[j].xy);
+				atten = 1.0/(0.0 + 0.5*dist + 0.001*pow(dist, 2));
+				illum = illum + lights[j].w*atten;
+				break;
+			}
 		}
+		prev = int(lights[j].z+1);
+		j++;
 	}
 	
 	if (color != ful) {

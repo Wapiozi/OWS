@@ -13,7 +13,7 @@ function Lights:create()
 	
 	self.data = {}
 	
-	self.triGl = {}
+	self.triGl = nil
 	self.triCnt = 0
 	
 	self.shadowThread = love.thread.newThread("lightsCalc.lua")
@@ -86,8 +86,10 @@ function Lights:draw(camx, camy)
 	
 	self.triGl = love.thread.getChannel("triangles"):pop()
 	self.triCnt = love.thread.getChannel("triangCnt"):pop()
+	if self.triCnt ~= nil then self.lightSources = love.thread.getChannel("lights"):pop() end
 
-	self.shader:send("lights", unpack(self.triGl or self.lightSources))
+	self.shader:send("triangles", unpack(self.triGl or self.lightSources))
+	self.shader:send("lights", unpack(self.lightSources))
 	self.shader:send("camPos", {camx or 0, camy or 0})
 	love.graphics.setShader(self.shader)
 end
