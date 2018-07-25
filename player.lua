@@ -76,9 +76,11 @@ function Player:updateSpeed()
 	if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:applyForce(1000000, 0) 
 	elseif (xveloc > -plen(0.45)) and (self.movDirection == -1) then self.body:applyForce(-1000000, 0) 
 	elseif (self.movDirection == 0) then
-		if (xveloc > 0.2) then 
+		if (xveloc <= plen(0.07)) and (xveloc >= plen(-0.07)) then
+			self.body:setLinearVelocity(1,yveloc)
+		elseif (xveloc > plen(0.07) ) then 
 			self.body:applyForce(-100000, 0)
-		elseif (xveloc < -0.2) then 
+		elseif (xveloc < plen(-0.07)) then 
 			self.body:applyForce(100000, 0)
 		end
 	end

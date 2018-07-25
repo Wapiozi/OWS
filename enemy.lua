@@ -23,29 +23,29 @@ function Enemy:init()
 		imgturn = -1,
 		size = 0.028,
 		Restitution = 0,
-		Friction = 0.1,
+		Friction = 0.09,
 		Damage = 0,
 		hp = 1,
 		Reload = 0,
 		mass = 70,
 
-		behaviour = { movement = "victim", sensor = {vision = true, smell = false, noise = true} },
+		behaviour = { movement_bd = "move", movement_ad = "victim", sensor = {vision = true, smell = false, noise = true} },
 
 		Init = nil
 		--Collis = nil
 	}
 	EnemyTypeMadwizard = {
 		image = EnemyMadwizardImg,
-		imgturn = 1,
-		size = 0.028,
+		imgturn = -1,
+		size = 0.2,
 		Restitution = 0,
 		Friction = 0.1,
 		Damage = 0, -- later
-		hp = 0,
+		hp = 100,
 		Reload = 0,
 		mass = 70,
 
-		behaviour = { movement = "victim", sensor = {vision = true, smell = false, noise = true} },
+		behaviour = { movement_bd = "slow_move", movement_ad = "victim", sensor = {vision = true, smell = false, noise = true} }, -- movement_bd = before detect | ad = after detect
 
 		Init = nil
 	}
@@ -135,16 +135,35 @@ end
 --]]
 function Enemy:standartMovement()
 	--check for the floor (in future)
-	local xveloc, yveloc = self.body:getLinearVelocity()
-	
-	if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:applyForce(100000, 0) 
-	elseif (xveloc > -plen(0.45)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0) 
-	elseif (self.movDirection == 0) then
-		if (xveloc > 0.2) then 
-			self.body:applyForce(-1000, 0)
-		elseif (xveloc < -0.2) then 
-			self.body:applyForce(1000, 0)
+	if self.behaviour.movement_bd == "move" then
+
+		local xveloc, yveloc = self.body:getLinearVelocity()
+		
+		if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:applyForce(100000, 0) 
+		elseif (xveloc > -plen(0.45)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0) 
+		elseif (self.movDirection == 0) then
+			if (xveloc > 0.2) then 
+				self.body:applyForce(-10000, 0)
+			elseif (xveloc < -0.2) then 
+				self.body:applyForce(10000, 0)
+			end
 		end
+
+	elseif self.behaviour.movement_bd == "slow_move" then
+
+		local xveloc, yveloc = self.body:getLinearVelocity()
+		
+		if (xveloc < plen(0.09)) and (self.movDirection == 1) then self.body:applyForce(100000, 0) 
+		elseif (xveloc > -plen(0.09)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0) 
+		elseif (self.movDirection == 0) then
+			if (xveloc > 0.2) then 
+				self.body:applyForce(-10000, 0)
+			elseif (xveloc < -0.2) then 
+				self.body:applyForce(10000, 0)
+			end
+		end
+
+
 	end
 
 end
@@ -175,7 +194,7 @@ end
 
 function Enemy:detect()
 	if self.behaviour.sensor.vision then
-		
+
 
 	end
 	if self.behaviour.sensor.smell then
