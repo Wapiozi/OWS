@@ -31,17 +31,18 @@ vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords 
 	int prev = 0;
 	
 	
-	while (lights[j].w > 0.0) {
-		for (int i = prev; i <= int(lights[j].z); i++) {
-			if (inTriang(triangles[i], lights[j], screen_coords+camPos)) {
-				dist = len(screen_coords+camPos - lights[j].xy);
-				atten = 1.0/(0.0 + 0.5*dist + 0.001*pow(dist, 2));
-				illum = illum + lights[j].w*atten;
-				break;
+	for (j = 0; j < 50; j++) {
+		if (lights[j].w > 0.0) {
+			for (int i = prev; i <= int(lights[j].z); i++) {
+				if (inTriang(triangles[i], lights[j], screen_coords+camPos)) {
+					dist = len(screen_coords+camPos - lights[j].xy);
+					atten = 1.0/(0.0 + 0.5*dist + 0.001*pow(dist, 2));
+					illum = illum + lights[j].w*atten;
+					break;
+				}
 			}
+			prev = int(lights[j].z+1);
 		}
-		prev = int(lights[j].z+1);
-		j++;
 	}
 	
 	if (color != ful) {

@@ -44,6 +44,8 @@ function Lights:add(x, y, bright, isFire, fbody)
 	self.lightSources[place] = light
 	self.data[place].isFired = isFire
 	self.data[place].body = fbody
+	
+	self.lightss = self.lightSources
 end
 
 function Lights:getLines()
@@ -72,24 +74,15 @@ function Lights:addBody(obj)
 end
 
 function Lights:draw(camx, camy)
-	for i = 1, 50 do
-		if (self.data[i].body ~= nil) and (not self.data[i].body:isDestroyed()) then 
-			self.lightSources[i][1] = self.data[i].body:getX()
-			self.lightSources[i][2] = self.data[i].body:getY()
-		elseif (self.data[i].body ~= nil) and (self.data[i].body:isDestroyed()) then
-			self.lightSources[i] = {0, 0, 0, 0}
-		end
-	end
-	
 	self.shadowThread:wait()
 	self.lineCnt = 0
 	
 	self.triGl = love.thread.getChannel("triangles"):pop()
 	self.triCnt = love.thread.getChannel("triangCnt"):pop()
-	if self.triCnt ~= nil then self.lightSources = love.thread.getChannel("lights"):pop() end
+	if self.triCnt ~= nil then self.lightss = love.thread.getChannel("lights"):pop() end
 
-	self.shader:send("triangles", unpack(self.triGl or self.lightSources))
-	self.shader:send("lights", unpack(self.lightSources))
+	self.shader:send("triangles", unpack(self.triGl or self.lightss))
+	self.shader:send("lights", unpack(self.lightss))
 	self.shader:send("camPos", {camx or 0, camy or 0})
 	love.graphics.setShader(self.shader)
 end
@@ -97,6 +90,14 @@ end
 function Lights:endDraw()
 	love.graphics.setShader()
 	self:getLines()
+	for i = 1, 50 do
+		if (self.data[i].body ~= nil) and (not self.data[i].body:isDestroyed()) then 
+			self.lightSources[i][1] = self.data[i].body:getX()
+			self.lightSources[i][2] = self.data[i].body:getY()
+		elseif (self.data[i].body ~= nil) and (self.data[i].body:isDestroyed()) and (self.lightSources[i][4] > 0) then
+			self.lightSources[i] = {0, 0, 0, 0}
+		end
+	end
 	self.shadowThread:start(self.lines, self.lineCnt, self.lightSources)
 end
 

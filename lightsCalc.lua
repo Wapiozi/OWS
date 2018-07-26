@@ -267,7 +267,8 @@ table.sort(triangles)
 local i, cur = 1, 1
 
 for i = 2, triangCnt do --count triangle lightsources
-	if triangles[i].light.lightInd ~= cur then
+	
+	while triangles[i].light.lightInd ~= cur do
 		lights[cur][3] = i-1
 		cur = cur + 1
 	end

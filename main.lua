@@ -359,15 +359,16 @@ function love.draw()
 	
 	lights:endDraw()
 	
-	if lights.triGl ~= nil and lights.lightSources ~= nil then 
+	if lights.triGl ~= nil and lights.lightss ~= nil then 
 		j = 1
 		prev = 1
-		while lights.lightSources[j][4] > 0 do 
-			for i = prev, lights.lightSources[j][3] do 
-				love.graphics.polygon("line", lights.triGl[i][1], lights.triGl[i][2], lights.triGl[i][3], lights.triGl[i][4], lights.lightSources[j][1], lights.lightSources[j][2])
+		for j = 1, 50 do
+			if lights.lightss[j][4] > 0 then
+				for i = prev, lights.lightss[j][3] do 
+					love.graphics.polygon("line", lights.triGl[i][1], lights.triGl[i][2], lights.triGl[i][3], lights.triGl[i][4], lights.lightss[j][1], lights.lightss[j][2])
+				end
+				prev = lights.lightss[j][3]+1
 			end
-			prev = lights.lightSources[j][3]+1
-			j = j+1
 		end
 	end
 	
