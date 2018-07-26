@@ -30,6 +30,7 @@ function Player:new(mana, x, y)
 	self.fixture:setRestitution(0.1)
 	self.fixture:setFriction(0)
 	self.body:setMass(70) -- 70kg wizard
+	self.fixture:setCategory(2)
 	self.fixture:setUserData(self)
 	--lights:add(flen(x), flen(y), 1, false, self.body)
 	return self

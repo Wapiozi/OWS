@@ -57,6 +57,7 @@ function Enemy:init()
 end
 
 function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
+
 	self = setmetatable({}, self)
 	
 	x, y = pcoords(x, y)
@@ -101,7 +102,8 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	self.water_r = red[w]
 	self.air_r   = red[a]
 	]]--
-	
+	self.fixture:setCategory(3)
+	self.fixture:setMask(3)
 	self.fixture:setUserData(self)
 
 	return self

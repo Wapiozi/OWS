@@ -27,6 +27,7 @@ function Brick:new(x, y, sizex, sizey, mean, angle, image)
 	
 	self.shader = nil
 
+	self.fixture:setCategory(5)
 	self.fixture:setUserData(self)
 	
 	return self

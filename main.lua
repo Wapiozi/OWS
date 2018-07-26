@@ -58,6 +58,7 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 	obj1 = f1:getUserData()
 	obj2 = f2:getUserData()
 
+
 	if (obj1 ~= nil) and (obj2 ~= nil) then
 		if obj1.name == "player" or obj2.name == "player" then
 
@@ -76,7 +77,15 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 		end
 
 		if obj1.name == "enemy" or obj2.name == "enemy" then
+--[[
+			if (obj1.name =="enemy") and (obj2.name == "enemy") then
+				cont:setEnabled(false)
+				cont:resetFriction()
+				cont:resetRestitution()
+		
+			end
 
+]]--
 			if (obj1.name == "magic") and (obj1.owner ~= "enemy") then
 				obj2:getDamage(obj1.damage)
 
@@ -231,11 +240,11 @@ function love.load(arg)
 	world = love.physics.newWorld(0, 9.81*100) --we need the whole world
 	world:setCallbacks(beginContact, endContact, preSolve, postSolve)
 
-	bullets = Container:new()
-	walls = Container:new()
-	enemies = Container:new()
-	particles = Container:new()
-	items = Container:new()
+	enemies = Container:new() -- Category 3
+	items = Container:new() --Category 4
+	walls = Container:new()  -- Category 5
+	bullets = Container:new()  -- Category 6 
+	particles = Container:new() -- (Category 7) by now no category
 
 	lights = Lights:create()
 	lights:add(0.6, 0.6, 0.06, true)
@@ -255,7 +264,7 @@ function love.load(arg)
 	inventory1 = Inventory:new()
 	inventoryMode = false
 	released = true
-	player1 = Player:new(100, 0.2, 0.8)
+	player1 = Player:new(100, 0.2, 0.8) -- Category 2
 	enemies:add(Enemy:new(EnemyTypeRat, 1.5, 0.8))
 	enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
 
