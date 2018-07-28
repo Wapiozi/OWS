@@ -419,12 +419,7 @@ function love.draw()
 	end
 
 	love.graphics.print(tostring(love.timer.getFPS( )), 10, 10)
-<<<<<<< HEAD
 	--love.graphics.print(tostring(player1.hp), 10, 10)
-	
-=======
-
->>>>>>> f6ce1f60664b85244718b95f4dd7ff49ae18d814
 	player1:drawHP()
 
 end
