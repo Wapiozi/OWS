@@ -48,7 +48,7 @@ function Lights:add(x, y, bright, isFire, fbody)
 	self.lightss = self.lightSources
 end
 
-function Lights:getLines()
+function Lights:getLines()  --get lines of all bodies attached
 	for i = 1, self.bodCnt do
 		if not self.bodies[i].body:isDestroyed() then
 			local x1, y1, x2, y2, x3, y3, x4, y4 = self.bodies[i].body:getWorldPoints(self.bodies[i].shape:getPoints())
@@ -75,7 +75,7 @@ function Lights:addBody(obj)
 	end
 end
 
-function Lights:draw(camx, camy)
+function Lights:draw(camx, camy) --all objects after this will be lightened
 	self.shadowThread:wait()
 	self.lineCnt = 0
 
@@ -89,7 +89,7 @@ function Lights:draw(camx, camy)
 	love.graphics.setShader(self.shader)
 end
 
-function Lights:endDraw()
+function Lights:endDraw()  --all object after this will NOT be lightened
 	love.graphics.setShader()
 	self:getLines()
 	for i = 1, 50 do
@@ -103,14 +103,7 @@ function Lights:endDraw()
 	self.shadowThread:start(self.lines, self.lineCnt, self.lightSources)
 end
 
-function Lights:setLightPosition(ind, x, y)
-	x, y = pcoords(x, y)
-
-	self.lightSources[ind][1] = x
-	self.lightSources[ind][2] = y
-end
-
-function Lights:addBodyFunc()
+function Lights:addBodyFunc() --return function which can be called in Container:exec()
 	tabl = self
 	return function(obj)
 		if obj then tabl:addBody(obj) end

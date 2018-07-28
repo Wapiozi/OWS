@@ -36,17 +36,14 @@ function Player:new(mana, x, y)
 	self.body:setMass(70) -- 70kg wizard
 	self.fixture:setCategory(2)
 	self.fixture:setUserData(self)
-	--lights:add(flen(x), flen(y), 1, false, self.body)
 	return self
 end
 
 function Player:draw()
-	--love.graphics.draw(PlayerImg, 100, 100)
-	-- by now, it is only like that :P
 	local x, y = self.body:getWorldPoints(self.shape:getPoints())
-	if self.side == 1 then
+	if self.side == 1 then  --draw normal
 		love.graphics.draw(self.image, x, y, 0, self.scale, self.scale)
-	elseif self.side == -1 then
+	elseif self.side == -1 then  --draw mirrored
 		love.graphics.draw(self.image, x+plen(self.width), y, 0, self.scale*self.side, self.scale)
 	end
 end
@@ -97,14 +94,14 @@ function Player:getCoords()
 	return fcoords(x, y)
 end
 
-function Player:getMagicCoords()
+function Player:getMagicCoords()  --where magic need to spawn
 	local x, y = self:getCoords()
 	x = x + (self.width/2 + 0.03)*self.side
 	y = y - self.height/2 + 0.05
 	return x, y
 end
 
-function Player:drawHP()
+function Player:drawHP()  --draw mana and hp lines
 	local len = self.hp/self.maxHP
 
 	local x, y, x1 = plen(0.02), plen(0.05), plen(0.2)

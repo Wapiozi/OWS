@@ -164,11 +164,8 @@ function love.keypressed(key)
 	if (key == "i") then
 		if inventoryOpen then
 			inventoryOpen = false
-			-- inventory:hide() by now it doesnt work :P
 		elseif not inventoryOpen then
 			inventoryOpen = true
-			--inventory:draw()
-			--love.event.quit()
 		end
 	end
 end
@@ -193,26 +190,10 @@ end
 function love.load(arg)
 	-----------RESOURCES LOAD----------------------------------
 
-	FireShader = love.graphics.newShader[[
-		extern number time;
-
-		vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords ){
-
-			vec4 col = Texel(texture, texture_coords);
-
-			float coef = cos((texture_coords.x - texture_coords.y + sin(time))*8);
-
-			col = vec4( abs(sin(time))*col.rg*coef, col.ba);
-
-			return col;
-		}
-	]]
-
-
-
-
 	-- Sprites
 	PlayerImg = love.graphics.newImage("Player.png")
+	MinecraftInv = love.graphics.newImage("minecraft.png")
+	InvborderImg = love.graphics.newImage("inventory_border.png")
 	-- enemies
 		EnemyMadwizardImg = love.graphics.newImage("EnemyMadwizard.png")
 		EnemyRatImg = love.graphics.newImage("EnemyRat.png")
@@ -226,14 +207,11 @@ function love.load(arg)
 	ClothSdImg = love.graphics.newImage("majka.png")
 	BrickImg = love.graphics.newImage("brick.png")
 	FireImg = love.graphics.newImage("fire.png")
-	MinecraftInv = love.graphics.newImage("minecraft.png")
-	InvborderImg = love.graphics.newImage("inventory_border.png")
-	-- by now there will be only one kind of enemies
+
 
 	--------------------------------------------------------------
 
 	love.window.setMode(1280,720)
-	--screenWidth, screenHeight = love.graphics.getDimensions()
 	screenWidth, screenHeight = love.window.getMode()
 
 
@@ -258,9 +236,9 @@ function love.load(arg)
 	Inventory:init()
 	Enemy:init()
 
-	walls:add(Brick:new(16/9/2, 0-0.05, 16/9, 0.1))
-	walls:add(Brick:new(16/9+0.05, 0.5, 0.1, 1))
-	walls:add(Brick:new(16/9/2, 1+0.05, 16/9, 0.1))
+	walls:add(Brick:new(16/9, 0-0.05, 16/9*2, 0.1))
+	walls:add(Brick:new(16/9*2+0.05, 0.5, 0.1, 1))
+	walls:add(Brick:new(16/9, 1+0.05, 16/9*2, 0.1))
 	walls:add(Brick:new(0-0.05, 0.5, 0.1, 1))
 
 	func = lights:addBodyFunc()
@@ -292,7 +270,7 @@ function love.load(arg)
 	camera:setBounds(0, 0, width * 2  , height)
 	camera:setPosition(0,width/2)
 
-	backgr = love.graphics.newQuad(0, 0, 1280, 720, BrickImg:getDimensions())
+	backgr = love.graphics.newQuad(0, 0, plen(16/9*2), plen(1), BrickImg:getDimensions())
 
 end
 
@@ -335,7 +313,6 @@ function love.update(dt)
 
 	player1:updateSpeed()
 	enemies:update(dt)
-	--camera:setPosition(player1.body:getX() - width / 2, player1.body:getY() - height / 2) --camera movement with bounds
 	camera:move(dx*4*dt,dy*10*dt)  --smooth camera movement with bounds
 
 	if love.keyboard.isDown("e") then
@@ -373,9 +350,6 @@ function love.draw()
 
 	love.graphics.setColor(1, 1, 1)
 
-
-
-	FireShader:send("time", love.timer.getTime()*20)
 	if not inventoryMode then bullets:CheckDraw() end
 	walls:CheckDraw()
 	particles:CheckDraw()
