@@ -60,9 +60,9 @@ function rayCast_vision(fixture, x1, y2, x2, y2, fraction)
 	hit.x, hit.y = x1, y1
 	hit.xn, hit.yn = x2, y2
 	hit.fraction = fraction
- 
+
 	table.insert(Ray.hitList, hit)
- 
+
 	return 1 -- Continues with ray cast through all shapes.
 end
 
@@ -204,7 +204,7 @@ end
 -- Standart ------------------------------------------------------------
 
 function love.load(arg)
-	love.physics.setMeter(10)
+	--love.physics.setMeter(10)
 	math.randomseed(0xfacef00d)
 	-----------RESOURCES LOAD----------------------------------
 
@@ -252,9 +252,9 @@ function love.load(arg)
 
 	lights = Lights:create()
 	lights:add(0.6, 0.6, 0.06, true)
-	--lights:add(0.8, 0.5, 0.08, true)
+--	lights:add(0.8, 0.5, 0.08, true)
 	lights:add(1, 0.4, 0.1, true)
-	--lights:add(1.2, 0.5, 0.08, true)
+--	lights:add(1.2, 0.5, 0.08, true)
 	lights:add(1.4, 0.6, 0.06, true)
 
 	Magic:init()

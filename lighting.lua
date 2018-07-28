@@ -16,6 +16,8 @@ function Lights:create()
 	self.triGl = nil
 	self.triCnt = 0
 
+	self.pdegs = {{0, 0}}
+
 	self.shadowThread = love.thread.newThread("lightsCalc.lua")
 
 	for i = 1, 50 do
@@ -81,11 +83,15 @@ function Lights:draw(camx, camy) --all objects after this will be lightened
 
 	self.triGl = love.thread.getChannel("triangles"):pop()
 	self.triCnt = love.thread.getChannel("triangCnt"):pop()
-	if self.triCnt ~= nil then self.lightss = love.thread.getChannel("lights"):pop() end
+	if self.triCnt ~= nil then
+		self.pdegs = love.thread.getChannel("pdegs"):pop()
+		self.lightss = love.thread.getChannel("lights"):pop()
+	end
 
 	self.shader:send("triangles", unpack(self.triGl or self.lightss))
 	self.shader:send("lights", unpack(self.lightss))
 	self.shader:send("camPos", {camx or 0, camy or 0})
+	self.shader:send("pdegs", unpack(self.pdegs))
 	love.graphics.setShader(self.shader)
 end
 

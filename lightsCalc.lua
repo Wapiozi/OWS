@@ -305,11 +305,23 @@ triGl = {}
 for i = 1, triangCnt do
 	triGl[i] = {triangles[i].p1.x, triangles[i].p1.y, triangles[i].p2.x, triangles[i].p2.y}
 end
-
-for i = triangCnt+1, 100 do
+--[[
+for i = triangCnt+1, 200 do
 	triGl[i] = {0, 0, 0, 0}
+end]]--
+
+pdegs = {}
+
+for i = 1, triangCnt do
+	pdegs[i] = {triangles[i].p1deg, triangles[i].p2deg}
 end
+
+--[[
+for i = triangCnt+1, 200 do
+	pdegs[i] = {0, 0}
+end ]]--
 
 love.thread.getChannel("triangles"):push(triGl)
 love.thread.getChannel("triangCnt"):push(triangCnt)
 love.thread.getChannel("lights"):push(lights)
+love.thread.getChannel("pdegs"):push(pdegs)
