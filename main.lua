@@ -74,6 +74,12 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 				obj1:getDamage(obj2.damage)
 			end
 
+			if (obj1.name == "brick") and (obj1.mean == "floor") then
+				obj2:collidedWithFloor()
+			elseif (obj2.name == "brick") and (obj2.mean == "floor") then
+				obj1.collidedWithFloor()
+			end
+
 		end
 
 		if obj1.name == "enemy" or obj2.name == "enemy" then
@@ -236,10 +242,10 @@ function love.load(arg)
 	Inventory:init()
 	Enemy:init()
 
-	walls:add(Brick:new(16/9, 0-0.05, 16/9*2, 0.1))
-	walls:add(Brick:new(16/9*2+0.05, 0.5, 0.1, 1))
-	walls:add(Brick:new(16/9, 1+0.05, 16/9*2, 0.1))
-	walls:add(Brick:new(0-0.05, 0.5, 0.1, 1))
+	walls:add(Brick:new(16/9, 0-0.05, 16/9*2, 0.1, "floor"))
+	walls:add(Brick:new(16/9*2+0.05, 0.5, 0.1, 1, "wall"))
+	walls:add(Brick:new(16/9, 1+0.05, 16/9*2, 0.1, "floor"))
+	walls:add(Brick:new(0-0.05, 0.5, 0.1, 1, "wall"))
 
 	func = lights:addBodyFunc()
 	walls:exec(func)

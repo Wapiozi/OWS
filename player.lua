@@ -17,14 +17,16 @@ function Player:new(mana, x, y)
 	self.magic_earth = Mana[earth] or 0
 
 	self.name = "player"
-	self.hp = 200
-	self.maxHP = 200
 	self.movDirection = 0    --   1 right      -1 left      0 no
 	self.side = 1            --   1 right      -1 left
 
 	self.maxMana = 50
 	self.mana = 0
 	self.manaPerSecond = 20
+	self.hp = 200
+	self.maxHP = 200
+	self.maxJumps = 2
+	self.jumpCount = 0
 
 	self.body = love.physics.newBody(world, x, y, "dynamic")  --create new dynamic body in world
 	self.body:setAngle(0)
@@ -67,9 +69,12 @@ function Player:moveLeft()
 end
 
 function Player:jump()
-	local vx, vy = self.body:getLinearVelocity()
-	if vy ~= 0 then self.body:setLinearVelocity(vx, 0) end
-	self.body:applyLinearImpulse(0, -30000)
+	if self.jumpCount < self.maxJumps then
+		local vx, vy = self.body:getLinearVelocity()
+		if vy ~= 0 then self.body:setLinearVelocity(vx, 0) end
+		self.body:applyLinearImpulse(0, -30000)
+		self.jumpCount = self.jumpCount + 1
+	end
 end
 
 function Player:updateSpeed()
@@ -143,4 +148,8 @@ function Player:update(dt)
 	if self.mana < self.maxMana then
 		self.mana = math.min(self.mana + self.manaPerSecond*dt, self.maxMana)
 	end
+end
+
+function Player:collidedWithFloor()
+	if self.jumpCount > 0 then self.jumpCount = 0 end
 end
