@@ -48,6 +48,7 @@ function Item:new(x, y, type, ID, SpecialImg)
 	self.canDelete = false
 
 	self.body:setAngle(45)
+	self.fixture:setCategory(4)
 	self.fixture:setUserData(self)
 	return self
 end

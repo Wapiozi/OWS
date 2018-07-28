@@ -30,6 +30,7 @@ function Player:new(mana, x, y)
 	self.fixture:setRestitution(0.1)
 	self.fixture:setFriction(0)
 	self.body:setMass(70) -- 70kg wizard
+	self.fixture:setCategory(2)
 	self.fixture:setUserData(self)
 	--lights:add(flen(x), flen(y), 1, false, self.body)
 	return self
@@ -76,9 +77,11 @@ function Player:updateSpeed()
 	if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:applyForce(1000000, 0) 
 	elseif (xveloc > -plen(0.45)) and (self.movDirection == -1) then self.body:applyForce(-1000000, 0) 
 	elseif (self.movDirection == 0) then
-		if (xveloc > 5) then 
+		if (xveloc <= plen(0.07)) and (xveloc >= plen(-0.07)) then
+			self.body:setLinearVelocity(1,yveloc)
+		elseif (xveloc > plen(0.07) ) then 
 			self.body:applyForce(-100000, 0)
-		elseif (xveloc < -5) then 
+		elseif (xveloc < plen(-0.07)) then 
 			self.body:applyForce(100000, 0)
 		end
 	end

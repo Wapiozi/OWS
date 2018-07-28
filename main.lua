@@ -58,6 +58,7 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 	obj1 = f1:getUserData()
 	obj2 = f2:getUserData()
 
+
 	if (obj1 ~= nil) and (obj2 ~= nil) then
 		if obj1.name == "player" or obj2.name == "player" then
 
@@ -76,7 +77,15 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 		end
 
 		if obj1.name == "enemy" or obj2.name == "enemy" then
+--[[
+			if (obj1.name =="enemy") and (obj2.name == "enemy") then
+				cont:setEnabled(false)
+				cont:resetFriction()
+				cont:resetRestitution()
 
+			end
+
+]]--
 			if (obj1.name == "magic") and (obj1.owner ~= "enemy") then
 				obj2:getDamage(obj1.damage)
 
@@ -97,7 +106,16 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 		obj2:delete()
 	end
 
-
+	if (obj1 ~= nil) and (obj1.name == "enemy") and (obj1.behaviour.movement ~= "stop") and (obj1.player_detect == false) and (obj2 ~= nil) and ((obj2.name ~= "brick") or (obj2.mean ~= "floor")) and (obj2.name ~= "magic") then
+		obj1.side = obj1.side * -1
+		obj1.movDirection = obj1.side * obj1.imgturn
+		obj1.step = love.math.random(1000,1000)
+	end
+	if (obj2 ~= nil) and (obj2.name == "enemy") and (obj2.behaviour.movement ~= "stop") and (obj2.player_detect == false) and (obj1 ~= nil) and ((obj1.name ~= "brick") or (obj1.mean ~= "floor")) and (obj2.name ~= "magic") then
+		obj2.side = obj2.side * -1
+		obj2.movDirection = obj2.side * obj2.imgturn
+		obj2.step = love.math.random(1000,1000)
+	end
 
 end
 
@@ -195,7 +213,10 @@ function love.load(arg)
 
 	-- Sprites
 	PlayerImg = love.graphics.newImage("Player.png")
-	EnemyImg  = love.graphics.newImage("Enemy.png")
+	-- enemies
+		EnemyMadwizardImg = love.graphics.newImage("EnemyMadwizard.png")
+		EnemyRatImg = love.graphics.newImage("EnemyRat.png")
+	-- magic
 	FireballImg = love.graphics.newImage("Fireball.png")
 	WaterballImg = love.graphics.newImage("Fireball.png")
 	AirballImg = love.graphics.newImage("Fireball.png")
@@ -219,11 +240,11 @@ function love.load(arg)
 	world = love.physics.newWorld(0, 9.81*100) --we need the whole world
 	world:setCallbacks(beginContact, endContact, preSolve, postSolve)
 
-	bullets = Container:new()
-	walls = Container:new()
-	enemies = Container:new()
-	particles = Container:new()
-	items = Container:new()
+	enemies = Container:new() -- Category 3
+	items = Container:new() --Category 4
+	walls = Container:new()  -- Category 5
+	bullets = Container:new()  -- Category 6
+	particles = Container:new() -- (Category 7) by now no category
 
 	lights = Lights:create()
 	lights:add(0.6, 0.6, 0.06, true)
@@ -235,6 +256,7 @@ function love.load(arg)
 	Magic:init()
 	Item:init()
 	Inventory:init()
+	Enemy:init()
 
 	walls:add(Brick:new(16/9/2, 0-0.05, 16/9, 0.1))
 	walls:add(Brick:new(16/9+0.05, 0.5, 0.1, 1))
@@ -247,9 +269,11 @@ function love.load(arg)
 	inventory1 = Inventory:new()
 	inventoryMode = false
 	released = true
+	
 	player1 = Player:new(100, 0.2, 0.8)
 	lights:addBody(player1)
-	enemies:add(Enemy:new(200, 1.5, 0.8))
+	enemies:add(Enemy:new(EnemyTypeRat, 1.5, 0.8))
+	enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
 
 	items:add(Item:new(0.5,0.8,WandObj))
 	items:add(Item:new(0.6,0.8,WandObj))
@@ -310,6 +334,7 @@ function love.update(dt)
 	local dy = camera._y + height / 2 - player1.body:getY()
 
 	player1:updateSpeed()
+	enemies:update(dt)
 	--camera:setPosition(player1.body:getX() - width / 2, player1.body:getY() - height / 2) --camera movement with bounds
 	camera:move(dx*4*dt,dy*10*dt)  --smooth camera movement with bounds
 
@@ -355,6 +380,7 @@ function love.draw()
 	particles:CheckDraw()
 	enemies:CheckDraw()
 	items:CheckDraw()
+	enemies:CheckDraw()
 
 	player1:draw()
 

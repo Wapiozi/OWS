@@ -2,14 +2,14 @@
 Brick = {}
 Brick.__index = Brick
 
-function Brick:new(x, y, sizex, sizey, angle, image) 
+function Brick:new(x, y, sizex, sizey, mean, angle, image) 
 	self = setmetatable({}, self)
 	
 	x, y = pcoords(x, y)
 	sizex, sizey = pcoords(sizex, sizey)
 	
 	self.name = "brick"
-	
+	self.mean = mean
 	self.body = love.physics.newBody(world, x, y, "static")
 	self.body:setAngle(angle or 0)
 	self.shape = love.physics.newRectangleShape(sizex, sizey)
@@ -26,6 +26,9 @@ function Brick:new(x, y, sizex, sizey, angle, image)
 	self.angle = angle or 0
 	
 	self.shader = nil
+
+	self.fixture:setCategory(5)
+	self.fixture:setUserData(self)
 	
 	return self
 end

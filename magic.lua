@@ -135,6 +135,7 @@ function Magic:new(x, y, vx, vy, type, owner)
 	self.body:applyLinearImpulse(self.type.ImpulseCoef*vx, self.type.ImpulseCoef*vy)
 	self.body:setAngle(45)
 	
+	self.fixture:setCategory(6)
 	self.fixture:setUserData(self)
 	
 	--[[
