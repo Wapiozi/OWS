@@ -50,19 +50,21 @@ end
 
 function Lights:getLines()
 	for i = 1, self.bodCnt do
-		local x1, y1, x2, y2, x3, y3, x4, y4 = self.bodies[i].body:getWorldPoints(self.bodies[i].shape:getPoints())
+		if not self.bodies[i].body:isDestroyed() then
+			local x1, y1, x2, y2, x3, y3, x4, y4 = self.bodies[i].body:getWorldPoints(self.bodies[i].shape:getPoints())
 
-		self.lineCnt = self.lineCnt + 1
-		self.lines[self.lineCnt] = {x = x1, y = y1, xv = x2, yv = y2}
+			self.lineCnt = self.lineCnt + 1
+			self.lines[self.lineCnt] = {x = x1, y = y1, xv = x2, yv = y2}
 
-		self.lineCnt = self.lineCnt + 1
-		self.lines[self.lineCnt] = {x = x2, y = y2, xv = x3, yv = y3}
+			self.lineCnt = self.lineCnt + 1
+			self.lines[self.lineCnt] = {x = x2, y = y2, xv = x3, yv = y3}
 
-		self.lineCnt = self.lineCnt + 1
-		self.lines[self.lineCnt] = {x = x3, y = y3, xv = x4, yv = y4}
+			self.lineCnt = self.lineCnt + 1
+			self.lines[self.lineCnt] = {x = x3, y = y3, xv = x4, yv = y4}
 
-		self.lineCnt = self.lineCnt + 1
-		self.lines[self.lineCnt] = {x = x4, y = y4, xv = x1, yv = y1}
+			self.lineCnt = self.lineCnt + 1
+			self.lines[self.lineCnt] = {x = x4, y = y4, xv = x1, yv = y1}
+		end
 	end
 end
 

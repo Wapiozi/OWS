@@ -269,7 +269,7 @@ function love.load(arg)
 	inventory1 = Inventory:new()
 	inventoryMode = false
 	released = true
-	
+
 	player1 = Player:new(100, 0.2, 0.8)
 	lights:addBody(player1)
 	enemies:add(Enemy:new(EnemyTypeRat, 1.5, 0.8))
@@ -307,23 +307,23 @@ function love.update(dt)
 			if gesture[i] == 1 then
 			elseif gesture[i] == 2 then
 				local x, y = player1:getMagicCoords()
-				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeGround, "player"))
+				if Magic:canShoot(player1, MagicTypeGround) then bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeGround, "player")) end
 			elseif gesture[i] == 3 then
 				local x, y = player1:getMagicCoords()
-				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeWater, "player"))
+				if Magic:canShoot(player1, MagicTypeWater) then bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeWater, "player")) end
 			elseif gesture[i] == 4 then
 				local x, y = player1:getMagicCoords()
-				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeFire, "player"))
+				if Magic:canShoot(player1, MagicTypeFire) then bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeFire, "player")) end
 			elseif gesture[i] == 5 then
 
 			elseif gesture[i] == 6 then
 				local x, y = player1:getMagicCoords()
-				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeAir, "player"))
+				if Magic:canShoot(player1, MagicTypeAir) then bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeAir, "player")) end
 			elseif gesture[i] == 7 then
 
 			elseif gesture[i] == 8 then
 				local x, y = player1:getMagicCoords()
-				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeIce, "player"))
+				if Magic:canShoot(player1, MagicTypeIce) then bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeIce, "player")) end
 			end
 			i = i+1
 		end
@@ -355,6 +355,7 @@ function love.update(dt)
 	world:update(dt) --update the whole world
 	bullets:update(dt)
 	particles:update(dt)
+	player1:update(dt)
 	if partSys ~= nil then partSys:update(dt) end
 end
 

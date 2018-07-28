@@ -18,10 +18,11 @@ function Magic:init()
 		Reload = 2,
 		ImpulseCoef = 1000,
 		mass = 1,
+		mana = 10,
 		Init = nil,  --magic type function. Is called when created
 		Collis = nil --magic type function. Is called when collided with anything else
 	}
-	
+
 	MagicTypeWater = {
 		image = WaterballImg,
 		shader = WaterShader,
@@ -33,10 +34,11 @@ function Magic:init()
 		Reload = 3,
 		ImpulseCoef = 100,
 		mass = 5,
+		mana = 20,
 		Init = nil,
 		Collis = nil
 	}
-	
+
 	MagicTypeAir = {
 		image = AirballImg,
 		shader = AirShader,
@@ -48,10 +50,11 @@ function Magic:init()
 		Reload = 0.5,
 		ImpulseCoef = 10000,
 		mass = 0.1,
+		mana = 5,
 		Init = nil,
 		Collis = nil
 	}
-	
+
 	MagicTypeIce = {
 		image = IceballImg,
 		shader = IceShader,
@@ -63,10 +66,11 @@ function Magic:init()
 		Reload = 1,
 		ImpulseCoef = 2000,
 		mass = 2,
+		mana = 10,
 		Init = nil,
 		Collis = nil
 	}
-	
+
 	MagicTypeGround = {
 		image = GroundballImg,
 		shader = nil,
@@ -78,66 +82,67 @@ function Magic:init()
 		Reload = 4,
 		ImpulseCoef = 500,
 		mass = 20,
+		mana = 20,
 		Init = nil,
 		Collis = nil
 	}
-	
+
 	MagicTypeFire.Collis = function(px, py)
-		
+
 	end
 	MagicTypeWater.Collis = function(px, py)
-		
+
 	end
 	MagicTypeAir.Collis = function(px, py)
-		
+
 	end
 	MagicTypeIce.Collis = function(px, py)
-		
+
 	end
 	MagicTypeGround.Collis = function(px, py)
-		
+
 	end
 end
 
 function Magic:new(x, y, vx, vy, type, owner)
 	self = setmetatable({}, self)
-	
+
 	x, y = pcoords(x, y)
-	
+
 	self.type = type
 	self.name = "magic"
 	self.owner = owner
-	
+
 	self.image = self.type.image
 	self.scale, self.width, self.height = imageProps(self.type.size, self.image)
-	
+
 	self.body = love.physics.newBody(world, x, y, "dynamic")
 	self.body:setBullet(true)
-	
+
 	self.shape = love.physics.newRectangleShape(pcoords(self.width, self.height))
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setRestitution(type.Restitution)
 	self.fixture:setFriction(type.Friction)
-	
+
 	self.body:setMass(type.mass)
-	
+
 	self.damage = self.type.Damage
 	self.reload = self.type.Reload
-	
+
 	self.shader = self.type.shader
-	
+
 	self.Collis = function()
 		if (not self.canDelete) and (self.type.Collis ~= nil) then self.type.Collis(self.body:getX(), self.body:getY()) end
 	end
-	
-	if self.type.Init ~= nil then self.type.Init() end 
-	
+
+	if self.type.Init ~= nil then self.type.Init() end
+
 	self.body:applyLinearImpulse(self.type.ImpulseCoef*vx, self.type.ImpulseCoef*vy)
 	self.body:setAngle(45)
-	
+
 	self.fixture:setCategory(6)
 	self.fixture:setUserData(self)
-	
+
 	--[[
 	self.partic = love.graphics.newParticleSystem(FireImg, 1000)
 	self.partic:setParticleLifetime(0.1, 0.3)
@@ -148,13 +153,13 @@ function Magic:new(x, y, vx, vy, type, owner)
 	self.partic:setPosition(x, y)
 	self.partic:setRelativeRotation(true)
 	]]--
-	
+
 	particles:add(Particle:new(FireImg, self.body))
-	
+
 	self.canDelete = false
-	
+
 	lights:add(flen(x), flen(y), 0.05, false, self.body)
-	
+
 	return self
 end
 
@@ -175,4 +180,14 @@ end
 
 function Magic:update(dt)
 	if self.partic ~= nil then self.partic:update(dt) end
+end
+
+function Magic:canShoot(player, magicType)
+	if player.mana ~= nil and magicType.mana ~= nil then
+		if player.mana >= magicType.mana then
+			player.mana = player.mana - magicType.mana
+			return true
+		end
+	end
+	return false
 end
