@@ -1,9 +1,9 @@
 Item = {}
 Item.__index = Item
 
-function Item:init() 
-	WandObj = {			
-		image = WandSdImg, -- Wand standart image 
+function Item:init()
+	WandObj = {
+		image = WandSdImg, -- Wand standart image
 		imageData = "palka.png",
 		init = nil,
 		size = 0.05,
@@ -20,10 +20,10 @@ end
 
 function Item:new(x, y, type, ID, SpecialImg)
 	self = setmetatable({}, self)
-	
+
 	x, y = pcoords(x, y)
 
-	self.type = type 
+	self.type = type
 	self.name = "item"
 
 	self.imageData = self.type.imageData
@@ -37,7 +37,7 @@ function Item:new(x, y, type, ID, SpecialImg)
 	self.ItemCanBeTaken = false
 	self.body = love.physics.newBody(world, x, y, "dynamic")
 	--self.body:setMass(self.type.mass)
-	
+
 	self.shape = love.physics.newRectangleShape(pcoords(self.width, self.height))
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setFriction(10)
@@ -53,13 +53,6 @@ function Item:new(x, y, type, ID, SpecialImg)
 	return self
 end
 
---[[  look in main
-function Item:checkcollis(x, y)
-	if math.abs(self.x - x) <= self.r and math.abs(self.y - y) <= self.r then
-		return true
-	end
-end
---]]
 function Item:spawn(x, y)
 	self.body:setPosition(x, y)
 	self.body:setActive(true)

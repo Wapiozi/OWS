@@ -86,6 +86,12 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 				obj1:getDamage(obj2.damage)
 			end
 
+			if (obj1.name == "brick") and (obj1.mean == "floor") then
+				obj2:collidedWithFloor()
+			elseif (obj2.name == "brick") and (obj2.mean == "floor") then
+				obj1.collidedWithFloor()
+			end
+
 		end
 
 		if obj1.name == "enemy" or obj2.name == "enemy" then
@@ -94,7 +100,7 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 				cont:setEnabled(false)
 				cont:resetFriction()
 				cont:resetRestitution()
-		
+
 			end
 
 ]]--
@@ -110,12 +116,10 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 	end
 
 	if (obj1 ~= nil) and (obj1.name == "magic") then
-		obj1:delete()
-		if obj1.Collis ~= nil then obj1.Collis() end
+		obj1:collision()
 	end
 	if (obj2 ~= nil) and (obj2.name == "magic") then
-		if obj2.Collis ~= nil then obj2.Collis() end
-		obj2:delete()
+		obj2:collision()
 	end
 
 	if (obj1 ~= nil) and (obj1.name == "enemy") and (obj1.behaviour.movement ~= "stop") and (obj1.player_detect == false) and (obj2 ~= nil) and ((obj2.name ~= "brick") or (obj2.mean ~= "floor")) and (obj2.name ~= "magic") then
@@ -159,12 +163,12 @@ end
 ------------------------KEYBOARD---------------------------------------
 
 function love.keypressed(key)
-	if (key == "d") and (player1.movDirection == 0) then 
+	if (key == "d") and (player1.movDirection == 0) then
 		player1:moveRight()
-	elseif (key == "a") and (player1.movDirection == 0) then 
+	elseif (key == "a") and (player1.movDirection == 0) then
 		player1:moveLeft()
 	end
-	
+
 	if (key == "w") then
 		player1:jump()
 	end
@@ -176,17 +180,14 @@ function love.keypressed(key)
 	if (key == "i") then
 		if inventoryOpen then
 			inventoryOpen = false
-			-- inventory:hide() by now it doesnt work :P
 		elseif not inventoryOpen then
 			inventoryOpen = true
-			--inventory:draw()
-			--love.event.quit()
 		end
 	end
 end
 
 function love.keyreleased(key)
-	if (key == "d") or (key == "a") then 
+	if (key == "d") or (key == "a") then
 		player1.movDirection = 0
 	end
 end
@@ -207,30 +208,14 @@ function love.load(arg)
 	math.randomseed(0xfacef00d)
 	-----------RESOURCES LOAD----------------------------------
 
-	FireShader = love.graphics.newShader[[
-		extern number time;
-
-		vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords ){
-
-			vec4 col = Texel(texture, texture_coords);
-
-			float coef = cos((texture_coords.x - texture_coords.y + sin(time))*8);
-
-			col = vec4( abs(sin(time))*col.rg*coef, col.ba);
-
-			return col;
-		}
-	]]
-
-
-
-
 	-- Sprites
 	PlayerImg = love.graphics.newImage("Player.png")
+	MinecraftInv = love.graphics.newImage("minecraft.png")
+	InvborderImg = love.graphics.newImage("inventory_border.png")
 	-- enemies
 		EnemyMadwizardImg = love.graphics.newImage("EnemyMadwizard.png")
 		EnemyRatImg = love.graphics.newImage("EnemyRat.png")
-	-- magic 
+	-- magic
 	FireballImg = love.graphics.newImage("Fireball.png")
 	WaterballImg = love.graphics.newImage("Fireball.png")
 	AirballImg = love.graphics.newImage("Fireball.png")
@@ -240,14 +225,11 @@ function love.load(arg)
 	ClothSdImg = love.graphics.newImage("majka.png")
 	BrickImg = love.graphics.newImage("brick.png")
 	FireImg = love.graphics.newImage("fire.png")
-	MinecraftInv = love.graphics.newImage("minecraft.png")
-	InvborderImg = love.graphics.newImage("inventory_border.png")
-	-- by now there will be only one kind of enemies
+
 
 	--------------------------------------------------------------
 
 	love.window.setMode(1280,720)
-	--screenWidth, screenHeight = love.graphics.getDimensions()
 	screenWidth, screenHeight = love.window.getMode()
 
 
@@ -265,14 +247,14 @@ function love.load(arg)
 	enemies = Container:new() -- Category 3
 	items = Container:new() --Category 4
 	walls = Container:new()  -- Category 5
-	bullets = Container:new()  -- Category 6 
+	bullets = Container:new()  -- Category 6
 	particles = Container:new() -- (Category 7) by now no category
 
 	lights = Lights:create()
 	lights:add(0.6, 0.6, 0.06, true)
-	lights:add(0.8, 0.5, 0.08, true)
+	--lights:add(0.8, 0.5, 0.08, true)
 	lights:add(1, 0.4, 0.1, true)
-	lights:add(1.2, 0.5, 0.08, true)
+	--lights:add(1.2, 0.5, 0.08, true)
 	lights:add(1.4, 0.6, 0.06, true)
 
 	Magic:init()
@@ -280,13 +262,20 @@ function love.load(arg)
 	Inventory:init()
 	Enemy:init()
 
-	walls:add(Brick:new(0, 1, 200, 0.1, "floor"))
-	walls:add(Brick:new(16/9*2, 0, 0.1, 200, "wall"))
+	walls:add(Brick:new(16/9, 0-0.05, 16/9*2, 0.1, "floor"))
+	walls:add(Brick:new(16/9*2+0.05, 0.5, 0.1, 1, "wall"))
+	walls:add(Brick:new(16/9, 1+0.05, 16/9*2, 0.1, "floor"))
+	walls:add(Brick:new(0-0.05, 0.5, 0.1, 1, "wall"))
+
+	func = lights:addBodyFunc()
+	walls:exec(func)
 
 	inventory1 = Inventory:new()
 	inventoryMode = false
 	released = true
-	player1 = Player:new(100, 0.2, 0.8) -- Category 2
+
+	player1 = Player:new(100, 0.2, 0.8)
+	lights:addBody(player1)
 	enemies:add(Enemy:new(EnemyTypeRat, 1.5, 0.8))
 	enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
 
@@ -296,7 +285,10 @@ function love.load(arg)
 	items:add(Item:new(0.8,0.8,ClothObj))
 	items:add(Item:new(0.9,0.8,ClothObj))
 	items:add(Item:new(0.2,0.8,ClothObj))
-	
+
+	--items:exec(func)
+	enemies:exec(func)
+
 
 	width = love.graphics.getWidth()
 	height = love.graphics.getHeight()
@@ -304,7 +296,7 @@ function love.load(arg)
 	camera:setBounds(0, 0, width * 2  , height)
 	camera:setPosition(0,width/2)
 
-	backgr = love.graphics.newQuad(0, 0, 1280, 720, BrickImg:getDimensions())
+	backgr = love.graphics.newQuad(0, 0, plen(16/9*2), plen(1), BrickImg:getDimensions())
 
 end
 
@@ -319,23 +311,23 @@ function love.update(dt)
 			if gesture[i] == 1 then
 			elseif gesture[i] == 2 then
 				local x, y = player1:getMagicCoords()
-				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeGround, "player"))
+				if Magic:canShoot(player1, MagicTypeGround) then bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeGround, "player")) end
 			elseif gesture[i] == 3 then
 				local x, y = player1:getMagicCoords()
-				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeWater, "player"))
+				if Magic:canShoot(player1, MagicTypeWater) then bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeWater, "player")) end
 			elseif gesture[i] == 4 then
 				local x, y = player1:getMagicCoords()
-				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeFire, "player"))
+				if Magic:canShoot(player1, MagicTypeFire) then bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeFire, "player")) end
 			elseif gesture[i] == 5 then
-			
+
 			elseif gesture[i] == 6 then
 				local x, y = player1:getMagicCoords()
-				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeAir, "player"))
-			elseif gesture[i] == 7 then	
-		
-			elseif gesture[i] == 8 then	
+				if Magic:canShoot(player1, MagicTypeAir) then bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeAir, "player")) end
+			elseif gesture[i] == 7 then
+
+			elseif gesture[i] == 8 then
 				local x, y = player1:getMagicCoords()
-				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeIce, "player"))
+				if Magic:canShoot(player1, MagicTypeIce) then bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeIce, "player")) end
 			end
 			i = i+1
 		end
@@ -347,7 +339,6 @@ function love.update(dt)
 
 	player1:updateSpeed()
 	enemies:update(dt)
-	--camera:setPosition(player1.body:getX() - width / 2, player1.body:getY() - height / 2) --camera movement with bounds
 	camera:move(dx*4*dt,dy*10*dt)  --smooth camera movement with bounds
 
 	if love.keyboard.isDown("e") then
@@ -367,6 +358,7 @@ function love.update(dt)
 	world:update(dt) --update the whole world
 	bullets:update(dt)
 	particles:update(dt)
+	player1:update(dt)
 	if partSys ~= nil then partSys:update(dt) end
 
 	-- Clear fixture hit list.
@@ -377,9 +369,9 @@ function love.draw()
 	if not inventoryOpen then loadMovement() end
 
 	camera:set()
-	
+
 	lights:draw(camera._x, camera._y)
-	
+
 	love.graphics.draw(BrickImg, backgr)
 	--so this is game
 	--this game is not shit
@@ -387,9 +379,6 @@ function love.draw()
 
 	love.graphics.setColor(1, 1, 1)
 
-	
-
-	FireShader:send("time", love.timer.getTime()*20)
 	if not inventoryMode then bullets:CheckDraw() end
 	walls:CheckDraw()
 	particles:CheckDraw()
@@ -398,14 +387,27 @@ function love.draw()
 	enemies:CheckDraw()
 
 	player1:draw()
-	
+
 	lights:endDraw()
-	
+
+	if lights.triGl ~= nil and lights.lightss ~= nil and false then  --lighting debugger
+		j = 1
+		prev = 1
+		for j = 1, 50 do
+			if lights.lightss[j][4] > 0 then
+				for i = prev, lights.lightss[j][3] do
+					love.graphics.polygon("line", lights.triGl[i][1], lights.triGl[i][2], lights.triGl[i][3], lights.triGl[i][4], lights.lightss[j][1], lights.lightss[j][2])
+				end
+				prev = lights.lightss[j][3]+1
+			end
+		end
+	end
+
 	camera:unset()
 	if inventoryOpen then
 		inventory1:draw()
 		inventory1:checkInventoryMode()
-		if cursorItem ~= nil then 
+		if cursorItem ~= nil then
 			mx, my = love.mouse.getPosition()
 			local scl, h, w = imageProps(0.15, cursorItem)
 			love.graphics.draw(cursorItem, mx, my, 0, scl)
@@ -415,11 +417,16 @@ function love.draw()
 		cursorItem = nil
 		love.mouse.setVisible(true)
 	end
-	
+
 	love.graphics.print(tostring(love.timer.getFPS( )), 10, 10)
+<<<<<<< HEAD
 	--love.graphics.print(tostring(player1.hp), 10, 10)
 	
+=======
+
+>>>>>>> f6ce1f60664b85244718b95f4dd7ff49ae18d814
 	player1:drawHP()
+
 end
 
 function math.clamp(x, min, max)
