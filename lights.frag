@@ -72,7 +72,7 @@ vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords 
 	bool isLightened = true;
 
 
-	while (lights[j].w > 0) {
+	while (lights[j].z > 0) {
 		curLight = lights[j];
 		isLightened = true;
 		angle = getDegr(curLight.xy, curPos);
