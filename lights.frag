@@ -1,6 +1,6 @@
-extern vec4[200] lights;  //lightSources
-extern vec4[200] triangles;  //p1, p2 from triangles
-extern vec2[200] pdegs;  //p1deg, p2deg from triangles
+extern vec4[100] lights;  //lightSources
+extern vec4[300] triangles;  //p1, p2 from triangles
+extern vec2[300] pdegs;  //p1deg, p2deg from triangles
 extern vec2 camPos;
 vec4 nul = vec4(0, 0, 0, 0);
 vec4 ful = vec4(1, 1, 1, 1);
@@ -72,29 +72,27 @@ vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords 
 	bool isLightened = true;
 
 
-	for (j = 0; j < 50; j++) {
-		if (lights[j].w > 0.0) {
-			curLight = lights[j];
-			isLightened = true;
-			angle = getDegr(curLight.xy, curPos);
+	while (lights[j].w > 0) {
+		curLight = lights[j];
+		isLightened = true;
+		angle = getDegr(curLight.xy, curPos);
 
-			for (i = prev; i <= int(curLight.z); i++) {
-				if (rayIsBetw(pdegs[i], angle)) {
-					if (!inTriang(triangles[i], curLight, curPos)) {
-						isLightened = false;
-	//					return vec4(0, 0, 0, 1);
-						break;
-					}
+		for (i = prev; i <= int(curLight.z); i++) {
+			if (rayIsBetw(pdegs[i], angle)) {
+				if (!inTriang(triangles[i], curLight, curPos)) {
+					isLightened = false;
+					break;
 				}
 			}
-			if (isLightened) {
-				dist = distance(curPos, curLight.xy);
-				atten = 1.0/(0.0 + 0.5*dist + 0.001*pow(dist, 2));
-				illum = illum + lights[j].w*atten;
-			}
-
-			prev = int(curLight.z+1);
 		}
+		if (isLightened) {
+			dist = distance(curPos, curLight.xy);
+			atten = 1.0/(0.0 + 0.5*dist + 0.001*pow(dist, 2));
+			illum = illum + lights[j].w*atten;
+		}
+
+		prev = int(curLight.z+1);
+		j++;
 	}
 
 	if (color != ful) {
