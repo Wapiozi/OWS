@@ -196,33 +196,65 @@ end
 
 function Enemy:detect()
 	if self.behaviour.sensor.vision then
-
-
+		local x1, y1 = self.body:getPosition()
+		local x2, y2 = player1.body:getPosition()
+		local canBeSeen = false
+		world:rayCast(x1, y1, x2, y2, rayCast_vision)
+		--if ((self.movDirection == 1) and (x2 > x1)) or ((self.movDirection == -1) and (x1 < x2))then local canBeSeen = true end
+		if ((self.movDirection == 1) and (x2 > x1)) or ((self.movDirection == -1) and (x2 < x1)) then canBeSeen = true end
+		for i, hit in ipairs(Ray.hitList) do
+			local obj = hit.fixture:getUserData()
+			if (obj.name == "player") then
+				if hit.fraction > 0.92 then canBeSeen = false end 
+				--player1.hp = hit.fraction
+				break
+			elseif (obj.name ~= "enemy") and (obj.name ~= "item") then
+				canBeSeen = false
+			end
+		end
+		--local RayLeng1th = plen(0.2)
+		--local x2 = x1 + (RayLength * self.side)
+		--local y2 = y1 + plen(0.1)
+		--local y3 = y1 - plen(0.1)
+		--local xn, yn, fraction = self.fixture:rayCast(x1, y1, x2, y1, RayLength, 1)
+		
+		--[[
+		while (xn ~= nil) and (xn <= RayLength) do
+			hitx, hity = x1 + (x2 - x1) * fraction, y1 + (y1 - y1) * fraction
+			if player1.fixture:testPoint(hitx, hity) then 
+				return true
+			end
+			local x1 = hitx
+			local xn, yn, fraction = self.fixture:rayCast(x1, y1, x2, y1, RayLength, 1)
+		end
+		]]--
+		return canBeSeen
 	end
 	if self.behaviour.sensor.smell then
 
 
-
+		return false
 	end
 	if self.behaviour.sensor.noise then
 
 
-
+		return false
 	end
 end
 
 function Enemy:update(dt)
 	-- every tic function
-	self:detect()
-	self.step = self.step - 1
-	if self.step == 0 then
-		self.side = self.side * -1
-		self.movDirection = self.side * self.imgturn
-		self.step = love.math.random(1000,1000)
-	end
+	self.player_detect = self:detect()
+	--if self.player_detect then love.event.quit() end
 	if self.player_detect then
 		self:trigerredMovement()
 	else
+		self.step = self.step - 1
+		if self.step == 0 then
+			self.side = self.side * -1
+			self.movDirection = self.side * self.imgturn
+			self.step = love.math.random(1000,1000)
+		end
 		self:standartMovement()
 	end
 end

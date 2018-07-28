@@ -54,6 +54,18 @@ end
 
 --------------WORLD CALLBACK--------------------------------------
 
+function rayCast_vision(fixture, x1, y2, x2, y2, fraction)
+	local hit = {}
+	hit.fixture = fixture
+	hit.x, hit.y = x1, y1
+	hit.xn, hit.yn = x2, y2
+	hit.fraction = fraction
+ 
+	table.insert(Ray.hitList, hit)
+ 
+	return 1 -- Continues with ray cast through all shapes.
+end
+
 function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 	obj1 = f1:getUserData()
 	obj2 = f2:getUserData()
@@ -191,6 +203,8 @@ end
 -- Standart ------------------------------------------------------------
 
 function love.load(arg)
+	love.physics.setMeter(10)
+	math.randomseed(0xfacef00d)
 	-----------RESOURCES LOAD----------------------------------
 
 	FireShader = love.graphics.newShader[[
@@ -239,6 +253,14 @@ function love.load(arg)
 
 	world = love.physics.newWorld(0, 9.81*100) --we need the whole world
 	world:setCallbacks(beginContact, endContact, preSolve, postSolve)
+
+	Ray = {
+		x1 = 0,
+		y1 = 0,
+		x2 = 0,
+		y2 = 0,
+		hitList = {}
+	}
 
 	enemies = Container:new() -- Category 3
 	items = Container:new() --Category 4
@@ -346,6 +368,9 @@ function love.update(dt)
 	bullets:update(dt)
 	particles:update(dt)
 	if partSys ~= nil then partSys:update(dt) end
+
+	-- Clear fixture hit list.
+	Ray.hitList = {}
 end
 
 function love.draw()
@@ -392,6 +417,7 @@ function love.draw()
 	end
 	
 	love.graphics.print(tostring(love.timer.getFPS( )), 10, 10)
+	--love.graphics.print(tostring(player1.hp), 10, 10)
 	
 	player1:drawHP()
 end
