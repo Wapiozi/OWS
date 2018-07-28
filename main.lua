@@ -129,12 +129,12 @@ end
 ------------------------KEYBOARD---------------------------------------
 
 function love.keypressed(key)
-	if (key == "d") and (player1.movDirection == 0) then 
+	if (key == "d") and (player1.movDirection == 0) then
 		player1:moveRight()
-	elseif (key == "a") and (player1.movDirection == 0) then 
+	elseif (key == "a") and (player1.movDirection == 0) then
 		player1:moveLeft()
 	end
-	
+
 	if (key == "w") then
 		player1:jump()
 	end
@@ -156,7 +156,7 @@ function love.keypressed(key)
 end
 
 function love.keyreleased(key)
-	if (key == "d") or (key == "a") then 
+	if (key == "d") or (key == "a") then
 		player1.movDirection = 0
 	end
 end
@@ -230,17 +230,17 @@ function love.load(arg)
 	--lights:add(0.8, 0.5, 0.08, true)
 	lights:add(1, 0.4, 0.1, true)
 	--lights:add(1.2, 0.5, 0.08, true)
-	--lights:add(1.4, 0.6, 0.06, true)
+	lights:add(1.4, 0.6, 0.06, true)
 
 	Magic:init()
 	Item:init()
 	Inventory:init()
 
-	walls:add(Brick:new(0, -10, 20, 0.1))
-	walls:add(Brick:new(16/9*2, 0, 0.1, 20))
-	walls:add(Brick:new(0, 1, 20, 0.1))
-	walls:add(Brick:new(-10, 0, 0.1, 20))
-	
+	walls:add(Brick:new(16/9/2, 0-0.05, 16/9, 0.1))
+	walls:add(Brick:new(16/9+0.05, 0.5, 0.1, 1))
+	walls:add(Brick:new(16/9/2, 1+0.05, 16/9, 0.1))
+	walls:add(Brick:new(0-0.05, 0.5, 0.1, 1))
+
 	func = lights:addBodyFunc()
 	walls:exec(func)
 
@@ -257,9 +257,10 @@ function love.load(arg)
 	items:add(Item:new(0.8,0.8,ClothObj))
 	items:add(Item:new(0.9,0.8,ClothObj))
 	items:add(Item:new(0.2,0.8,ClothObj))
-	
+
 	--items:exec(func)
-	
+	enemies:exec(func)
+
 
 	width = love.graphics.getWidth()
 	height = love.graphics.getHeight()
@@ -290,13 +291,13 @@ function love.update(dt)
 				local x, y = player1:getMagicCoords()
 				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeFire, "player"))
 			elseif gesture[i] == 5 then
-			
+
 			elseif gesture[i] == 6 then
 				local x, y = player1:getMagicCoords()
 				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeAir, "player"))
-			elseif gesture[i] == 7 then	
-		
-			elseif gesture[i] == 8 then	
+			elseif gesture[i] == 7 then
+
+			elseif gesture[i] == 8 then
 				local x, y = player1:getMagicCoords()
 				bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeIce, "player"))
 			end
@@ -336,9 +337,9 @@ function love.draw()
 	if not inventoryOpen then loadMovement() end
 
 	camera:set()
-	
+
 	lights:draw(camera._x, camera._y)
-	
+
 	love.graphics.draw(BrickImg, backgr)
 	--so this is game
 	--this game is not shit
@@ -346,7 +347,7 @@ function love.draw()
 
 	love.graphics.setColor(1, 1, 1)
 
-	
+
 
 	FireShader:send("time", love.timer.getTime()*20)
 	if not inventoryMode then bullets:CheckDraw() end
@@ -356,27 +357,27 @@ function love.draw()
 	items:CheckDraw()
 
 	player1:draw()
-	
+
 	lights:endDraw()
-	
-	if lights.triGl ~= nil and lights.lightss ~= nil then 
+
+	if lights.triGl ~= nil and lights.lightss ~= nil and false then  --lighting debugger
 		j = 1
 		prev = 1
 		for j = 1, 50 do
 			if lights.lightss[j][4] > 0 then
-				for i = prev, lights.lightss[j][3] do 
+				for i = prev, lights.lightss[j][3] do
 					love.graphics.polygon("line", lights.triGl[i][1], lights.triGl[i][2], lights.triGl[i][3], lights.triGl[i][4], lights.lightss[j][1], lights.lightss[j][2])
 				end
 				prev = lights.lightss[j][3]+1
 			end
 		end
 	end
-	
+
 	camera:unset()
 	if inventoryOpen then
 		inventory1:draw()
 		inventory1:checkInventoryMode()
-		if cursorItem ~= nil then 
+		if cursorItem ~= nil then
 			mx, my = love.mouse.getPosition()
 			local scl, h, w = imageProps(0.15, cursorItem)
 			love.graphics.draw(cursorItem, mx, my, 0, scl)
@@ -386,12 +387,11 @@ function love.draw()
 		cursorItem = nil
 		love.mouse.setVisible(true)
 	end
-	
+
 	love.graphics.print(tostring(love.timer.getFPS( )), 10, 10)
-	
+
 	player1:drawHP()
-	
-	
+
 end
 
 function math.clamp(x, min, max)

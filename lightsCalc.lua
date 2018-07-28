@@ -12,29 +12,29 @@ local function getDirection(p1, p2)
 	local yy = p2.y - p1.y
 	local mv = 0
 	local res = 0
-	
+
 	if (xx == 0) then xx = 0.00000001 end
 	if (yy == 0) then yy = 0.00000001 end
-	
-	if (xx < 0) and (yy >= 0) then 
+
+	if (xx < 0) and (yy >= 0) then
 		xx = -xx
-		res = math.atan(xx/yy)*57.2958 + 90 
-	elseif (xx < 0) and (yy < 0) then 
+		res = math.atan(xx/yy)*57.2958 + 90
+	elseif (xx < 0) and (yy < 0) then
 		xx = -xx
 		yy = -yy
 		res = math.atan(yy/xx)*57.2958 + 180
-	elseif (xx >= 0) and (yy < 0) then 
+	elseif (xx >= 0) and (yy < 0) then
 		yy = -yy
-		res = math.atan(xx/yy)*57.2958 + 270 
-	elseif (xx >= 0) and (yy >= 0) then 
-		res = math.atan(yy/xx)*57.2958 
+		res = math.atan(xx/yy)*57.2958 + 270
+	elseif (xx >= 0) and (yy >= 0) then
+		res = math.atan(yy/xx)*57.2958
 	end
-	
+
 	return res
 end
 
 function trSort()
-	for i = 1, triangCnt do 
+	for i = 1, triangCnt do
 		if math.abs(triangles[i].p2deg - triangles[i].p1deg) < 180 then  --when triangle not cross 0 deg
 			if triangles[i].p2deg < triangles[i].p1deg then
 				triangles[i].p1, triangles[i].p2 = triangles[i].p2, triangles[i].p1  --swap
@@ -49,27 +49,9 @@ function trSort()
 	end
 end
 
---[[
-function qsort(l, r)
-	local i = l
-	local j = r
-	local x = rays[math.floor((l + r) / 2)].pdeg
-	repeat 
-		while rays[i].pdeg < x do i = i + 1 end
-		while x < rays[j].pdeg do j = j - 1 end
-		if not (i > j) then
-			rays[i], rays[j] = rays[j], rays[i]
-			i = i + 1
-			j = j - 1
-		end
-		if l < j then qsort(l, j)
-		if i < r then qsort(i, r)
-	until (i > j) 
-end]]--
-
 function isPinTriang(triangInd, point) --is point in triangle
 	local p1, p2, p3 = triangles[triangInd].light, triangles[triangInd].p1, triangles[triangInd].p2
-	
+
 	if ((p1.x - point.x)*(p2.y-p1.y) - (p2.x-p1.x)*(p1.y-point.y)) >= 0 and
 	  ((p2.x-point.x)*(p3.y-p2.y) - (p3.x-p2.x)*(p2.y-point.y)) >= 0 and
 	  ((p3.x-point.x)*(p1.y-p3.y) - (p1.x-p3.x)*(p3.y-point.y)) >= 0 then
@@ -78,14 +60,17 @@ function isPinTriang(triangInd, point) --is point in triangle
 	return false
 end
 
-function rayIsBetw(triangInd, rayInd)
+function rayIsBetw(triangInd, raydeg)
 	local ang1, ang2 = triangles[triangInd].p1deg, triangles[triangInd].p2deg
-	
+
+	if raydeg == ang1 then return true end
+	if raydeg == ang2 then return false end
+
 	if ang2 - ang1 > 0 then
-		if rays[rayInd].pdeg >= ang1 and rays[rayInd].pdeg <= ang2 then return true end
+		if raydeg > ang1 and raydeg < ang2 then return true end
 		return false
 	else
-		if rays[rayInd].pdeg >= ang1 or rays[rayInd].pdeg <= ang2 then return true end
+		if (raydeg >= ang1 and raydeg <= 360) or (raydeg <= ang2 and raydeg >= 0) then return true end
 		return false
 	end
 end
@@ -112,15 +97,15 @@ end
 function lineCrossing(p1, p2, p3, p4)  --line, ray
 	local ua = ((p4.x-p3.x)*(p1.y-p3.y)-(p4.y-p3.y)*(p1.x-p3.x))/((p4.y-p3.y)*(p2.x-p1.x)-(p4.x-p3.x)*(p2.y-p1.y))
 	local ub = ((p2.x-p1.x)*(p1.y-p3.y)-(p2.y-p1.y)*(p1.x-p3.x))/((p4.y-p3.y)*(p2.x-p1.x)-(p4.x-p3.x)*(p2.y-p1.y))
-	
-	if (ua > 1 or ua < 0) then return nil end
-	
+
+	--if (ua >= 1 or ua <= 0) then return nil end
+
 	local pua = {x = ua, y = ua}  --kostil
-	
+
 	setmetatable(p1, vector)
 	setmetatable(p2, vector)
 	setmetatable(pua, vector)
-	
+
 	local point = p1 + pua * (p2 - p1)
 	return point
 end
@@ -128,12 +113,12 @@ end
 raySorter = {}
 
 function raySorter:__lt(next)
-	if self.light.lightInd ~= next.light.lightInd then 
+	if self.light.lightInd ~= next.light.lightInd then
 		if self.light.lightInd < next.light.lightInd then return true end
 		return false
 	end
-	
-	
+
+
 	if self.pdeg < next.pdeg then return true end
 	return false
 
@@ -142,19 +127,23 @@ end
 triangSorter = {}
 
 function triangSorter:__lt(next)
-	if self.light.lightInd ~= next.light.lightInd then 
+	if next == nil then
+		return true
+	end
+
+	if self.light.lightInd ~= next.light.lightInd then
 		if self.light.lightInd < next.light.lightInd then return true end
 		return false
 	end
-	
+
 	if self.p1deg < next.p1deg then return true end
 	return false
 end
 
-for j = 1, 50 do 
-	if lights[j][4] ~= 0 then 
+for j = 1, 50 do
+	if lights[j][4] ~= 0 then
 		for i = 1, lineCnt do
-		
+
 			--add triangle
 			triangCnt = triangCnt + 1
 			triangles[triangCnt] = {
@@ -165,7 +154,7 @@ for j = 1, 50 do
 				p2deg = getDirection({x = lights[j][1], y = lights[j][2]}, {x = lines[i].xv, y = lines[i].yv})
 			}
 			setmetatable(triangles[triangCnt], triangSorter)
-			
+
 			--add rays of triangle
 			rayCnt = rayCnt + 1
 			rays[rayCnt] = {
@@ -175,7 +164,7 @@ for j = 1, 50 do
 				trianInd = triangCnt
 			}
 			setmetatable(rays[rayCnt], raySorter)
-			
+
 			rayCnt = rayCnt + 1
 			rays[rayCnt] = {
 				light = triangles[triangCnt].light,
@@ -189,86 +178,122 @@ for j = 1, 50 do
 end
 
 trSort()
-table.sort(rays)
 
-local i, cur = 1, 1
-
-for i = 2, rayCnt do --count where ends rays for lightsources
-	if rays[i].light.lightInd ~= cur then
-		lights[cur][3] = i-1
-		cur = cur + 1
+function overlap(tri1, tri2)
+	if triangles[tri1] ~= nil and triangles[tri2] ~= nil and triangles[tri1].p1deg > triangles[tri2].p1deg then --tri1 p1deg must be less than tri2 p1deg
+		tri1, tri2 = tri2, tri1
 	end
-end
+	while triangles[tri1] ~= nil and triangles[tri2] ~= nil and rayIsBetw(tri1, triangles[tri2].p1deg) do
+		if rayIsBetw(tri1, triangles[tri2].p2deg) then --if tri2 is between tri1 rays
+			if isPinTriang(tri1, triangles[tri2].p1) and isPinTriang(tri1, triangles[tri2].p2) then  --if tri2 is in tri1
+				local tmp1 = lineCrossing(triangles[tri1].p1, triangles[tri1].p2, triangles[tri2].light, triangles[tri2].p1)
+				local tmp2 = lineCrossing(triangles[tri1].p1, triangles[tri1].p2, triangles[tri2].light, triangles[tri2].p2)
 
-local curtri = rays[1].trianInd
-
-for i = 2, cur do
-	if rayIsBetw(curtri, i) then 
-		if isPinTriang(curtri, rays[i].point) then 
-			local tmptri = triangles[cur]
-			local point1 = lineCrossing(tmptri.p1, tmptri.p2, triangles[rays[i].trianInd].light, triangles[rays[i].trianInd].p1)
-			local point2 = lineCrossing(tmptri.p1, tmptri.p2, triangles[rays[i].trianInd].light, triangles[rays[i].trianInd].p2)
-			
-			if (not point1) and (not point2) then
-				triangles[curtri].light.bright = 0
-			elseif point1 and point2 then 
-				local tmppoint = triangles[curtri].p2
-				triangles[curtri].p2 = point1
-				
-				triangCnt = triangCnt + 1
+				triangCnt = triangCnt + 1  --add new triangle
 				triangles[triangCnt] = {
-					light = triangles[curtri].light,
-					p1 = point2,
-					p2 = tmppoint,
-					p1deg = getDirection(triangles[curtri].light, point2),
-					p2deg = getDirection(triangles[curtri].light, tmppoint)
+					light = triangles[tri1].light,
+					p1 = tmp2,
+					p2 = triangles[tri1].p2,
+					p1deg = getDirection(triangles[tri1].light, tmp2),
+					p2deg = getDirection(triangles[tri1].light, triangles[tri1].p2)
 				}
 				setmetatable(triangles[triangCnt], triangSorter)
-			elseif point1 then 
-				triangles[curtri].p2 = point1
-			elseif point2 then 
-				triangles[curtri].p1 = point2
+
+				triangles[tri1].p2 = tmp1
+				triangles[tri1].p2deg = getDirection(triangles[tri1].light, tmp1)
+
+				overlap(tri2, tri2+1)
+				overlap(triangCnt, tri2+1)
+			else --if tri2 is out of tri1
+				triangles[tri2].light.bright = 0
+				triangles[tri2].light.lightInd = 50
 			end
-			
-			curtri = rays[i].trianInd
 		else
-			local tmptri = triangles[rays[i].trianInd]
-			local point1 = lineCrossing(tmptri.p1, tmptri.p2, triangles[curtri].light, triangles[curtri].p1)
-			local point2 = lineCrossing(tmptri.p1, tmptri.p2, triangles[curtri].light, triangles[curtri].p2)
-			
-			if (not point1) and (not point2) then
-				triangles[rays[i].trianInd].light.bright = 0
-			elseif point1 and point2 then 
-				local tmppoint = triangles[rays[i].trianInd].p2
-				triangles[rays[i].trianInd].p2 = point1
-				
-				triangCnt = triangCnt + 1
-				triangles[triangCnt] = {
-					light = triangles[rays[i].trianInd].light,
-					p1 = point2,
-					p2 = tmppoint,
-					p1deg = getDirection(triangles[rays[i].trianInd].light, point2),
-					p2deg = getDirection(triangles[rays[i].trianInd].light, tmppoint)
-				}
-				setmetatable(triangles[triangCnt], triangSorter)
-			elseif point1 then 
-				triangles[rays[i].trianInd].p2 = point1
-			elseif point2 then 
-				triangles[rays[i].trianInd].p1 = point2
+			if isPinTriang(tri1, triangles[tri2].p1) then --if tri2.p1 is in tri1
+				local tmp = lineCrossing(triangles[tri1].p1, triangles[tri1].p2, triangles[tri2].light, triangles[tri2].p1)  --tmp point
+				triangles[tri1].p2 = tmp
+				triangles[tri1].p2deg = getDirection(triangles[tri1].light, tmp)
+			else --if tri2.p1 is out of tri1
+				local tmp = lineCrossing(triangles[tri2].p1, triangles[tri2].p2, triangles[tri1].light, triangles[tri1].p2)  --tmp point
+				triangles[tri2].p1 = tmp
+				triangles[tri2].p1deg = getDirection(triangles[tri2].light, tmp)
 			end
 		end
-	else
-		curtri = rays[i].trianInd
+		tri2 = tri2 + 1
+	end
+	if triangles[tri2+1] ~= nil and triangles[tri2+2] ~= nil then
+		--overlap(tri2+1, tri2+2)
 	end
 end
+
+function calcTri(stI, stJ, maxI, maxJ)
+
+	table.sort(triangles)
+
+	i, j = stI, stJ+1
+
+	while i < maxI do
+		if triangles[j] ~= nil and triangles[i] ~= nil and rayIsBetw(i, triangles[j].p1deg) then  --if triangleJ overlaps triangleI
+			if rayIsBetw(i, triangles[j].p2deg) then --if triangleJ is fully between triangleI
+				if isPinTriang(i, triangles[j].p1) and isPinTriang(i, triangles[j].p2) then --if triangleJ is in triangleI
+					local tmp1 = lineCrossing(triangles[i].p1, triangles[i].p2, triangles[j].light, triangles[j].p1)
+					local tmp2 = lineCrossing(triangles[i].p1, triangles[i].p2, triangles[j].light, triangles[j].p2)
+
+					triangCnt = triangCnt + 1  --add new triangle
+					triangles[triangCnt] = {
+						light = triangles[i].light,
+						p1 = tmp2,
+						p2 = triangles[i].p2,
+						p1deg = getDirection(triangles[i].light, tmp2),
+						p2deg = getDirection(triangles[i].light, triangles[i].p2)
+					}
+					setmetatable(triangles[triangCnt], triangSorter)
+
+					triangles[i].p2 = tmp1
+					triangles[i].p2deg = getDirection(triangles[i].light, tmp1)
+
+					i = j
+
+					calcTri(i, i, i, i+5)
+				else --if triangleJ is out of triangleI
+					triangles[j].light.bright = 0
+					triangles[j].light.lightInd = 50
+					i = j
+					--setmetatable(triangles[triangCnt], triangSorter)
+				end
+			else  --if not triangleJ is fully between triangleI
+				if isPinTriang(i, triangles[j].p1) then --if triangleJ.p1 is in triangleI
+					local tmp = lineCrossing(triangles[i].p1, triangles[i].p2, triangles[j].light, triangles[j].p1)  --tmp point
+					triangles[i].p2 = tmp
+					triangles[i].p2deg = getDirection(triangles[i].light, tmp)
+					i = j
+				else --if triangleJ.p1 is out of triangleI
+					local tmp = lineCrossing(triangles[j].p1, triangles[j].p2, triangles[i].light, triangles[i].p2)  --tmp point
+					triangles[j].p1 = tmp
+					triangles[j].p1deg = getDirection(triangles[j].light, tmp)
+					i = j
+				end
+			end
+		else --if NOT triangleJ overlaps triangleI
+			i = j
+		end
+		j = j + 1
+		if j > maxJ then j = 1 end
+	end
+end
+
+--calcTri(1, 1, triangCnt, triangCnt)
+--calcTri(1, 1, triangCnt, triangCnt)
+
+--overlap(1, 2)
 
 table.sort(triangles)
 
 local i, cur = 1, 1
 
 for i = 2, triangCnt do --count triangle lightsources
-	
-	while triangles[i].light.lightInd ~= cur do
+
+	while triangles[i].light.lightInd < 400 and triangles[i].light.lightInd ~= cur do
 		lights[cur][3] = i-1
 		cur = cur + 1
 	end
@@ -277,12 +302,14 @@ lights[cur][3] = triangCnt
 
 triGl = {}
 
-for i = 1, triangCnt do 
+for i = 1, triangCnt do
 	triGl[i] = {triangles[i].p1.x, triangles[i].p1.y, triangles[i].p2.x, triangles[i].p2.y}
+end
+
+for i = triangCnt+1, 100 do
+	triGl[i] = {0, 0, 0, 0}
 end
 
 love.thread.getChannel("triangles"):push(triGl)
 love.thread.getChannel("triangCnt"):push(triangCnt)
 love.thread.getChannel("lights"):push(lights)
-
-
