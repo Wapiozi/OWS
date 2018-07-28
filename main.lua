@@ -104,12 +104,10 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 	end
 
 	if (obj1 ~= nil) and (obj1.name == "magic") then
-		obj1:delete()
-		if obj1.Collis ~= nil then obj1.Collis() end
+		obj1:collision()
 	end
 	if (obj2 ~= nil) and (obj2.name == "magic") then
-		if obj2.Collis ~= nil then obj2.Collis() end
-		obj2:delete()
+		obj2:collision()
 	end
 
 	if (obj1 ~= nil) and (obj1.name == "enemy") and (obj1.behaviour.movement ~= "stop") and (obj1.player_detect == false) and (obj2 ~= nil) and ((obj2.name ~= "brick") or (obj2.mean ~= "floor")) and (obj2.name ~= "magic") then

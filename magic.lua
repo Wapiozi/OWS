@@ -17,6 +17,7 @@ function Magic:init()
 		ImpulseCoef = 1000, --speed of magic
 		mass = 1,
 		mana = 10, --used mana
+		aim = true,
 		Init = nil,  --magic type function. Is called when created
 		Collis = nil --magic type function. Is called when collided with anything else
 	}
@@ -31,6 +32,7 @@ function Magic:init()
 		ImpulseCoef = 100,
 		mass = 5,
 		mana = 20,
+		aim = true,
 		Init = nil,
 		Collis = nil
 	}
@@ -45,6 +47,7 @@ function Magic:init()
 		ImpulseCoef = 10000,
 		mass = 0.1,
 		mana = 5,
+		aim = true,
 		Init = nil,
 		Collis = nil
 	}
@@ -53,12 +56,15 @@ function Magic:init()
 		image = IceballImg,
 		psystem = nil,
 		size = 0.02,
-		Restitution = 0.7,
+		Restitution = 1.5,
 		Friction = 0.01,
 		Damage = 15,
 		ImpulseCoef = 2000,
 		mass = 2,
 		mana = 10,
+		aim = false,
+		ricochet = true,
+		maxRic = 2,
 		Init = nil,
 		Collis = nil
 	}
@@ -73,6 +79,8 @@ function Magic:init()
 		ImpulseCoef = 500,
 		mass = 20,
 		mana = 20,
+		aim = false,
+		ricochet = false,
 		Init = nil,
 		Collis = nil
 	}
@@ -94,6 +102,17 @@ function Magic:init()
 	end
 end
 
+function Magic:canShoot(player, magicType)
+	if player.mana ~= nil and magicType.mana ~= nil then
+		if player.mana >= magicType.mana then
+			player.mana = player.mana - magicType.mana
+			return true
+		end
+	end
+	return false
+end
+
+
 function Magic:new(x, y, vx, vy, type, owner)
 	self = setmetatable({}, self)
 
@@ -108,33 +127,27 @@ function Magic:new(x, y, vx, vy, type, owner)
 
 	self.body = love.physics.newBody(world, x, y, "dynamic")
 	self.body:setBullet(true)
-
 	self.shape = love.physics.newRectangleShape(pcoords(self.width, self.height))
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setRestitution(type.Restitution)
 	self.fixture:setFriction(type.Friction)
-
 	self.body:setMass(type.mass)
-
-	self.damage = self.type.Damage
-
-	self.Collis = function()
-		if (not self.canDelete) and (self.type.Collis ~= nil) then self.type.Collis(self.body:getX(), self.body:getY()) end
-	end
-
-	if self.type.Init ~= nil then self.type.Init() end
-
 	self.body:applyLinearImpulse(self.type.ImpulseCoef*vx, self.type.ImpulseCoef*vy)
+	self.body:applyAngularImpulse(1000)
 	self.body:setAngle(45)
-
 	self.fixture:setCategory(6)
 	self.fixture:setUserData(self)
 
-	particles:add(Particle:new(FireImg, self.body))
+	self.damage = self.type.Damage
+	self.ricCnt = 0
 
 	self.canDelete = false
 
+
+	particles:add(Particle:new(FireImg, self.body))
 	lights:add(flen(x), flen(y), 0.05, false, self.body)
+
+	if self.type.Init ~= nil then self.type.Init() end
 
 	return self
 end
@@ -158,12 +171,11 @@ function Magic:update(dt)
 	if self.partic ~= nil then self.partic:update(dt) end
 end
 
-function Magic:canShoot(player, magicType)
-	if player.mana ~= nil and magicType.mana ~= nil then
-		if player.mana >= magicType.mana then
-			player.mana = player.mana - magicType.mana
-			return true
-		end
+function Magic:collision()
+	if (not self.canDelete) and (self.type.Collis ~= nil) then self.type.Collis(self.body:getX(), self.body:getY()) end
+	if self.type.ricochet and self.ricCnt < self.type.maxRic then
+		self.ricCnt = self.ricCnt + 1
+	else
+		self:delete()
 	end
-	return false
 end
