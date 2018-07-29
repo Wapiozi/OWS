@@ -9,9 +9,9 @@ function Particle:new(image, body)
 
 	self.name = "particle"
 
-	self.partic = love.graphics.newParticleSystem(image, 1000)
+	self.partic = love.graphics.newParticleSystem(image, 300)
 	self.partic:setParticleLifetime(0.1, 0.3)
-	self.partic:setEmissionRate(300)
+	self.partic:setEmissionRate(100)
 	self.partic:setSizeVariation(0.01)
 	self.partic:setLinearAcceleration(-2000, -2000, 2000, 2000)
 	self.partic:setColors(255, 255, 255, 255, 255, 255, 127, 255)

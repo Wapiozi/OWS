@@ -124,6 +124,8 @@ function triangSorter:__lt(next)
 	return false
 end
 
+
+
 for j = 1, 50 do
 	if lights[j][4] ~= 0 then
 		for i = 1, lineCnt do
