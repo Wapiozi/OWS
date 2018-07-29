@@ -384,7 +384,7 @@ function love.draw()
 	particles:CheckDraw()
 	enemies:CheckDraw()
 	items:CheckDraw()
-	enemies:CheckDraw()
+	--enemies:CheckDraw()
 
 	player1:draw()
 

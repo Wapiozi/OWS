@@ -49,10 +49,12 @@ function Enemy:init()
 		hp = 100,
 		Reload = 0,
 		mass = 70,
+		manaMax = 100,
 
 		behaviour = { 
 			movement_bd = "slow_move", 
-			movement_ad = "attack", 
+			movement_ad = "aggressive", 
+			attack = "magic",
 			sensor = {vision = true, smell = false, noise = true},
 			playerdist = 0.35}, -- movement_bd = before detect | ad = after detect
 
@@ -93,6 +95,7 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setRestitution(0.1)
 	self.fixture:setFriction(5)
+	self.canAttack = false
 	
 	self.body:setMass(self.type.mass)
 	
@@ -100,6 +103,7 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 
 	self.behaviour = self.type.behaviour
 	self.timer = 0
+	self.mana = 0
 	self.canDelete = false
 	
 	 -- also, there should be some agilities of different classes
@@ -146,6 +150,15 @@ function Enemy:applyMagic(Dmg_fire, Dmg_water, Dmg_earth, Dmg_air)
 	end
 end
 --]]
+
+function Enemy:attack()
+	local x1, y1 = self.body:getPosition()
+	if self.behaviour.attack == "magic" then 
+		if Magic:canShoot(self, MagicTypeFire) then bullets:add(Magic:new(x1 + (self.movDirection * plen(0.05)), y1, 50*self.side*self.type.imgturn, 1, MagicTypeFire, self.name)) end
+	end
+
+end
+
 function Enemy:standartMovement()
 	--check for the floor (in future)
 	if self.behaviour.movement_bd == "move" then
@@ -197,7 +210,7 @@ function Enemy:trigerredMovement()
 		if (xveloc < plen(0.55)) and (self.movDirection == 1) then self.body:applyForce(100000, 0) 
 		elseif (xveloc > -plen(055)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0)
 		end
-	elseif self.behaviour.movement_ad == "attack" then
+	elseif self.behaviour.movement_ad == "aggressive" then
 		if (x1 < x2) then 
 			self.movDirection = 1
 			self.side = 1 * self.type.imgturn 
@@ -205,16 +218,22 @@ function Enemy:trigerredMovement()
 			self.movDirection = -1 
 			self.side = -1 * self.type.imgturn
 		end
-		if (self.behaviour.playerdist  >= flen(math.abs(x2 - x1) ) ) then 
+		if ((flen(math.abs(x2 - x1)) < self.behaviour.playerdist + 0.02) and (flen(math.abs(x2 - x1)) > self.behaviour.playerdist - 0.02) ) then 
 			--if (xveloc < plen(0.1)) and (self.movDirection == 1) then self.body:applyForce(100000, 0) 
 			--elseif (xveloc > -plen(0.1)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0) 
 			--else
-				self.body:setLinearVelocity(0, yveloc)
+			self.body:setLinearVelocity(0, yveloc)
+			self.canAttack = true
 			--end
-		else
+		elseif (flen(math.abs(x2 - x1)) > self.behaviour.playerdist) then
 			if (xveloc < plen(0.3)) and (self.movDirection == 1) then self.body:applyForce(100000, 0) 
-			elseif (xveloc > -plen(0.3)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0)end	
-		end
+			elseif (xveloc > -plen(0.3)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0) end
+			self.canAttack = false
+		elseif (flen(math.abs(x2 - x1)) < self.behaviour.playerdist) then
+			if (xveloc < plen(0.15)) and (self.movDirection == -1) then self.body:applyForce(100000, 0) 
+			elseif (xveloc > -plen(0.15)) and (self.movDirection == 1) then self.body:applyForce(-100000, 0) end
+			self.canAttack = true
+		end	
 	end
 	--check for the floor (in future)
 	--[[
@@ -287,7 +306,8 @@ function Enemy:update(dt)
 	-- every tic function
 	self.player_detect = self:detect()
 	if self.player_detect then self.timer = self.type.timer end
-	--if self.player_detect then love.event.quit() end
+	if (self.type.manaMax ~= nil) and (self.mana < self.type.manaMax) then self.mana = self.mana + dt*3 end
+	if self.canAttack then self:attack() end
 	if self.timer > 0 then
 		self.timer = self.timer - dt
 		self:trigerredMovement()
