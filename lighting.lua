@@ -13,6 +13,9 @@ function Lights:create()
 	self.lines = {}   --x, y, xv, yv
 	self.lineCnt = 0
 
+	self.shapes = {}
+	self.shapeCnt = 0
+
 	self.triGl = nil
 	self.triCnt = 0
 
@@ -60,6 +63,9 @@ function Lights:getLines()  --get lines of all bodies attached
 		if not self.bodies[i].body:isDestroyed() then
 			local x1, y1, x2, y2, x3, y3, x4, y4 = self.bodies[i].body:getWorldPoints(self.bodies[i].shape:getPoints())
 
+			self.shapeCnt = self.shapeCnt + 1
+			self.shapes[self.shapeCnt] = {x1 = x1, y1 = y1, x2 = x2, y2 = y2, x3 = x3, y3 = y3, x4 = x4, y4 = y4}
+			--[[
 			self.lineCnt = self.lineCnt + 1
 			self.lines[self.lineCnt] = {x = x1, y = y1, xv = x2, yv = y2, body = i}
 
@@ -70,7 +76,7 @@ function Lights:getLines()  --get lines of all bodies attached
 			self.lines[self.lineCnt] = {x = x3, y = y3, xv = x4, yv = y4, body = i}
 
 			self.lineCnt = self.lineCnt + 1
-			self.lines[self.lineCnt] = {x = x4, y = y4, xv = x1, yv = y1, body = i}
+			self.lines[self.lineCnt] = {x = x4, y = y4, xv = x1, yv = y1, body = i} ]]
 		end
 	end
 end
@@ -85,6 +91,7 @@ end
 function Lights:draw(camx, camy) --all objects after this will be lightened
 	self.shadowThread:wait()
 	self.lineCnt = 0
+	self.shapeCnt = 0
 
 	self.triGl = love.thread.getChannel("triangles"):pop()
 	self.triCnt = love.thread.getChannel("triangCnt"):pop()
@@ -112,7 +119,7 @@ function Lights:endDraw()  --all object after this will NOT be lightened
 			self.lightSources[i] = {0, 0, 0, 0}
 		end
 	end
-	self.shadowThread:start(self.lines, self.lineCnt, self.lightSources)
+	self.shadowThread:start(self.shapes, self.shapeCnt, self.lightSources)
 end
 
 function Lights:addBodyFunc() --return function which can be called in Container:exec()
