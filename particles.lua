@@ -2,7 +2,7 @@
 Particle = {}
 Particle.__index = Particle
 
-function Particle:new(image, body)
+function Particle:new(image, body, toUp)
 	self = setmetatable({}, self)
 
 	self.body = body
@@ -13,8 +13,13 @@ function Particle:new(image, body)
 	self.partic:setParticleLifetime(0.1, 0.3)
 	self.partic:setEmissionRate(100)
 	self.partic:setSizeVariation(0.01)
-	self.partic:setLinearAcceleration(-2000, -2000, 2000, 2000)
-	self.partic:setColors(255, 255, 255, 255, 255, 255, 127, 255)
+	if toUp then
+		self.partic:setLinearAcceleration(-2000, 0, 2000, 2000)
+	else
+		self.partic:setLinearAcceleration(-2000, -2000, 2000, 2000)
+	end
+
+	self.partic:setColors(1, 1, 1, 1, 1, 1, 1, 1)
 	self.partic:setPosition(self.body:getPosition())
 	self.partic:setRelativeRotation(true)
 

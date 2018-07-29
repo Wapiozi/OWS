@@ -9,6 +9,7 @@ libbrick = require("brick")
 libcont = require("container")
 libparticles = require("particles")
 liblighting = require("lighting")
+libenv = require("envobjects")
 
 world = nil
 inventoryOpen = false
@@ -225,6 +226,8 @@ function love.load(arg)
 	ClothSdImg = love.graphics.newImage("majka.png")
 	BrickImg = love.graphics.newImage("brick.png")
 	FireImg = love.graphics.newImage("fire.png")
+	BlueBrick = love.graphics.newImage("brick2.png") BlueBrick:setWrap("repeat", "repeat")
+	ChestImg = love.graphics.newImage("chest.png")
 
 
 	--------------------------------------------------------------
@@ -249,6 +252,7 @@ function love.load(arg)
 	walls = Container:new()  -- Category 5
 	bullets = Container:new()  -- Category 6
 	particles = Container:new() -- (Category 7) by now no category
+	envir = Container:new()
 
 	lights = Lights:create()
 	lights:add(0.6, 0.6, 0.06, true, nil, 1, 0.6, 0.6)
@@ -267,6 +271,8 @@ function love.load(arg)
 	walls:add(Brick:new(16/9, 1+0.05, 16/9*2, 0.1, "floor"))
 	walls:add(Brick:new(0-0.05, 0.5, 0.1, 1, "wall"))
 
+	envir:add(EnvObject:new(1, 0.5, ChestImg, true, 1000))
+
 	func = lights:addBodyFunc()
 	walls:exec(func)
 
@@ -275,7 +281,7 @@ function love.load(arg)
 	released = true
 
 	player1 = Player:new(100, 0.2, 0.8)
-	lights:addBody(player1)
+	--lights:addBody(player1)
 	enemies:add(Enemy:new(EnemyTypeRat, 1.5, 0.8))
 	enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
 
@@ -287,7 +293,8 @@ function love.load(arg)
 	items:add(Item:new(0.2,0.8,ClothObj))
 
 	--items:exec(func)
-	enemies:exec(func)
+	--enemies:exec(func)
+	envir:exec(func)
 
 
 	width = love.graphics.getWidth()
@@ -385,6 +392,7 @@ function love.draw()
 	enemies:CheckDraw()
 	items:CheckDraw()
 	enemies:CheckDraw()
+	envir:CheckDraw()
 
 	player1:draw()
 
