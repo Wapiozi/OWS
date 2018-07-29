@@ -152,9 +152,9 @@ end
 --]]
 
 function Enemy:attack()
-	local x1, y1 = self.body:getPosition()
+	local x, y = self:getMagicCoords()
 	if self.behaviour.attack == "magic" then 
-		if Magic:canShoot(self, MagicTypeFire) then bullets:add(Magic:new(x1 + (self.movDirection * plen(0.05)), y1, 50*self.side*self.type.imgturn, 1, MagicTypeFire, self.name)) end
+		if Magic:canShoot(self, MagicTypeFire) then bullets:add(Magic:new(x, y, 50*self.side*self.type.imgturn, 1, MagicTypeFire, self.name)) end
 	end
 
 end
@@ -355,6 +355,13 @@ end
 function Enemy:getCoords()
 	local x, y = self.body:getPosition()
 	return fcoords(x, y)
+end
+
+function Enemy:getMagicCoords()  --where magic need to spawn
+	local x, y = self:getCoords()
+	x = x + (self.width/2 + 0.03)*self.side*self.type.imgturn
+	y = y - self.height/2 + 0.05
+	return x, y
 end
 
 function Enemy:destroy()
