@@ -1,4 +1,5 @@
 extern vec4[100] lights;
+extern vec4[100] colors;
 extern vec4[300] triangles;
 extern vec2[300] pdegs;
 extern vec2 camPos;

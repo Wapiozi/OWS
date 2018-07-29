@@ -1,7 +1,10 @@
-lines, lineCnt, lights = ...
+shapes, shapeCnt, lights = ...
 
 triangles = {}
 triangCnt = 0
+
+lines = {}
+lineCnt = 0
 
 local function getDirection(p1, p2)
 
@@ -95,7 +98,8 @@ function lineCrossing(p1, p2, p3, p4)  --line, ray
 	local ua = ((p4.x-p3.x)*(p1.y-p3.y)-(p4.y-p3.y)*(p1.x-p3.x))/((p4.y-p3.y)*(p2.x-p1.x)-(p4.x-p3.x)*(p2.y-p1.y))
 	local ub = ((p2.x-p1.x)*(p1.y-p3.y)-(p2.y-p1.y)*(p1.x-p3.x))/((p4.y-p3.y)*(p2.x-p1.x)-(p4.x-p3.x)*(p2.y-p1.y))
 
-	--if (ua >= 1 or ua <= 0) then return nil end
+	if (ua >= 1 or ua <= 0) then return nil end
+	if (ub >= 1 or ub <= 0) then return nil end
 
 	local pua = {x = ua, y = ua}  --kostil
 
@@ -124,20 +128,69 @@ function triangSorter:__lt(next)
 	return false
 end
 
-for j = 1, 50 do
-	if lights[j][4] ~= 0 then
-		for i = 1, lineCnt do
+function addTri(lightInd, p1, p2)
+	triangCnt = triangCnt + 1
+	triangles[triangCnt] = {
+		light = {x = lights[lightInd][1], y = lights[lightInd][2], bright = lights[lightInd][4], lightInd = lightInd},
+		p1 = p1,
+		p2 = p2,
+		p1deg = getDirection({x = lights[lightInd][1], y = lights[lightInd][2]}, p1),
+		p2deg = getDirection({x = lights[lightInd][1], y = lights[lightInd][2]}, p2)
+	}
+	setmetatable(triangles[triangCnt], triangSorter)
+end
 
-			--add triangle
-			triangCnt = triangCnt + 1
-			triangles[triangCnt] = {
-				light = {x = lights[j][1], y = lights[j][2], bright = lights[j][4], lightInd = j},
-				p1 = {x = lines[i].x, y = lines[i].y},
-				p2 = {x = lines[i].xv, y = lines[i].yv},
-				p1deg = getDirection({x = lights[j][1], y = lights[j][2]}, {x = lines[i].x, y = lines[i].y}),
-				p2deg = getDirection({x = lights[j][1], y = lights[j][2]}, {x = lines[i].xv, y = lines[i].yv})
-			}
-			setmetatable(triangles[triangCnt], triangSorter)
+function isInShape(shape, point1, point2) --shape, ray
+	local crosCnt = 0
+
+	p1 = {x = shape.x1, y = shape.y1}
+	p2 = {x = shape.x2, y = shape.y2}
+	p3 = {x = shape.x3, y = shape.y3}
+	p4 = {x = shape.x4, y = shape.y4}
+
+	local p = lineCrossing(p1, p2, point1, point2)
+	if p ~= nil then crosCnt = crosCnt + 1 end
+	local p = lineCrossing(p2, p3, point1, point2)
+	if p ~= nil then crosCnt = crosCnt + 1 end
+	local p = lineCrossing(p3, p4, point1, point2)
+	if p ~= nil then crosCnt = crosCnt + 1 end
+	local p = lineCrossing(p4, p1, point1, point2)
+	if p ~= nil then crosCnt = crosCnt + 1 end
+
+	if crosCnt == 1 or crosCnt == 3 then return true end
+	return false
+end
+
+function len(p1, p2)
+	local outp = ((p2.x - p1.x) ^ 2) + ((p2.y - p1.y) ^ 2)
+	return math.sqrt(outp)
+end
+
+for j = 1, 100 do
+	if lights[j][4] ~= 0 then
+		for i = 1, shapeCnt do
+			local cur = shapes[i]
+
+			if not isInShape(cur, {x = lights[j][1], y = lights[j][2]}, {x = lights[j][1] + 10000, y = lights[j][2]+10000}) then
+
+				local l1, l2 = len({x = lights[j][1], y = lights[j][2]}, p1), len({x = lights[j][1], y = lights[j][2]}, p2)
+				local l3, l4 = len({x = lights[j][1], y = lights[j][2]}, p3), len({x = lights[j][1], y = lights[j][2]}, p4)
+
+				if l1 < l2 and l1 < l3 and l1 < l4 then
+					addTri(j, {x = cur.x2, y = cur.y2}, {x = cur.x3, y = cur.y3})
+					addTri(j, {x = cur.x3, y = cur.y3}, {x = cur.x4, y = cur.y4})
+				elseif l2 < l1 and l2 < l3 and l2 < l4 then
+					addTri(j, {x = cur.x3, y = cur.y3}, {x = cur.x4, y = cur.y4})
+					addTri(j, {x = cur.x4, y = cur.y4}, {x = cur.x1, y = cur.y1})
+				elseif l3 < l1 and l3 < l2 and l3 < l4 then
+					addTri(j, {x = cur.x1, y = cur.y1}, {x = cur.x2, y = cur.y2})
+					addTri(j, {x = cur.x4, y = cur.y4}, {x = cur.x1, y = cur.y1})
+				elseif l4 < l1 and l4 < l2 and l4 < l3 then
+					addTri(j, {x = cur.x1, y = cur.y1}, {x = cur.x2, y = cur.y2})
+					addTri(j, {x = cur.x2, y = cur.y2}, {x = cur.x3, y = cur.y3})
+				end
+			end
+
 		end
 	end
 end

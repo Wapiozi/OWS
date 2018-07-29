@@ -145,7 +145,7 @@ function Magic:new(x, y, vx, vy, type, owner)
 
 
 	particles:add(Particle:new(FireImg, self.body))
-	lights:add(flen(x), flen(y), 0.05, false, self.body)
+	lights:add(flen(x), flen(y), 0.05, false, self.body, 1, 0.3, 0)
 
 	if self.type.Init ~= nil then self.type.Init() end
 

@@ -251,11 +251,11 @@ function love.load(arg)
 	particles = Container:new() -- (Category 7) by now no category
 
 	lights = Lights:create()
-	lights:add(0.6, 0.6, 0.06, true)
+	lights:add(0.6, 0.6, 0.06, true, nil, 1, 0.6, 0.6)
 --	lights:add(0.8, 0.5, 0.08, true)
-	lights:add(1, 0.4, 0.1, true)
+	lights:add(1, 0.4, 0.1, true, nil, 0.6, 1, 0.6)
 --	lights:add(1.2, 0.5, 0.08, true)
-	lights:add(1.4, 0.6, 0.06, true)
+	lights:add(1.4, 0.6, 0.06, true, nil, 0.6, 0.6, 1)
 
 	Magic:init()
 	Item:init()

@@ -34,7 +34,7 @@ function Player:new(mana, x, y)
 	self.shape = love.physics.newRectangleShape(pcoords(self.width, self.height))      --wizard figure
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setRestitution(0.1)
-	self.fixture:setFriction(plen(0.01))
+	self.fixture:setFriction(plen(0.001))
 	self.body:setMass(70) -- 70kg wizard
 	self.fixture:setCategory(2)
 	self.fixture:setUserData(self)
@@ -73,7 +73,7 @@ function Player:jump()
 		local vx, vy = self.body:getLinearVelocity()
 		if vy ~= 0 then self.body:setLinearVelocity(vx, 0) end
 		self.body:applyLinearImpulse(0, -30000)
-		self.jumpCount = self.jumpCount + 1
+		--self.jumpCount = self.jumpCount + 1
 	end
 end
 
