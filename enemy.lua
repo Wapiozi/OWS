@@ -33,12 +33,14 @@ function Enemy:init()
 			movement_bd = "move", 
 			movement_ad = "victim", 
 			sensor = {vision = true, smell = false, noise = true},
-			playerdist = 0 },
+			playerdist = 0 
+		},
 
 		timer = 5,
 		Init = nil
 		--Collis = nil
 	}
+
 	EnemyTypeMadwizard = {
 		image = EnemyMadwizardImg,
 		imgturn = -1,
@@ -55,8 +57,15 @@ function Enemy:init()
 			movement_bd = "slow_move", 
 			movement_ad = "aggressive", 
 			attack = "magic",
+			magic_type = {
+				q = 3, --quantity
+				[1] = MagicTypeFire,
+				[2] = MagicTypeGround,
+				[3] = MagicTypeIce
+			},
 			sensor = {vision = true, smell = false, noise = true},
-			playerdist = 0.35}, -- movement_bd = before detect | ad = after detect
+			playerdist = 0.35
+		}, -- movement_bd = before detect | ad = after detect
 
 		timer = 5,
 		Init = nil
@@ -154,7 +163,9 @@ end
 function Enemy:attack()
 	local x, y = self:getMagicCoords()
 	if self.behaviour.attack == "magic" then 
-		if Magic:canShoot(self, MagicTypeFire) then bullets:add(Magic:new(x, y, 50*self.side*self.type.imgturn, 1, MagicTypeFire, self.name)) end
+		local typeMagic = math.random(1,self.behaviour.magic_type.q)
+		typeMagic = self.behaviour.magic_type[typeMagic]
+		if Magic:canShoot(self, typeMagic) then bullets:add(Magic:new(x, y, 50*self.side*self.type.imgturn, 1, typeMagic, self.name)) end
 	end
 
 end
