@@ -228,6 +228,7 @@ function love.load(arg)
 	FireImg = love.graphics.newImage("fire.png")
 	BlueBrick = love.graphics.newImage("brick2.png") BlueBrick:setWrap("repeat", "repeat")
 	ChestImg = love.graphics.newImage("chest.png")
+	TorchImg = love.graphics.newImage("torch.png")
 
 
 	--------------------------------------------------------------
@@ -252,7 +253,8 @@ function love.load(arg)
 	walls = Container:new()  -- Category 5
 	bullets = Container:new()  -- Category 6
 	particles = Container:new() -- (Category 7) by now no category
-	envir = Container:new()
+	envir = Container:new()	--shadowed EnvObjects
+	envirsh = Container:new() --non shadowed EnvObjects
 
 	lights = Lights:create()
 	lights:add(0.6, 0.6, 0.06, true, nil, 1, 0.6, 0.6)
@@ -271,7 +273,8 @@ function love.load(arg)
 	walls:add(Brick:new(16/9, 1+0.05, 16/9*2, 0.1, "floor"))
 	walls:add(Brick:new(0-0.05, 0.5, 0.1, 1, "wall"))
 
-	envir:add(EnvObject:new(1, 0.5, ChestImg, true, 1000))
+	envir:add(EnvObject:new(1, 0.5, ChestImg, true, 10000, 0.3))
+	envirsh:add(Torch:new(0.5, 0.1))
 
 	func = lights:addBodyFunc()
 	walls:exec(func)
@@ -366,6 +369,8 @@ function love.update(dt)
 	bullets:update(dt)
 	particles:update(dt)
 	player1:update(dt)
+	envir:update(dt)
+	envirsh:update(dt)
 	if partSys ~= nil then partSys:update(dt) end
 
 	-- Clear fixture hit list.
@@ -392,6 +397,7 @@ function love.draw()
 	enemies:CheckDraw()
 	items:CheckDraw()
 	envir:CheckDraw()
+	envirsh:CheckDraw()
 
 	player1:draw()
 
