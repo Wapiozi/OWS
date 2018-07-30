@@ -112,7 +112,7 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 
 	self.behaviour = self.type.behaviour
 	self.timer = 0
-	self.mana = 0
+	self.mana = 10
 	self.canDelete = false
 	
 	 -- also, there should be some agilities of different classes
@@ -163,7 +163,8 @@ end
 function Enemy:attack()
 	local x, y = self:getMagicCoords()
 	if self.behaviour.attack == "magic" then 
-		local typeMagic = math.random(1,self.behaviour.magic_type.q)
+		local typeMagic = math.random(self.behaviour.magic_type.q)
+		--love.event.quit(typeMagic)
 		typeMagic = self.behaviour.magic_type[typeMagic]
 		if Magic:canShoot(self, typeMagic) then bullets:add(Magic:new(x, y, 50*self.side*self.type.imgturn, 1, typeMagic, self.name)) end
 	end
@@ -321,7 +322,7 @@ function Enemy:update(dt)
 	-- every tic function
 	self.player_detect = self:detect()
 	if self.player_detect then self.timer = self.type.timer end
-	if (self.type.manaMax ~= nil) and (self.mana < self.type.manaMax) then self.mana = self.mana + dt*3 end
+	if (self.type.manaMax ~= nil) and (self.mana < self.type.manaMax) then self.mana = self.mana + dt*10 end
 	if self.canAttack then self:attack() end
 	if self.timer > 0 then
 		self.timer = self.timer - dt

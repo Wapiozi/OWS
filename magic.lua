@@ -9,6 +9,7 @@ Magic.__index = Magic
 function Magic:init()
 	MagicTypeFire = {
 		image = FireballImg,
+		color = { r = 0.44, g = 0.01, b = 0.01},
 		psystem = FireImg, --ParticleSystem
 		size = 0.028,
 		Restitution = 0,
@@ -24,6 +25,7 @@ function Magic:init()
 
 	MagicTypeWater = {
 		image = WaterballImg,
+		color = { r = 0.01, g = 0.01, b = 0.41},
 		psystem = nil,
 		size = 0.0417,
 		Restitution = 0,
@@ -39,6 +41,7 @@ function Magic:init()
 
 	MagicTypeAir = {
 		image = AirballImg,
+		color = { r = 0.05, g = 0.05, b = 0.05},
 		psystem = nil,
 		size = 0.0417,
 		Restitution = 0,
@@ -54,6 +57,7 @@ function Magic:init()
 
 	MagicTypeIce = {
 		image = IceballImg,
+		color = { r = 0.01, g = 0.01, b = 0.56},
 		psystem = nil,
 		size = 0.02,
 		Restitution = 1.5,
@@ -71,6 +75,7 @@ function Magic:init()
 
 	MagicTypeGround = {
 		image = GroundballImg,
+		color = { r = 0.01, g = 0.54, b = 0.01},
 		psystem = nil,
 		size = 0.0347,
 		Restitution = 0.4,
@@ -145,7 +150,7 @@ function Magic:new(x, y, vx, vy, type, owner)
 
 
 	particles:add(Particle:new(FireImg, self.body))
-	lights:add(flen(x), flen(y), 0.05, false, self.body, 1, 0.3, 0)
+	lights:add(flen(x), flen(y), 0.05, false, self.body, self.type.color.r, self.type.color.g, self.type.color.b)--1, 0.3, 0)
 
 	if self.type.Init ~= nil then self.type.Init() end
 
