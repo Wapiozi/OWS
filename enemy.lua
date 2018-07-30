@@ -264,10 +264,14 @@ function Enemy:detect()
 			local obj = hit.fixture:getUserData()
 			if (obj.name == "player") then
 				if hit.fraction > 0.92 then canBeSeen = false end 
+				local player_fraction = hit.fraction
 				--player1.hp = hit.fraction
-				break
+				--break
 			elseif (obj.name ~= "enemy") and (obj.name ~= "item") then
-				canBeSeen = false
+				--love.event.quit()
+				if player_fraction ~= nil then
+					if player_fraction > hit.fraction then canBeSeen = false end
+				else canBeSeen = false end
 			end
 		end
 		--local RayLeng1th = plen(0.2)
