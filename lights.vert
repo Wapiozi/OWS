@@ -1,4 +1,7 @@
-extern vec4[50] lights;
+extern vec4[100] lights;
+extern vec4[100] colors;
+extern vec4[300] triangles;
+extern vec2[300] pdegs;
 extern vec2 camPos;
 
 vec4 position( mat4 transform_projection, vec4 vertex_position ) {
