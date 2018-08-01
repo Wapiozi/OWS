@@ -33,12 +33,8 @@ function Enemy:init()
 			movement_bd = "move",
 			movement_ad = "victim",
 			sensor = {vision = true, smell = false, noise = true},
-<<<<<<< HEAD
-			playerdist = 0
-=======
 			playerdist = 0,
 			canJump = true
->>>>>>> 47a3e6d138dbe1a4938a6e534f38e28769e25537
 		},
 
 		timer = 5,
@@ -77,14 +73,11 @@ function Enemy:init()
 		timer = 5,
 		Init = nil
 	}
-<<<<<<< HEAD
 
 	EnemyTypeRat.Collis = function(px, py)
 	end
 	EnemyTypeMadwizard.Collis = function(px, py)
 	end
-=======
->>>>>>> 47a3e6d138dbe1a4938a6e534f38e28769e25537
 end
 
 function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
@@ -115,10 +108,7 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	self.fixture:setRestitution(0.1)
 	self.fixture:setFriction(5)
 	self.canAttack = false
-<<<<<<< HEAD
-=======
 	self.readytojump = 0
->>>>>>> 47a3e6d138dbe1a4938a6e534f38e28769e25537
 
 	self.body:setMass(self.type.mass)
 
@@ -128,12 +118,9 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	self.timer = 0
 	self.mana = 1000
 	self.canDelete = false
-<<<<<<< HEAD
-=======
 	self.cooldown = self.type.cooldown or 0
 	self.canJump= self.behaviour.canJump or false
 	self.nearObstacle = false
->>>>>>> 47a3e6d138dbe1a4938a6e534f38e28769e25537
 
 	 -- also, there should be some agilities of different classes
 	 -- for ex. immortal, reduce fire dmg or smth like that
@@ -304,8 +291,6 @@ function Enemy:trigerredMovement()
 			elseif (xveloc > -plen(0.15)) and (self.movDirection == 1) then self.body:applyForce(-100000, 0) end
 			self.canAttack = true
 		end
-<<<<<<< HEAD
-=======
 	end
 	xveloc, yveloc = self.body:getLinearVelocity()
 	self:checkForObstacle()
@@ -314,7 +299,6 @@ function Enemy:trigerredMovement()
 		self:jump()
 		self.readytojump = 0
 		self.nearObstacle = false
->>>>>>> 47a3e6d138dbe1a4938a6e534f38e28769e25537
 	end
 	--check for the floor (in future)
 	--[[
