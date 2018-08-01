@@ -10,6 +10,7 @@ libcont = require("container")
 libparticles = require("particles")
 liblighting = require("lighting")
 libenv = require("envobjects")
+libpnc = require("npc")
 
 world = nil
 inventoryOpen = false
@@ -229,6 +230,7 @@ function love.load(arg)
 	BlueBrick = love.graphics.newImage("brick2.png") BlueBrick:setWrap("repeat", "repeat")
 	ChestImg = love.graphics.newImage("chest.png")
 	TorchImg = love.graphics.newImage("torch.png")
+	NpcMerchantImg = love.graphics.newImage("merchant.png")
 
 
 	--------------------------------------------------------------
@@ -255,6 +257,7 @@ function love.load(arg)
 	particles = Container:new() -- (Category 7) by now no category
 	envir = Container:new()	--shadowed EnvObjects
 	envirsh = Container:new() --non shadowed EnvObjects
+	npcs = Container:new() --Category 10
 
 	lights = Lights:create()
 	lights:add(0.6, 0.6, 0.06, true, nil, 1, 0.6, 0.6)
@@ -287,6 +290,8 @@ function love.load(arg)
 	--lights:addBody(player1)
 	enemies:add(Enemy:new(EnemyTypeRat, 1.5, 0.8))
 	enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
+
+	npcs:add(Npc:new(NpcTypeMerchant,0.4,0.8))
 
 	items:add(Item:new(0.5,0.8,WandObj))
 	items:add(Item:new(0.6,0.8,WandObj))
@@ -349,7 +354,8 @@ function love.update(dt)
 
 	player1:updateSpeed()
 	enemies:update(dt)
-	camera:move(dx*4*dt,dy*10*dt)  --smooth camera movement with bounds
+	npcs:update(dt) --new FICHA
+	camera:move(dx*4*dt,dy*10*dt)  --smooth  movement with bounds
 
 	if love.keyboard.isDown("e") then
 		local tmp = items.list
@@ -398,6 +404,7 @@ function love.draw()
 	items:CheckDraw()
 	envir:CheckDraw()
 	envirsh:CheckDraw()
+	npcs:CheckDraw()
 
 	player1:draw()
 
