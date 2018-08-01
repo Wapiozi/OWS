@@ -54,19 +54,6 @@ function imageProps(height, img)
 end
 
 --------------WORLD CALLBACK--------------------------------------
-
-function rayCast_vision(fixture, x1, y2, x2, y2, fraction)
-	local hit = {}
-	hit.fixture = fixture
-	hit.x, hit.y = x1, y1
-	hit.xn, hit.yn = x2, y2
-	hit.fraction = fraction
-
-	table.insert(Ray.hitList, hit)
-
-	return 1 -- Continues with ray cast through all shapes.
-end
-
 function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 	obj1 = f1:getUserData()
 	obj2 = f2:getUserData()
@@ -305,8 +292,8 @@ function love.load(arg)
 
 	player1 = Player:new(100, 0.2, 0.8)
 	--lights:addBody(player1)
-	enemies:add(Enemy:new(EnemyTypeRat, 1.5, 0.8))
-	enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
+	enemies:add(Enemy:new(EnemyTypeRat, 0.4, 0.8))
+	enemies:add(Enemy:new(EnemyTypeRat, 0.1, 0.8))
 
 	items:add(Item:new(0.5,0.8,WandObj))
 	items:add(Item:new(0.6,0.8,WandObj))

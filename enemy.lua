@@ -33,7 +33,12 @@ function Enemy:init()
 			movement_bd = "move",
 			movement_ad = "victim",
 			sensor = {vision = true, smell = false, noise = true},
+<<<<<<< HEAD
 			playerdist = 0
+=======
+			playerdist = 0,
+			canJump = true
+>>>>>>> 47a3e6d138dbe1a4938a6e534f38e28769e25537
 		},
 
 		timer = 5,
@@ -52,6 +57,7 @@ function Enemy:init()
 		Reload = 0,
 		mass = 70,
 		manaMax = 100,
+		cooldown = 1.2,
 
 		behaviour = {
 			movement_bd = "slow_move",
@@ -64,17 +70,21 @@ function Enemy:init()
 				[3] = MagicTypeIce
 			},
 			sensor = {vision = true, smell = false, noise = true},
-			playerdist = 0.35
+			playerdist = 0.35,
+			canJump = true
 		}, -- movement_bd = before detect | ad = after detect
 
 		timer = 5,
 		Init = nil
 	}
+<<<<<<< HEAD
 
 	EnemyTypeRat.Collis = function(px, py)
 	end
 	EnemyTypeMadwizard.Collis = function(px, py)
 	end
+=======
+>>>>>>> 47a3e6d138dbe1a4938a6e534f38e28769e25537
 end
 
 function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
@@ -105,6 +115,10 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	self.fixture:setRestitution(0.1)
 	self.fixture:setFriction(5)
 	self.canAttack = false
+<<<<<<< HEAD
+=======
+	self.readytojump = 0
+>>>>>>> 47a3e6d138dbe1a4938a6e534f38e28769e25537
 
 	self.body:setMass(self.type.mass)
 
@@ -112,8 +126,14 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 
 	self.behaviour = self.type.behaviour
 	self.timer = 0
-	self.mana = 10
+	self.mana = 1000
 	self.canDelete = false
+<<<<<<< HEAD
+=======
+	self.cooldown = self.type.cooldown or 0
+	self.canJump= self.behaviour.canJump or false
+	self.nearObstacle = false
+>>>>>>> 47a3e6d138dbe1a4938a6e534f38e28769e25537
 
 	 -- also, there should be some agilities of different classes
 	 -- for ex. immortal, reduce fire dmg or smth like that
@@ -128,8 +148,31 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	]]--
 	self.fixture:setCategory(3)
 	self.fixture:setMask(3)
-	self.fixture:setUserData(self)
 
+	--------------------------------methods-------------------------------------
+
+	self.vision_ray = function(fixture, x1, y2, x2, y2, fraction)
+		local hit = {}
+		hit.fixture = fixture
+		hit.x, hit.y = x1, y1
+		hit.xn, hit.yn = x2, y2
+		hit.fraction = fraction
+
+		table.insert(Ray.hitList, hit)
+
+		return 1 -- Continues with ray cast through all shapes.
+	end
+
+	self.getObstacle = function(fixture)
+		if fixture:getCategory() == 16 then
+			self.nearObstacle = true
+			return false
+		end
+		self.nearObstacle = false
+		return true
+	end
+
+	self.fixture:setUserData(self)
 	return self
 end
 --[[
@@ -160,13 +203,28 @@ function Enemy:applyMagic(Dmg_fire, Dmg_water, Dmg_earth, Dmg_air)
 end
 --]]
 
+function Enemy:checkForObstacle()
+	local x1, y1, x2, y2 = self:getUpandBottomCoords() -- najti nizhniju position
+	x1, y1, x2, y2 = plen(x1), plen(y1), plen(x2), plen(y2)
+	world:queryBoundingBox(x1, y1, x2, y2, self.getObstacle)
+end
+
+function Enemy:jump()
+	local vx, vy = self.body:getLinearVelocity()
+	if vy ~= 0 then self.body:setLinearVelocity(vx, 0) end
+	self.body:applyLinearImpulse(0, -30000)
+end
+
 function Enemy:attack()
 	local x, y = self:getMagicCoords()
 	if self.behaviour.attack == "magic" then
 		local typeMagic = math.random(self.behaviour.magic_type.q)
 		--love.event.quit(typeMagic)
 		typeMagic = self.behaviour.magic_type[typeMagic]
-		if Magic:canShoot(self, typeMagic) then bullets:add(Magic:new(x, y, 50*self.side*self.type.imgturn, 1, typeMagic, self.name)) end
+		if (Magic:canShoot(self, typeMagic)) and (self.cooldown < 0) then
+			bullets:add(Magic:new(x, y, 50*self.side*self.type.imgturn, 1, typeMagic, self.name))
+			self.cooldown = self.type.cooldown or 0
+		end
 	end
 
 end
@@ -246,6 +304,17 @@ function Enemy:trigerredMovement()
 			elseif (xveloc > -plen(0.15)) and (self.movDirection == 1) then self.body:applyForce(-100000, 0) end
 			self.canAttack = true
 		end
+<<<<<<< HEAD
+=======
+	end
+	xveloc, yveloc = self.body:getLinearVelocity()
+	self:checkForObstacle()
+	if (self.nearObstacle) then --(self.readytojump > 0.1) and (self.behaviour.canJump == true) and (xveloc ~= 0) then
+		--self.body:applyForce(-self.movDirection * 100000 / 2, 0)
+		self:jump()
+		self.readytojump = 0
+		self.nearObstacle = false
+>>>>>>> 47a3e6d138dbe1a4938a6e534f38e28769e25537
 	end
 	--check for the floor (in future)
 	--[[
@@ -269,13 +338,13 @@ function Enemy:detect()
 		local x1, y1 = self.body:getPosition()
 		local x2, y2 = player1.body:getPosition()
 		local canBeSeen = false
-		world:rayCast(x1, y1, x2, y2, rayCast_vision)
+		world:rayCast(x1, y1, x2, y2, self.vision_ray)
 		--if ((self.movDirection == 1) and (x2 > x1)) or ((self.movDirection == -1) and (x1 < x2))then local canBeSeen = true end
 		if ((self.movDirection == 1) and (x2 > x1)) or ((self.movDirection == -1) and (x2 < x1)) then canBeSeen = true end
 		for i, hit in ipairs(Ray.hitList) do
 			local obj = hit.fixture:getUserData()
 			if (obj.name == "player") then
-				if hit.fraction > 0.92 then canBeSeen = false end 
+				if hit.fraction > 0.92 then canBeSeen = false end
 				local player_fraction = hit.fraction
 				--player1.hp = hit.fraction
 				--break
@@ -320,10 +389,17 @@ end
 
 function Enemy:update(dt)
 	-- every tic function
+	local xveloc, yveloc = self.body:getLinearVelocity()
+	--[[
+	if (xveloc <= 0.008) and (xveloc >= -0.008) then
+		self.readytojump = self.readytojump + dt
+	else self.readytojump = 0 end
+	--]]
 	self.player_detect = self:detect()
 	if self.player_detect then self.timer = self.type.timer end
-	if (self.type.manaMax ~= nil) and (self.mana < self.type.manaMax) then self.mana = self.mana + dt*10 end
-	if self.canAttack then self:attack() end
+	if (self.type.manaMax ~= nil) and (self.mana < self.type.manaMax) then self.mana = self.mana + dt*7 end
+	if (self.cooldown >= 0) then self.cooldown = self.cooldown - dt end
+	if self.canAttack == true then self:attack() self.canAttack = false end
 	if self.timer > 0 then
 		self.timer = self.timer - dt
 		self:trigerredMovement()
@@ -378,6 +454,17 @@ function Enemy:getMagicCoords()  --where magic need to spawn
 	x = x + (self.width/2 + 0.03)*self.side*self.type.imgturn
 	y = y - self.height/2 + 0.05
 	return x, y
+end
+
+function Enemy:getUpandBottomCoords()
+	--local x, y = self:getCoords()
+	local x1, y1, x2, y2, x3, y3, x4, y4 = self.body:getWorldPoints(self.shape:getPoints())
+	x1, y1, x2, y2, x3, y3, x4, y4 = fcoords(x1, y1), fcoords(x2, y2), fcoords(x3, y3), fcoords(x4, y4)
+	if self.movDirection == -1 then
+		return x1 - 0.11, y1, x1 - 0.01, y3
+	else
+		return x3 + 0.01, y1, x3 + 0.11, y3
+	end
 end
 
 function Enemy:destroy()
