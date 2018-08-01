@@ -1,7 +1,7 @@
 -- NPC Implementation --------------------------------------------
 npc = {}
-npc.__index = Enemy
-npc.type = 'enemy'
+npc.__index = npc
+npc.type = 'npc'
 
 function npc:init()
 
@@ -17,17 +17,17 @@ function npc:init()
     NpcTypeMerchant = {
 		image = NpcMerchantImg,
 		imgturn = -1,
-		size = 0.028,
+		size = 0.2,
 		Restitution = 0,
 		Friction = 0.09,
 		Damage = 0,
-		hp = 1,
+		hp = 1000,
 		Reload = 0,
 		mass = 70,
 
 		behaviour = {
-			movement_bd = "move",
-			movement_ad = "victim",
+			movement_bd = "slow_move",
+			movement_ad = "neutral",
 			sensor = {vision = true, smell = false, noise = true},
 			playerdist = 0
 		},
@@ -53,7 +53,7 @@ function npc:new(type, x, y) -- + class of enemy, warior, magician..
 	self.body:setAngle(0)
 	self.body:setFixedRotation(true)
 
-	self.name = "enemy"
+	self.name = "npc"
 
 	self.movDirection = love.math.random(2)
 	if self.movDirection == 2 then self.movDirection = -1 end
@@ -114,8 +114,8 @@ function npc:standartMovement()
 
 		local xveloc, yveloc = self.body:getLinearVelocity()
 
-		if (xveloc < plen(0.09)) and (self.movDirection == 1) then self.body:applyForce(100000, 0)
-		elseif (xveloc > -plen(0.09)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0)
+		if (xveloc < plen(0.09)) and (self.movDirection == -1) then self.body:applyForce(100000, 0)
+		elseif (xveloc > -plen(0.09)) and (self.movDirection == 1) then self.body:applyForce(-100000, 0)
 		elseif (self.movDirection == 0) then
 			if (xveloc > 0.2) then
 				self.body:applyForce(-10000, 0)
@@ -127,6 +127,72 @@ function npc:standartMovement()
 
 	end
 
+end
+
+function npc:trigerredMovement()
+  local xveloc, yveloc = self.body:getLinearVelocity()
+  local x1, y1 = self.body:getPosition()
+  local x2, y2 = player1.body:getPosition()
+  if self.behaviour.movement_ad == "neutral" then
+    if (x1 > x2) then
+      self.movDirection = 1
+      self.side = 1 * self.type.imgturn
+    else
+      self.movDirection = -1
+      self.side = -1 * self.type.imgturn
+    end
+    --if (xveloc < plen(0.55)) and (self.movDirection == 1) then self.body:applyForce(100000, 0)
+    --elseif (xveloc > -plen(055)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0)
+  end
+end
+
+function npc:detect()
+	if self.behaviour.sensor.vision then
+		local x1, y1 = self.body:getPosition()
+		local x2, y2 = player1.body:getPosition()
+		local canBeSeen = false
+		world:rayCast(x1, y1, x2, y2, rayCast_vision)
+		--if ((self.movDirection == 1) and (x2 > x1)) or ((self.movDirection == -1) and (x1 < x2))then local canBeSeen = true end
+		if ((self.movDirection == 1) and (x2 > x1)) or ((self.movDirection == -1) and (x2 < x1)) then canBeSeen = true end
+		for i, hit in ipairs(Ray.hitList) do
+			local obj = hit.fixture:getUserData()
+			if (obj.name == "player") then
+				if hit.fraction > 0.92 then canBeSeen = false end
+				local player_fraction = hit.fraction
+				--player1.hp = hit.fraction
+				--break
+			elseif (obj.name ~= "npc") and (obj.name ~= "item") then
+				--love.event.quit()
+				if player_fraction ~= nil then
+					if player_fraction > hit.fraction then canBeSeen = false end
+				else canBeSeen = false end
+			end
+		end
+		--local RayLeng1th = plen(0.2)
+		--local x2 = x1 + (RayLength * self.side)
+		--local y2 = y1 + plen(0.1)
+		--local y3 = y1 - plen(0.1)
+		--local xn, yn, fraction = self.fixture:rayCast(x1, y1, x2, y1, RayLength, 1)
+
+		--[[
+		while (xn ~= nil) and (xn <= RayLength) do
+			hitx, hity = x1 + (x2 - x1) * fraction, y1 + (y1 - y1) * fraction
+			if player1.fixture:testPoint(hitx, hity) then
+				return true
+			end
+			local x1 = hitx
+			local xn, yn, fraction = self.fixture:rayCast(x1, y1, x2, y1, RayLength, 1)
+		end
+		]]--
+		-- Clear fixture hit list.
+		Ray.hitList = {}
+		return canBeSeen
+	end
+	if self.behaviour.sensor.smell then
+
+
+		return false
+	end
 end
 
 function npc:update(dt)
@@ -196,4 +262,10 @@ function npc:destroy()
 	self.fixture:destroy()
 	self.shape:release()
 	self.body:destroy()
+end
+
+function npc:getDamage(dmg, magic)
+	self.timer = self.type.timer
+	self.hp = self.hp-dmg
+	if self.hp < 0 then self:destroy() end
 end

@@ -10,7 +10,7 @@ libcont = require("container")
 libparticles = require("particles")
 liblighting = require("lighting")
 libenv = require("envobjects")
-libpnc = require("npc")
+libnpc = require("npc")
 
 world = nil
 inventoryOpen = false
@@ -230,7 +230,9 @@ function love.load(arg)
 	BlueBrick = love.graphics.newImage("brick2.png") BlueBrick:setWrap("repeat", "repeat")
 	ChestImg = love.graphics.newImage("chest.png")
 	TorchImg = love.graphics.newImage("torch.png")
+	--NPC
 	NpcMerchantImg = love.graphics.newImage("merchant.png")
+
 
 
 	--------------------------------------------------------------
@@ -270,6 +272,7 @@ function love.load(arg)
 	Item:init()
 	Inventory:init()
 	Enemy:init()
+	npc:init()
 
 	walls:add(Brick:new(16/9, 0-0.05, 16/9*2, 0.1, "floor"))
 	walls:add(Brick:new(16/9*2+0.05, 0.5, 0.1, 1, "wall"))
@@ -288,17 +291,17 @@ function love.load(arg)
 
 	player1 = Player:new(100, 0.2, 0.8)
 	--lights:addBody(player1)
-	enemies:add(Enemy:new(EnemyTypeRat, 1.5, 0.8))
-	enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
+	--enemies:add(Enemy:new(EnemyTypeRat, 1.5, 0.8))
+--	enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
 
-	npcs:add(Npc:new(NpcTypeMerchant,0.4,0.8))
+	npcs:add(npc:new(NpcTypeMerchant,0.4,0.8))
 
-	items:add(Item:new(0.5,0.8,WandObj))
-	items:add(Item:new(0.6,0.8,WandObj))
-	items:add(Item:new(0.7,0.8,WandObj))
-	items:add(Item:new(0.8,0.8,ClothObj))
-	items:add(Item:new(0.9,0.8,ClothObj))
-	items:add(Item:new(0.2,0.8,ClothObj))
+--	items:add(Item:new(0.5,0.8,WandObj))
+	--items:add(Item:new(0.6,0.8,WandObj))
+	--items:add(Item:new(0.7,0.8,WandObj))
+	--items:add(Item:new(0.8,0.8,ClothObj))
+	--items:add(Item:new(0.9,0.8,ClothObj))
+	--items:add(Item:new(0.2,0.8,ClothObj))
 
 	--items:exec(func)
 	--enemies:exec(func)
