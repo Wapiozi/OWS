@@ -33,7 +33,8 @@ function Enemy:init()
 			movement_bd = "move", 
 			movement_ad = "victim", 
 			sensor = {vision = true, smell = false, noise = true},
-			playerdist = 0 
+			playerdist = 0, 
+			canJump = true
 		},
 
 		timer = 5,
@@ -52,6 +53,7 @@ function Enemy:init()
 		Reload = 0,
 		mass = 70,
 		manaMax = 100,
+		cooldown = 1.2,
 
 		behaviour = { 
 			movement_bd = "slow_move", 
@@ -64,7 +66,8 @@ function Enemy:init()
 				[3] = MagicTypeIce
 			},
 			sensor = {vision = true, smell = false, noise = true},
-			playerdist = 0.35
+			playerdist = 0.35,
+			canJump = true
 		}, -- movement_bd = before detect | ad = after detect
 
 		timer = 5,
@@ -105,6 +108,7 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	self.fixture:setRestitution(0.1)
 	self.fixture:setFriction(5)
 	self.canAttack = false
+	self.readytojump = 0
 	
 	self.body:setMass(self.type.mass)
 	
@@ -112,8 +116,10 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 
 	self.behaviour = self.type.behaviour
 	self.timer = 0
-	self.mana = 10
+	self.mana = 1000
 	self.canDelete = false
+	self.cooldown = self.type.cooldown or 0
+	self.canJump= self.behaviour.canJump or false
 	
 	 -- also, there should be some agilities of different classes
 	 -- for ex. immortal, reduce fire dmg or smth like that
@@ -160,13 +166,22 @@ function Enemy:applyMagic(Dmg_fire, Dmg_water, Dmg_earth, Dmg_air)
 end
 --]]
 
+function Enemy:jump()
+	local vx, vy = self.body:getLinearVelocity()
+	if vy ~= 0 then self.body:setLinearVelocity(vx, 0) end
+	self.body:applyLinearImpulse(0, -30000)
+end
+
 function Enemy:attack()
 	local x, y = self:getMagicCoords()
 	if self.behaviour.attack == "magic" then 
 		local typeMagic = math.random(self.behaviour.magic_type.q)
 		--love.event.quit(typeMagic)
 		typeMagic = self.behaviour.magic_type[typeMagic]
-		if Magic:canShoot(self, typeMagic) then bullets:add(Magic:new(x, y, 50*self.side*self.type.imgturn, 1, typeMagic, self.name)) end
+		if (Magic:canShoot(self, typeMagic)) and (self.cooldown < 0) then 
+			bullets:add(Magic:new(x, y, 50*self.side*self.type.imgturn, 1, typeMagic, self.name)) 
+			self.cooldown = self.type.cooldown or 0
+		end
 	end
 
 end
@@ -247,6 +262,10 @@ function Enemy:trigerredMovement()
 			self.canAttack = true
 		end	
 	end
+	if (self.readytojump > 5) and (self.behaviour.canJump == true) then
+		self:jump()
+		self.readytojump = 0
+	end
 	--check for the floor (in future)
 	--[[
 	-- find player, decide what to do
@@ -320,10 +339,15 @@ end
 
 function Enemy:update(dt)
 	-- every tic function
+	local xveloc, yveloc = self.body:getLinearVelocity()
+	if (xveloc <= 0.01) and (xveloc >= -0.01) then 
+		self.readytojump = self.readytojump + 1
+	end
 	self.player_detect = self:detect()
 	if self.player_detect then self.timer = self.type.timer end
-	if (self.type.manaMax ~= nil) and (self.mana < self.type.manaMax) then self.mana = self.mana + dt*10 end
-	if self.canAttack then self:attack() end
+	if (self.type.manaMax ~= nil) and (self.mana < self.type.manaMax) then self.mana = self.mana + dt*7 end
+	if (self.cooldown >= 0) then self.cooldown = self.cooldown - dt end
+	if self.canAttack == true then self:attack() end
 	if self.timer > 0 then
 		self.timer = self.timer - dt
 		self:trigerredMovement()
