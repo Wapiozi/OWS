@@ -81,6 +81,12 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 				obj2.ItemCanBeTaken = true
 			end
 
+			if obj1.name == 'EnvObject' then
+				obj1.canInteract = true
+			elseif obj2.name == 'EnvObject' then
+				obj2.canInteract = true
+			end
+
 			if (obj1.name == "magic") and (obj1.owner ~= "player") then
 				obj2:getDamage(obj1.damage)
 			elseif (obj2.name == "magic") and (obj2.owner ~= "player") then
@@ -149,6 +155,12 @@ function endContact(f1, f2, cont)
 			elseif obj2.name == 'item' then
 				obj2.ItemCanBeTaken = false
 			end
+
+			if obj1.name == 'EnvObject' then
+				obj1.canInteract = false
+			elseif obj2.name == 'EnvObject' then
+				obj2.canInteract = false
+			end
 		end
 	end
 end
@@ -184,6 +196,14 @@ function love.keypressed(key)
 		elseif not inventoryOpen then
 			inventoryOpen = true
 		end
+	end
+
+	if (key == 'c') then
+		local tmfunc = function(obj)
+			obj:interact(player1)
+		end
+		envir:exec(tmfunc)
+		envirsh:exec(tmfunc)
 	end
 end
 
@@ -273,7 +293,7 @@ function love.load(arg)
 	walls:add(Brick:new(16/9, 1+0.05, 16/9*2, 0.1, "floor"))
 	walls:add(Brick:new(0-0.05, 0.5, 0.1, 1, "wall"))
 
-	envir:add(EnvObject:new(1, 0.5, ChestImg, true, 10000, 0.3))
+	envir:add(EnvObject:new(2, 0.5, ChestImg, true, 1000, 0.3))
 	envirsh:add(Torch:new(0.5, 0.1))
 
 	func = lights:addBodyFunc()
