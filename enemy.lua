@@ -186,13 +186,22 @@ end
 --]]
 
 function Enemy:checkForObstacle()
-	local x1, y1, x2, y2 = self:getUpandBottomCoords() -- najti nizhniju position
-	x1, y1, x2, y2 = plen(x1), plen(y1), plen(x2), plen(y2)
+	--local x1, y1 = self:getUpCoords() -- najti nizhniju position
+	--x2, y2 = x1 + 0.2, y1 + 0.2
+	local x1, y1, x2, y2
+	x1, y1= self.body:getWorldPoints(self.shape:getPoints())
+	x1, y1= fcoords(x1, y1)
+	if self.movDirection == -1 then
+		x1, y1, x2, y2 = plen( x1 - 0.11 ), plen(y1), plen(x1 - 0.01), plen(y1 + self.height - 0.01)
+	else
+		x1, y1, x2, y2 = plen( x1 + 0.01 + self.width ), plen(y1), plen(x1 + 0.11 + self.width), plen(y1 + self.height - 0.01)
+	end
 	world:queryBoundingBox(x1, y1, x2, y2, self.getObstacle)
 end
 
 function Enemy:jump()
 	local vx, vy = self.body:getLinearVelocity()
+	self.body:applyLinearImpulse(10000 * -self.movDirection,0)
 	if vy ~= 0 then self.body:setLinearVelocity(vx, 0) end
 	self.body:applyLinearImpulse(0, -30000)
 end
@@ -419,7 +428,7 @@ function Enemy:draw()
 	elseif self.side == -1 then
 		love.graphics.draw(self.image, x+plen(self.width), y, 0, self.scale*self.side, self.scale)
 	end
-
+	--love.graphics.rectangle("fill", self.x2, self.y1, self.movDirection * math.abs(self.x2 - self.x1), self.movDirection  * math.abs(self.y2 - self.y1) )
 	self:drawHP()
 end
 
@@ -436,13 +445,12 @@ function Enemy:getMagicCoords()  --where magic need to spawn
 end
 
 function Enemy:getUpandBottomCoords()
-	--local x, y = self:getCoords()
-	local x1, y1, x2, y2, x3, y3, x4, y4 = self.body:getWorldPoints(self.shape:getPoints())
-	x1, y1, x2, y2, x3, y3, x4, y4 = fcoords(x1, y1), fcoords(x2, y2), fcoords(x3, y3), fcoords(x4, y4)
+	local x1, y1= self.body:getWorldPoints(self.shape:getPoints())
+	x1, y1= fcoords(x1, y1)
 	if self.movDirection == -1 then
-		return x1 - 0.11, y1, x1 - 0.01, y3
+		return x1 - 0.11, y1, x1 - 0.01, y2
 	else
-		return x3 + 0.01, y1, x3 + 0.11, y3
+		return x2 + 0.01 + self.width, y1, x2 + 0.11, y2
 	end
 end
 
