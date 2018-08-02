@@ -36,6 +36,30 @@ function npc:init()
 		Init = nil
 		--Collis = nil
 	}
+
+  NpcTypeChallenge = {
+  image = NpcChallengeImg,
+  imgturn = -1,
+  size = 0.2,
+  Restitution = 0,
+  Friction = 0.09,
+  Damage = 0,
+  hp = 1000,
+  Reload = 0,
+  mass = 70,
+
+  behaviour = {
+    movement_bd = "slow_move",
+    movement_ad = "neutral",
+    sensor = {vision = true, smell = false, noise = true},
+    playerdist = 0
+  },
+
+  timer = 5,
+  Init = nil
+  --Collis = nil
+}
+
 end
 
 function npc:new(type, x, y) -- + class of enemy, warior, magician..
@@ -65,7 +89,10 @@ function npc:new(type, x, y) -- + class of enemy, warior, magician..
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setRestitution(0.1)
 	self.fixture:setFriction(5)
+<<<<<<< HEAD
   self.fixture:SetCategory(7)
+=======
+>>>>>>> cfd9e48182bc361033995f91f64df7d955bcb9c5
 	self.canAttack = false
 
 	self.body:setMass(self.type.mass)
@@ -270,3 +297,4 @@ function npc:getDamage(dmg, magic)
 	self.hp = self.hp-dmg
 	if self.hp < 0 then self:destroy() end
 end
+return(self)
