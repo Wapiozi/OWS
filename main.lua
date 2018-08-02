@@ -280,11 +280,7 @@ function love.load(arg)
 	walls:add(Brick:new(16/9, 1+0.05, 16/9*2, 0.1, "floor"))
 	walls:add(Brick:new(0-0.05, 0.5, 0.1, 1, "wall"))
 
-<<<<<<< HEAD
 	envir:add(EnvObject:new(2, 0.5, ChestImg, true, 1000, 0.3))
-=======
-	envir:add(EnvObject:new(1.5, 0.9, ChestImg, true, 10000, 0.3))
->>>>>>> b7750fa2ff280c0d75740588b2a029129e8fb3bc
 	envirsh:add(Torch:new(0.5, 0.1))
 
 	func = lights:addBodyFunc()
