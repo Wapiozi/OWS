@@ -39,7 +39,6 @@ function Player:new(mana, x, y)
 	self.fixture:setCategory(2)
 
 	self.fixture:setMask(10)
-
 	self.fixture:setUserData(self)
 	return self
 end
