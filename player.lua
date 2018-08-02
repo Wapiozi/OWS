@@ -37,11 +37,9 @@ function Player:new(mana, x, y)
 	self.fixture:setFriction(plen(0.001))
 	self.body:setMass(70) -- 70kg wizard
 	self.fixture:setCategory(2)
-<<<<<<< HEAD
+
 	self.fixture:setMask(7)
-=======
-	self.fixture:setMask(10)
->>>>>>> cfd9e48182bc361033995f91f64df7d955bcb9c5
+
 	self.fixture:setUserData(self)
 	return self
 end

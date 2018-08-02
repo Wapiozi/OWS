@@ -89,10 +89,9 @@ function npc:new(type, x, y) -- + class of enemy, warior, magician..
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setRestitution(0.1)
 	self.fixture:setFriction(5)
-<<<<<<< HEAD
-  self.fixture:SetCategory(7)
-=======
->>>>>>> cfd9e48182bc361033995f91f64df7d955bcb9c5
+
+    self.fixture:setCategory(7)
+
 	self.canAttack = false
 
 	self.body:setMass(self.type.mass)
