@@ -38,7 +38,6 @@ function Player:new(mana, x, y)
 	self.body:setMass(70) -- 70kg wizard
 	self.fixture:setCategory(2)
 
-	self.fixture:setMask(7)
 	self.fixture:setMask(10)
 	self.fixture:setUserData(self)
 	return self

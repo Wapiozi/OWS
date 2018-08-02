@@ -121,7 +121,7 @@ function npc:new(type, x, y) -- + class of enemy, warior, magician..
 	self.air_r   = red[a]
 	]]--
 	self.fixture:setCategory(10)
-	self.fixture:setMask(10)
+	self.fixture:setMask(2, 10)
 	self.fixture:setUserData(self)
 
 	return self
