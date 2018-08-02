@@ -100,10 +100,11 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 
 	self.shape = love.physics.newRectangleShape(pcoords(self.width, self.height))
 	self.fixture = love.physics.newFixture(self.body, self.shape)
-	self.fixture:setRestitution(0.1)
-	self.fixture:setFriction(5)
+	--self.fixture:setRestitution(0.1)
+	--self.fixture:setFriction(5)
 	self.canAttack = false
 	self.readytojump = 0
+	self.ax = 0
 
 	self.body:setMass(self.type.mass)
 
@@ -221,13 +222,25 @@ function Enemy:attack()
 
 end
 
-function Enemy:standartMovement()
+function Enemy:move(dt, speed, direction)
+	local xveloc, yveloc = self.body:getLinearVelocity()
+	if self.movDirection == 1 then
+		self.ax = self.ax + 5 * dt
+	else
+		self.ax = -self.ax + 5 *dt
+	end
+	if (math.abs(xveloc) < plen(speed)) then
+		self.body:setLinearVelocity(xveloc + self.movDirection * direction * math.min(math.max(plen(0.03),math.abs(self.ax)),plen(0.03)),yveloc)
+	end
+end
+
+function Enemy:standartMovement(dt)
 	--check for the floor (in future)
 	if self.behaviour.movement_bd == "move" then
+		local speed, direction = 0.35, 1
+		self:move(dt,speed,direction)
 
-		local xveloc, yveloc = self.body:getLinearVelocity()
-
-		if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:applyForce(100000, 0)
+	--[[	if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:applyForce(100000, 0)
 		elseif (xveloc > -plen(0.45)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0)
 		elseif (self.movDirection == 0) then
 			if (xveloc > 0.2) then
@@ -237,9 +250,17 @@ function Enemy:standartMovement()
 			end
 		end
 
+		player.vx = player.vx + player.ax * dt
+ 		player.vy = player.vy + player.ay * dt
+ 		player.x = player.x + player.vx * dt
+ 		player.y = player.y + player.vy * dt
+	]]--
 	elseif self.behaviour.movement_bd == "slow_move" then
 
-		local xveloc, yveloc = self.body:getLinearVelocity()
+		local speed, direction = 0.15, 1
+		self:move(dt,speed,direction)
+
+		--[[local xveloc, yveloc = self.body:getLinearVelocity()
 
 		if (xveloc < plen(0.09)) and (self.movDirection == 1) then self.body:applyForce(100000, 0)
 		elseif (xveloc > -plen(0.09)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0)
@@ -250,13 +271,13 @@ function Enemy:standartMovement()
 				self.body:applyForce(10000, 0)
 			end
 		end
-
+		]]--
 
 	end
 
 end
 
-function Enemy:trigerredMovement()
+function Enemy:trigerredMovement(dt)
 	local xveloc, yveloc = self.body:getLinearVelocity()
 	local x1, y1 = self.body:getPosition()
 	local x2, y2 = player1.body:getPosition()
@@ -269,9 +290,13 @@ function Enemy:trigerredMovement()
 			self.movDirection = -1
 			self.side = -1 * self.type.imgturn
 		end
+		local speed, direction  = 0.55, 1
+		self:move(dt,speed,direction)
+		--[[
 		if (xveloc < plen(0.55)) and (self.movDirection == 1) then self.body:applyForce(100000, 0)
 		elseif (xveloc > -plen(055)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0)
 		end
+		]]--
 	elseif self.behaviour.movement_ad == "aggressive" then
 		if (x1 < x2) then
 			self.movDirection = 1
@@ -288,12 +313,20 @@ function Enemy:trigerredMovement()
 			self.canAttack = true
 			--end
 		elseif (flen(math.abs(x2 - x1)) > self.behaviour.playerdist) then
+			local speed, direction = 0.55, 1
+			self:move(dt,speed,direction)
+			--[[
 			if (xveloc < plen(0.3)) and (self.movDirection == 1) then self.body:applyForce(100000, 0)
 			elseif (xveloc > -plen(0.3)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0) end
+			]]--
 			self.canAttack = false
 		elseif (flen(math.abs(x2 - x1)) < self.behaviour.playerdist) then
+			local speed, direction = 0.15, -1
+			self:move(dt,speed,direction)
+			--[[
 			if (xveloc < plen(0.15)) and (self.movDirection == -1) then self.body:applyForce(100000, 0)
 			elseif (xveloc > -plen(0.15)) and (self.movDirection == 1) then self.body:applyForce(-100000, 0) end
+			]]--
 			self.canAttack = true
 		end
 	end
@@ -391,7 +424,7 @@ function Enemy:update(dt)
 	if self.canAttack == true then self:attack() self.canAttack = false end
 	if self.timer > 0 then
 		self.timer = self.timer - dt
-		self:trigerredMovement()
+		self:trigerredMovement(dt)
 	else
 		self.step = self.step - 1
 		if self.step == 0 then
@@ -399,7 +432,7 @@ function Enemy:update(dt)
 			self.movDirection = self.side * self.imgturn
 			self.step = love.math.random(1000,1000)
 		end
-		self:standartMovement()
+		self:standartMovement(dt)
 	end
 end
 

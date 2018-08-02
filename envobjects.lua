@@ -17,7 +17,7 @@ function EnvObject:new(x, y, image, canBeMoved, mass, height)
     end
 	self.shape = love.physics.newRectangleShape(pcoords(self.width, self.height))
 	self.fixture = love.physics.newFixture(self.body, self.shape)
-    self.fixture:setFriction(plen(0.1))
+    --self.fixture:setFriction(plen(0.1))
     self.body:setMass(mass)
 	self.fixture:setCategory(16)
 	self.fixture:setUserData(self)
