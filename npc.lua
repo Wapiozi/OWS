@@ -2,6 +2,7 @@
 npc = {}
 npc.__index = npc
 npc.type = 'npc'
+utf8 = require("utf8")
 
 function npc:init()
 
@@ -62,7 +63,10 @@ function npc:init()
 
 end
 
+
+
 function npc:new(type, x, y) -- + class of enemy, warior, magician..
+  txt = {}
 
 	self = setmetatable({}, self)
 
@@ -72,6 +76,8 @@ function npc:new(type, x, y) -- + class of enemy, warior, magician..
 	self.image = self.type.image
 	self.imgturn = self.type.imgturn
 	self.scale, self.width, self.height = imageProps(self.type.size, self.image)
+
+  txt.image = MessageImg
 
 	self.body = love.physics.newBody(world, x, y, "dynamic")
 	self.body:setAngle(0)
@@ -120,6 +126,24 @@ function npc:new(type, x, y) -- + class of enemy, warior, magician..
 
 	return self
 end
+
+
+
+function npc:work()
+  local x1, y1 = self.body:getPosition()
+  local x2, y2 = player1.body:getPosition()
+
+  x1, y1 = fcoords(x1, y1)
+  x2, y2 = fcoords(x2, y2)
+  if ((math.abs(x1-x2)<0.15) and (self.image == NpcChallengeImg)) then
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.draw(MessageImg, 0, 400)
+    love.graphics.printf("That's where the story begins. You'll go through challenges and hard task and maybe even become a great and powerfull magician, but for now all you have this magic stuff of wizardry good luck surviving!", 200, 530 ,700,left,0,1.5)
+   end
+
+end
+
+
 
 function npc:standartMovement()
 	--check for the floor (in future)
@@ -268,7 +292,6 @@ function npc:draw()
 	elseif self.side == -1 then
 		love.graphics.draw(self.image, x+plen(self.width), y, 0, self.scale*self.side, self.scale)
 	end
-
 	self:drawHP()
 end
 

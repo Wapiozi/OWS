@@ -11,6 +11,7 @@ libparticles = require("particles")
 liblighting = require("lighting")
 libenv = require("envobjects")
 libnpc = require("npc")
+utf8 = require("utf8")
 
 world = nil
 inventoryOpen = false
@@ -163,6 +164,18 @@ function postSolve(body_a, body_b, collision, normalimpulse, tangentimpulse)
 end
 
 ------------------------KEYBOARD---------------------------------------
+function utf8.sub(str,x,y) -- russian letters
+  local x2,y2
+  x2=utf8.offset(str,x)
+  if y then
+    y2=utf8.offset(str,y+1)
+    if y2 then
+      y2=y2-1
+    end
+  end
+  print(x,y,"|",x2,y2)
+  return string.sub(str,x2,y2)
+end
 
 function love.keypressed(key)
 	if (key == "d") and (player1.movDirection == 0) then
@@ -214,6 +227,7 @@ function love.load(arg)
 	PlayerImg = love.graphics.newImage("Player.png")
 	MinecraftInv = love.graphics.newImage("minecraft.png")
 	InvborderImg = love.graphics.newImage("inventory_border.png")
+	MessageImg = love.graphics.newImage("Message.png")
 	-- enemies
 		EnemyMadwizardImg = love.graphics.newImage("EnemyMadwizard.png")
 		EnemyRatImg = love.graphics.newImage("EnemyRat.png")
@@ -295,7 +309,7 @@ function love.load(arg)
 	--enemies:add(Enemy:new(EnemyTypeRat, 1.5, 0.8))
 --	enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
 
-	npcs:add(npc:new(NpcTypeMerchant,0.4,0.8))
+	--npcs:add(npc:new(NpcTypeMerchant,0.4,0.8))
 	npcs:add(npc:new(NpcTypeChallenge,0.4,0.8))
 
 --	items:add(Item:new(0.5,0.8,WandObj))
@@ -410,7 +424,6 @@ function love.draw()
 	envir:CheckDraw()
 	envirsh:CheckDraw()
 	npcs:CheckDraw()
-
 	player1:draw()
 
 	lights:endDraw()
@@ -429,6 +442,9 @@ function love.draw()
 	end
 
 	camera:unset()
+
+	npcs:exec(npc.work)
+
 	if inventoryOpen then
 		inventory1:draw()
 		inventory1:checkInventoryMode()
