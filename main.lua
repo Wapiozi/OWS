@@ -109,10 +109,10 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 		end
 	end
 
-	if (obj1 ~= nil) and (obj1.name == "magic") then
+	if (obj1 ~= nil) and (not obj2.fixture:isSensor()) and (obj1.name == "magic") then
 		obj1:collision()
 	end
-	if (obj2 ~= nil) and (obj2.name == "magic") then
+	if (obj2 ~= nil) and (not obj1.fixture:isSensor()) and (obj2.name == "magic") then
 		obj2:collision()
 	end
 
@@ -236,6 +236,7 @@ function love.load(arg)
 	BlueBrick = love.graphics.newImage("brick2.png") BlueBrick:setWrap("repeat", "repeat")
 	ChestImg = love.graphics.newImage("chest.png")
 	TorchImg = love.graphics.newImage("torch.png")
+	TransitionImg = love.graphics.newImage("Enemy.jpg")
 
 
 	--------------------------------------------------------------
@@ -282,6 +283,7 @@ function love.load(arg)
 
 	envir:add(EnvObject:new(2, 0.5, ChestImg, true, 1000, 0.3))
 	envirsh:add(Torch:new(0.5, 0.1))
+	envirsh:add(Transition:new(1, 0.9))
 
 	func = lights:addBodyFunc()
 	walls:exec(func)
@@ -399,12 +401,12 @@ function love.draw()
 	love.graphics.setColor(1, 1, 1)
 
 	if not inventoryMode then bullets:CheckDraw() end
+	envirsh:CheckDraw()
 	walls:CheckDraw()
 	particles:CheckDraw()
 	enemies:CheckDraw()
 	items:CheckDraw()
 	envir:CheckDraw()
-	envirsh:CheckDraw()
 
 	player1:draw()
 

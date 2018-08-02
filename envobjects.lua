@@ -103,3 +103,46 @@ function Torch:draw()
 		love.graphics.draw(self.image, x, y, self.body:getAngle(), self.scale)
 	end
 end
+
+Transition = {} --door to another location
+Transition.__index = Transition
+
+function Transition:new(x, y, nextLocation)
+    self = setmetatable({}, self)
+
+	x, y = pcoords(x, y)
+
+    self.image = TransitionImg
+    self.scale, self.width, self.height = imageProps(0.2, self.image)
+
+	self.name = "EnvObject"
+    self.body = love.physics.newBody(world, x, y, "static")
+	self.shape = love.physics.newRectangleShape(pcoords(self.width, self.height))
+	self.fixture = love.physics.newFixture(self.body, self.shape)
+    self.fixture:setSensor(true)
+    self.fixture:setUserData(self)
+    self.obstacle = true
+    self.nextLocation = nextLocation
+    self.angle = angle or 0
+    self.canDelete = false
+    self.state = false --off
+    self.canInteract = false
+    return self
+end
+
+function Transition:interact(obj)
+    if self.state then self.state = false elseif (not self.state) and self.canInteract then self.state = true end
+
+    if self.state then
+        --go to next location
+    elseif self.joint ~= nil and (not self.joint:isDestroyed()) then
+
+    end
+end
+
+function Transition:draw()
+    if not self.canDelete then
+		local x, y = self.body:getWorldPoints(self.shape:getPoints())
+		love.graphics.draw(self.image, x, y, self.body:getAngle(), self.scale)
+	end
+end
