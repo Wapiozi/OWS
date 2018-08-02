@@ -259,7 +259,7 @@ function love.load(arg)
 	particles = Container:new() -- (Category 7) by now no category
 	envir = Container:new()	--shadowed EnvObjects
 	envirsh = Container:new() --non shadowed EnvObjects
-	npcs = Container:new() --Category 10
+	npcs = Container:new() --Category 7
 
 	lights = Lights:create()
 	lights:add(0.6, 0.6, 0.06, true, nil, 1, 0.6, 0.6)
