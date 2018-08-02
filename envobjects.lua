@@ -21,6 +21,7 @@ function EnvObject:new(x, y, image, canBeMoved, mass, height)
     self.body:setMass(mass)
 	self.fixture:setCategory(16)
 	self.fixture:setUserData(self)
+    self.obstacle = true
 
     self.angle = angle or 0
     self.canDelete = false
@@ -64,6 +65,7 @@ function Torch:new(x, y)
     self.fixture:setFriction(plen(0.1))
     self.body:setMass(5)
 	self.fixture:setCategory(16)
+    self.obstacle = true
 	self.fixture:setUserData(self)
 
     self.angle = angle or 0
@@ -80,6 +82,8 @@ function Torch:interact(obj)
     if self.state then self.state = false elseif (not self.state) and self.canInteract then self.state = true end
 
     if self.state then
+        self.fixture:setMask(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)
+        self.obstacle = false
         self.body:setAngle(0)
         local _, _, x, y = obj.body:getWorldPoints(obj.shape:getPoints())
         self.body:setPosition(x, y+plen(0.05))
@@ -87,7 +91,9 @@ function Torch:interact(obj)
         self.joint:setLimitsEnabled(true)
         self.joint:setLimits(-1, 1)
     elseif self.joint ~= nil and (not self.joint:isDestroyed()) then
+        self.obstacle = true
         self.joint:destroy()
+        self.fixture:setMask()
     end
 end
 

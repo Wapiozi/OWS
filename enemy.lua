@@ -73,11 +73,6 @@ function Enemy:init()
 		timer = 5,
 		Init = nil
 	}
-
-	EnemyTypeRat.Collis = function(px, py)
-	end
-	EnemyTypeMadwizard.Collis = function(px, py)
-	end
 end
 
 function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
@@ -151,7 +146,8 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	end
 
 	self.getObstacle = function(fixture)
-		if fixture:getCategory() == 16 then
+		obj = fixture:getUserData()
+		if (fixture:getCategory() == 16 and obj.obstacle == true) or (fixture:getCategory() == 4 ) then
 			self.nearObstacle = true
 			return false
 		end
@@ -447,16 +443,6 @@ function Enemy:getMagicCoords()  --where magic need to spawn
 	x = x + (self.width/2 + 0.03)*self.side*self.type.imgturn
 	y = y - self.height/2 + 0.05
 	return x, y
-end
-
-function Enemy:getUpandBottomCoords()
-	local x1, y1= self.body:getWorldPoints(self.shape:getPoints())
-	x1, y1= fcoords(x1, y1)
-	if self.movDirection == -1 then
-		return x1 - 0.11, y1, x1 - 0.01, y2
-	else
-		return x2 + 0.01 + self.width, y1, x2 + 0.11, y2
-	end
 end
 
 function Enemy:destroy()
