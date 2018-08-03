@@ -34,6 +34,7 @@ function Player:new(x, y)
 		if not obj.body:isDestroyed() then
 			local curx, cury = self.body:getPosition()
 		    local xx, yy = obj.body:getPosition()
+<<<<<<< HEAD
 			local aimChoosen = nil
 		    world:rayCast(curx, cury, xx, yy, self.rayCallback)
 			for i, aims in ipairs(self.aimList) do
@@ -69,13 +70,29 @@ function Player:new(x, y)
 			table.insert(self.aimList, aims)
 			--[[
 			self.objCnt = self.objCnt + 1
+=======
+		    world:rayCast(curx, cury, xx, yy, self.rayCallback)
+		end
+	end
+
+	self.rayCallback = function(fixt, xx, yy, xn, yn, fraction)
+	    local obj = fixt:getUserData()
+
+	    if obj ~= nil and obj.name == "enemy" then
+	        self.objCnt = self.objCnt + 1
+>>>>>>> a23f9de5b71004d5751f009b9c846a8cf8516303
 			local curx, cury = self:getMagicCoords()
 			curx, cury = pcoords(curx, cury)
 
 	        self.aimList[self.objCnt] = {obj = obj, x = xx, y = yy, fraction = fraction, dist = getDist(curx, cury, xx, yy)}
+<<<<<<< HEAD
 			]]--
 	    end
 	    return 1
+=======
+	    end
+	    return 0
+>>>>>>> a23f9de5b71004d5751f009b9c846a8cf8516303
 	end
 
 	self.body = love.physics.newBody(world, x, y, "dynamic")  --create new dynamic body in world
