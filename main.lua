@@ -10,6 +10,8 @@ libcont = require("container")
 libparticles = require("particles")
 liblighting = require("lighting")
 libenv = require("envobjects")
+libnpc = require("npc")
+utf8 = require("utf8")
 
 world = nil
 inventoryOpen = false
@@ -149,6 +151,18 @@ function postSolve(body_a, body_b, collision, normalimpulse, tangentimpulse)
 end
 
 ------------------------KEYBOARD---------------------------------------
+function utf8.sub(str,x,y) -- russian letters
+  local x2,y2
+  x2=utf8.offset(str,x)
+  if y then
+    y2=utf8.offset(str,y+1)
+    if y2 then
+      y2=y2-1
+    end
+  end
+  print(x,y,"|",x2,y2)
+  return string.sub(str,x2,y2)
+end
 
 function love.keypressed(key)
 	if (key == "d") and (player1.movDirection == 0) then
@@ -210,6 +224,7 @@ function love.load(arg)
 	PlayerImg = love.graphics.newImage("Player.png")
 	MinecraftInv = love.graphics.newImage("minecraft.png")
 	InvborderImg = love.graphics.newImage("inventory_border.png")
+	MessageImg = love.graphics.newImage("message.png")
 	-- enemies
 		EnemyMadwizardImg = love.graphics.newImage("EnemyMadwizard.png")
 		EnemyRatImg = love.graphics.newImage("EnemyRat.png")
@@ -227,6 +242,10 @@ function love.load(arg)
 	ChestImg = love.graphics.newImage("chest.png")
 	TorchImg = love.graphics.newImage("torch.png")
 	TransitionImg = love.graphics.newImage("Enemy.jpg")
+	--NPC
+	NpcMerchantImg = love.graphics.newImage("merchant.png")
+	NpcChallengeImg = love.graphics.newImage("challenge.png")
+
 
 
 	--------------------------------------------------------------
@@ -253,6 +272,7 @@ function love.load(arg)
 	particles = Container:new() -- (Category 7) by now no category
 	envir = Container:new()	--shadowed EnvObjects
 	envirsh = Container:new() --non shadowed EnvObjects
+	npcs = Container:new() --Category 7
 
 	player1 = Player:new(0.2, 0.8)
 	inventory1 = Inventory:new()
@@ -263,6 +283,7 @@ function love.load(arg)
 	Item:init()
 	Inventory:init()
 	Enemy:init()
+	npc:init()
 
 	lights = Lights:create()
 
@@ -277,22 +298,39 @@ function love.load(arg)
 	walls:add(Brick:new(16/9, 1+0.05, 16/9*2, 0.1, "floor"))
 	walls:add(Brick:new(0-0.05, 0.5, 0.1, 1, "wall"))
 
+	envir:add(EnvObject:new(1, 0.5, ChestImg, true, 10000, 0.3))
+	envirsh:add(Torch:new(0.5, 0.1))
 	envir:add(EnvObject:new(2, 0.5, ChestImg, true, 1000, 0.3))
 	--envirsh:add(Torch:new(0.5, 0.1))
 	envirsh:add(Transition:new(1, 0.9))
 
 	enemies:add(Enemy:new(EnemyTypeRat, 0.9, 0.8))
 	enemies:add(Enemy:new(EnemyTypeMadwizard, 0.8, 0.8))
---[[
-	items:add(Item:new(0.5,0.8,WandObj))
-	items:add(Item:new(0.6,0.8,WandObj))
-	items:add(Item:new(0.7,0.8,WandObj))
-	items:add(Item:new(0.8,0.8,ClothObj))
-	items:add(Item:new(0.9,0.8,ClothObj))
-	items:add(Item:new(0.2,0.8,ClothObj))
-]]--
+
 	func = lights:addBodyFunc()
 	walls:exec(func)
+
+	inventory1 = Inventory:new()
+	inventoryMode = false
+	released = true
+
+	player1 = Player:new(100, 0.2, 0.8)
+	--lights:addBody(player1)
+	--enemies:add(Enemy:new(EnemyTypeRat, 1.5, 0.8))
+--	enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
+
+	npcs:add(npc:new(NpcTypeMerchant,0.8,0.8))
+	npcs:add(npc:new(NpcTypeChallenge,0.4,0.8))
+
+--	items:add(Item:new(0.5,0.8,WandObj))
+	--items:add(Item:new(0.6,0.8,WandObj))
+	--items:add(Item:new(0.7,0.8,WandObj))
+	--items:add(Item:new(0.8,0.8,ClothObj))
+	--items:add(Item:new(0.9,0.8,ClothObj))
+	--items:add(Item:new(0.2,0.8,ClothObj))
+
+	--items:exec(func)
+	--enemies:exec(func)
 	envir:exec(func)
 
 	----------------END OF CREATING ROOM------------------
@@ -319,6 +357,7 @@ function love.update(dt)
 	enemies:update(dt)
 	player1:update(dt)
 	world:update(dt)
+	npcs:update(dt) --new FICHA
 	bullets:update(dt)
 	particles:update(dt)
 	envir:update(dt)
@@ -347,7 +386,8 @@ function love.draw()
 	enemies:CheckDraw()
 	items:CheckDraw()
 	envir:CheckDraw()
-
+	envirsh:CheckDraw()
+	npcs:CheckDraw()
 	player1:draw()
 
 	lights:endDraw()
@@ -366,7 +406,8 @@ function love.draw()
 	end
 
 	camera:unset()
-	-----------------------END DRAWING ROOM-----------------------
+
+	npcs:exec(npc.work)
 
 	if inventoryOpen then
 		inventory1:draw()
