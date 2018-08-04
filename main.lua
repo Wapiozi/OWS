@@ -227,7 +227,7 @@ function love.load(arg)
 	PlayerImg = love.graphics.newImage("Player.png")
 	MinecraftInv = love.graphics.newImage("minecraft.png")
 	InvborderImg = love.graphics.newImage("inventory_border.png")
-	MessageImg = love.graphics.newImage("Message.png")
+	MessageImg = love.graphics.newImage("message.png")
 	-- enemies
 		EnemyMadwizardImg = love.graphics.newImage("EnemyMadwizard.png")
 		EnemyRatImg = love.graphics.newImage("EnemyRat.png")
