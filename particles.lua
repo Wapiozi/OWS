@@ -2,7 +2,7 @@
 Particle = {}
 Particle.__index = Particle
 
-function Particle:new(image, body, toUp)
+function Particle:new(image, body, toUp, x, y, emissionTime)
 	self = setmetatable({}, self)
 
 	self.body = body
@@ -20,13 +20,19 @@ function Particle:new(image, body, toUp)
 	end
 
 	self.partic:setColors(1, 1, 1, 1, 1, 1, 1, 1)
-	self.partic:setPosition(self.body:getPosition())
+	if body ~= nil then
+		self.partic:setPosition(self.body:getPosition())
+	else
+		self.partic:setPosition(pcoords(x, y))
+	end
 	self.partic:setRelativeRotation(true)
 
 	self.image = image
 
 	self.lifetime = 0
 	self.prevlt = self.lifetime
+
+	self.emissionTime = emissionTime or 0
 
 	self.canDelete = false
 
@@ -42,6 +48,8 @@ end
 function Particle:update(dt)
 	if (self.body ~= nil) and (not self.body:isDestroyed()) then
 		self.partic:setPosition(self.body:getPosition())
+		self.prevlt = self.lifetime
+	elseif (self.lifetime < self.emissionTime) then
 		self.prevlt = self.lifetime
 	else
 		if self.partic:getEmissionRate() > 0 then self.partic:setEmissionRate(0) end

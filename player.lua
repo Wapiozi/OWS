@@ -188,11 +188,11 @@ function Player:shoot(gesture)
 		elseif gesture[i] == 3 then
 			local canAim, canShoot = Magic:canShoot(self, MagicTypeWater)
 			if not canAim then vx, vy = 1*self.side, 0 end
-			if canAim then bullets:add(Magic:new(x, y, vx, vy, MagicTypeWater, "player")) end
+			if canShoot then bullets:add(Magic:new(x, y, vx, vy, MagicTypeWater, "player")) end
 		elseif gesture[i] == 4 then
-			local canAim, canShoot = Magic:canShoot(self, MagicTypeFire)
+			local canAim, canShoot = Magic:canShoot(self, MagicTypeTinyLaser)
 			if not canAim then vx, vy = 1*self.side, 0 end
-			if canAim then bullets:add(Magic:new(x, y, vx, vy, MagicTypeFire, "player")) end
+			if canShoot then bullets:add(Magic:new(x, y, vx, vy, MagicTypeTinyLaser, "player")) end
 		elseif gesture[i] == 5 then
 
 		elseif gesture[i] == 6 then

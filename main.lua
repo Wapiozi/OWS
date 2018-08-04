@@ -242,6 +242,8 @@ function love.load(arg)
 	ChestImg = love.graphics.newImage("chest.png")
 	TorchImg = love.graphics.newImage("torch.png")
 	TransitionImg = love.graphics.newImage("Enemy.jpg")
+	LaserImg = love.graphics.newImage("laser.png") LaserImg:setWrap("repeat", "repeat")
+	FireeImg = love.graphics.newImage("firee.png")
 	--NPC
 	NpcMerchantImg = love.graphics.newImage("merchant.png")
 	NpcChallengeImg = love.graphics.newImage("challenge.png")
@@ -315,8 +317,8 @@ function love.load(arg)
 	released = true
 
 	--lights:addBody(player1)
-	--enemies:add(Enemy:new(EnemyTypeRat, 1.5, 0.8))
---	enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
+	enemies:add(Enemy:new(EnemyTypeRat, 1.5, 0.8))
+	enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
 
 	--npcs:add(npc:new(NpcTypeMerchant,0.8,0.8))
 	--npcs:add(npc:new(NpcTypeChallenge,0.4,0.8))
@@ -378,18 +380,15 @@ function love.draw()
 
 	love.graphics.setColor(1, 1, 1)
 
-	if not inventoryMode then bullets:CheckDraw() end
+
+	envirsh:CheckDraw()
 	envir:CheckDraw()
-	envirsh:CheckDraw()
-	envirsh:CheckDraw()
 	walls:CheckDraw()
 	particles:CheckDraw()
 	enemies:CheckDraw()
 	items:CheckDraw()
-	envir:CheckDraw()
-	envirsh:CheckDraw()
-	--npcs:CheckDraw()
 	player1:draw()
+	if not inventoryMode then bullets:CheckDraw() end
 
 	lights:endDraw()
 

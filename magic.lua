@@ -94,21 +94,40 @@ function Magic:init()
 		Collis = nil
 	}
 
+	MagicTypeTinyLaser = {
+		type = 3,
+		image = LaserImg,
+		color = { r = 1, g = 0, b = 0},
+		psystem = FireeImg,
+		size = 0.01,
+		Damage = 101,
+		mana = 50,
+		fade = 1, -- 1 second to fade
+		maxLen = 3,
+		aim = true,
+		ricochet = false,
+		Init = nil,
+		Collis = nil
+	}
+
 	MagicTypeFire.Collis = function(px, py)
 
 	end
-	MagicTypeWater.Collis = function(px, py)
 
-	end
-	MagicTypeAir.Collis = function(px, py)
+	MagicTypeTinyLaser.Collis = function(fixt, x, y, xn, yn, fraction)
+		obj = fixt:getUserData()
 
-	end
-	MagicTypeIce.Collis = function(px, py)
+		if obj ~= nil and obj.name ~= nil then
+			if obj.name == "player" or obj.name == "enemy" then
+				obj:getDamage(MagicTypeTinyLaser.Damage)
+			end
+		end
 
+		x, y = fcoords(x, y)
+		particles:add(Particle:new(MagicTypeTinyLaser.psystem, nil, false, x, y, 0.1))
+		return 0
 	end
-	MagicTypeGround.Collis = function(px, py)
 
-	end
 end
 
 function Magic:canShoot(player, magicType)
@@ -121,19 +140,7 @@ function Magic:canShoot(player, magicType)
 	return magicType.aim, false
 end
 
-
-function Magic:new(x, y, vx, vy, type, owner)
-	self = setmetatable({}, self)
-
-	x, y = pcoords(x, y)
-
-	self.type = type
-	self.name = "magic"
-	self.owner = owner
-
-	self.image = self.type.image
-	self.scale, self.width, self.height = imageProps(self.type.size, self.image)
-
+function Magic:ballisticInit(x, y, vx, vy, type)
 	self.body = love.physics.newBody(world, x, y, "dynamic")
 	self.body:setBullet(true)
 	self.shape = love.physics.newRectangleShape(pcoords(self.width, self.height))
@@ -146,37 +153,100 @@ function Magic:new(x, y, vx, vy, type, owner)
 	self.body:setAngle(45)
 	self.fixture:setCategory(6)
 	self.fixture:setUserData(self)
+	if type.psystem then particles:add(Particle:new(type.psystem, self.body)) end
+	lights:add(flen(x), flen(y), 0.1, false, self.body, self.type.color.r, self.type.color.g, self.type.color.b)
+end
+
+function Magic:laserInit(x, y, vx, vy, type, scale)
+	self.quad = love.graphics.newQuad(x, y, plen(type.maxLen), plen(type.size), scale, scale)
+
+	self.x = x
+	self.y = y
+	self.vx = vx
+	self.vy = vy
+	self.alphaCol = 1
+	self.lifetime = 0
+
+	world:rayCast(x, y, x + plen(self.type.maxLen)*vx, y + plen(self.type.maxLen)*vy, type.Collis)
+
+	if (xx == 0) then xx = 0.00000001 end
+	if (yy == 0) then yy = 0.00000001 end
+
+	if (vx < 0) and (vy >= 0) then
+		vx = -vx
+		self.angle = math.atan(vx/vy) + math.pi/2
+	elseif (vx < 0) and (vy < 0) then
+		vx = -vx
+		vy = -vy
+		self.angle = math.atan(vy/vx) + math.pi
+	elseif (vx >= 0) and (vy < 0) then
+		vy = -vy
+		self.angle = math.atan(vx/vy) + math.pi + math.pi/2
+	elseif (vx >= 0) and (vy >= 0) then
+		self.angle = math.atan(vy/vx)
+	end
+end
+
+
+function Magic:new(x, y, vx, vy, type, owner)
+	self = setmetatable({}, self)
+
+	x, y = pcoords(x, y)
+
+	self.type = type
+	self.name = "magic"
+	self.owner = owner
+
+	if self.type.Init ~= nil then self.type.Init() end
+
+	self.image = self.type.image
+	self.scale, self.width, self.height = imageProps(self.type.size, self.image)
+
+	if type.type == 1 then
+		self:ballisticInit(x, y, vx, vy, self.type)
+	elseif type.type == 3 then
+		self:laserInit(x, y, vx, vy, self.type, self.scale)
+	end
 
 	self.damage = self.type.Damage
 	self.ricCnt = 0
 
 	self.canDelete = false
 
-
-	if type.psystem then particles:add(Particle:new(type.psystem, self.body)) end
-	lights:add(flen(x), flen(y), 0.1, false, self.body, self.type.color.r, self.type.color.g, self.type.color.b)--1, 0.3, 0)
-
-	if self.type.Init ~= nil then self.type.Init() end
-
 	return self
 end
 
 function Magic:draw()
 	if not self.canDelete then
-		local x, y = self.body:getWorldPoints(self.shape:getPoints())
-		love.graphics.draw(self.image, x, y, self.body:getAngle(), self.scale)
+		if self.type.type == 1 then
+			local x, y = self.body:getWorldPoints(self.shape:getPoints())
+			love.graphics.draw(self.image, x, y, self.body:getAngle(), self.scale)
+		elseif self.type.type == 3 then
+			local r, g, b, a = love.graphics.getColor()
+			love.graphics.setColor(self.alphaCol, self.alphaCol, self.alphaCol, 1)
+			love.graphics.draw(self.image, self.quad, self.x, self.y, self.angle)
+			--love.graphics.line(self.x, self.y, self.x + plen(self.type.maxLen*self.vx), self.y + plen(self.type.maxLen*self.vy))
+			love.graphics.setColor(r, g, b, a)
+		end
 	end
 end
 
 function Magic:delete()
 	self.canDelete = true
-	self.fixture:destroy()
-	self.shape:release()
-	self.body:destroy()
+	if self.fixture ~= nil then self.fixture:destroy() end
+	if self.shape ~= nil then self.shape:release() end
+	if self.body ~= nil then self.body:destroy() end
+	if self.quad ~= nil then self.quad:release() end
 end
 
 function Magic:update(dt)
+	if self.type.type == 3 then
+		self.lifetime = self.lifetime + dt
 
+		self.alphaCol = math.max(self.type.fade - self.lifetime, 0)/self.type.fade
+
+		if self.alphaCol == 0 then self:delete() end
+	end
 end
 
 function Magic:collision()

@@ -685,5 +685,5 @@ end
 function Enemy:getDamage(dmg, magic)
 	self.timer = self.type.timer
 	self.hp = self.hp-dmg
-	if self.hp < 0 then self:destroy() end
+	if self.hp < 0 then self.canDelete = true end
 end
