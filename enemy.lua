@@ -18,6 +18,32 @@ function Enemy:init()
 			3) ...
 	]]--
 
+	EnemyTypeBat = {
+		image = EnemyBatImg,
+		imgturn = -1,
+		size = 0.15,
+		Restitution = 0,
+		Friction = 0.1,
+		Damage = 0, -- later
+		hp = 100,
+		Reload = 0,
+		mass = 70,
+		manaMax = 100,
+		cooldown = 1.2,
+
+		behaviour = {
+			movement_bd = "fly_stay",
+			movement_ad = "fly_aggressive",
+			attack = "fly_contact",
+			sensor = {vision = false, smell = false, noise = true},
+			noise_dist = 0.1,
+			playerdist = 0,
+		}, -- movement_bd = before detect | ad = after detect
+
+		timer = 5,
+		Init = nil
+	}
+
 	EnemyTypeRat = {
 		image = EnemyRatImg,
 		imgturn = -1,
@@ -32,8 +58,11 @@ function Enemy:init()
 		behaviour = {
 			movement_bd = "move",
 			movement_ad = "victim",
-			sensor = {vision = true, smell = false, noise = true},
-			playerdist = 0
+			sensor = {vision = true, smell = false, noise = false},
+			smell_detection_time = 2,
+			noise_dist = 0.1,
+			playerdist = 0,
+			canJump = true
 		},
 
 		timer = 5,
@@ -52,6 +81,7 @@ function Enemy:init()
 		Reload = 0,
 		mass = 70,
 		manaMax = 100,
+		cooldown = 1.2,
 
 		behaviour = {
 			movement_bd = "slow_move",
@@ -63,18 +93,16 @@ function Enemy:init()
 				[2] = MagicTypeGround,
 				[3] = MagicTypeIce
 			},
-			sensor = {vision = true, smell = false, noise = true},
-			playerdist = 0.35
+			sensor = {vision = false, smell = true, noise = false},
+			smell_detection_time = 3,
+			noise_dist = 0.1,
+			playerdist = 0.35,
+			canJump = true
 		}, -- movement_bd = before detect | ad = after detect
 
 		timer = 5,
 		Init = nil
 	}
-
-	EnemyTypeRat.Collis = function(px, py)
-	end
-	EnemyTypeMadwizard.Collis = function(px, py)
-	end
 end
 
 function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
@@ -102,9 +130,11 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 
 	self.shape = love.physics.newRectangleShape(pcoords(self.width, self.height))
 	self.fixture = love.physics.newFixture(self.body, self.shape)
-	self.fixture:setRestitution(0.1)
-	self.fixture:setFriction(5)
+	--self.fixture:setRestitution(0.1)
+	--self.fixture:setFriction(5)
 	self.canAttack = false
+	self.readytojump = 0
+	self.ax = 0
 
 	self.body:setMass(self.type.mass)
 
@@ -112,8 +142,13 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 
 	self.behaviour = self.type.behaviour
 	self.timer = 0
-	self.mana = 10
+	self.mana = 1000
 	self.canDelete = false
+	self.cooldown = self.type.cooldown or 0
+	self.canJump= self.behaviour.canJump or false
+	self.nearObstacle = false
+	self.smell_detection_time = 0
+	self.noise_time = 0
 
 	 -- also, there should be some agilities of different classes
 	 -- for ex. immortal, reduce fire dmg or smth like that
@@ -127,9 +162,57 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	self.air_r   = red[a]
 	]]--
 	self.fixture:setCategory(3)
-	self.fixture:setMask(3)
-	self.fixture:setUserData(self)
+	self.fixture:setMask(3,10)
 
+	--------------------------------methods-------------------------------------
+
+	self.vision_ray = function(fixture, x1, y2, x2, y2, fraction)
+		local hit = {}
+		hit.fixture = fixture
+		hit.x, hit.y = x1, y1
+		hit.xn, hit.yn = x2, y2
+		hit.fraction = fraction
+
+		table.insert(Ray.hitList, hit)
+
+		return 1 -- Continues with ray cast through all shapes.
+	end
+
+	self.smell_ray = function(fixture, x1, y2, x2, y2, fraction)
+		obj = fixture:getUserData()
+		if obj.name == "player" then
+			self.smell = {}
+			self.smell.fixture = fixture
+			self.smell.obj = obj
+			self.smell.fraction = fraction
+			return 0
+		end
+		return 1
+	end
+
+	self.noise_ray = function(fixture, x1, y2, x2, y2, fraction)
+		obj = fixture:getUserData()
+		if obj.name == "player" then
+			self.noise = {}
+			self.noise.fixture = fixture
+			self.noise.obj = obj
+			self.noise.fraction = fraction
+			return 0
+		end
+		return 1
+	end
+
+	self.getObstacle = function(fixture)
+		obj = fixture:getUserData()
+		if (fixture:getCategory() == 16 and obj.obstacle == true) or (fixture:getCategory() == 4 ) then
+			self.nearObstacle = true
+			return false
+		end
+		self.nearObstacle = false
+		return true
+	end
+
+	self.fixture:setUserData(self)
 	return self
 end
 --[[
@@ -160,24 +243,60 @@ function Enemy:applyMagic(Dmg_fire, Dmg_water, Dmg_earth, Dmg_air)
 end
 --]]
 
+function Enemy:checkForObstacle()
+	--local x1, y1 = self:getUpCoords() -- najti nizhniju position
+	--x2, y2 = x1 + 0.2, y1 + 0.2
+	local x1, y1, x2, y2
+	x1, y1= self.body:getWorldPoints(self.shape:getPoints())
+	x1, y1= fcoords(x1, y1)
+	if self.movDirection == -1 then
+		x1, y1, x2, y2 = plen( x1 - 0.11 ), plen(y1), plen(x1 - 0.01), plen(y1 + self.height - 0.01)
+	else
+		x1, y1, x2, y2 = plen( x1 + 0.01 + self.width ), plen(y1), plen(x1 + 0.11 + self.width), plen(y1 + self.height - 0.01)
+	end
+	world:queryBoundingBox(x1, y1, x2, y2, self.getObstacle)
+end
+
+function Enemy:jump()
+	local vx, vy = self.body:getLinearVelocity()
+	self.body:applyLinearImpulse(10000 * -self.movDirection,0)
+	if vy ~= 0 then self.body:setLinearVelocity(vx, 0) end
+	self.body:applyLinearImpulse(0, -30000)
+end
+
 function Enemy:attack()
 	local x, y = self:getMagicCoords()
 	if self.behaviour.attack == "magic" then
 		local typeMagic = math.random(self.behaviour.magic_type.q)
 		--love.event.quit(typeMagic)
 		typeMagic = self.behaviour.magic_type[typeMagic]
-		if Magic:canShoot(self, typeMagic) then bullets:add(Magic:new(x, y, 50*self.side*self.type.imgturn, 1, typeMagic, self.name)) end
+		if (Magic:canShoot(self, typeMagic)) and (self.cooldown < 0) then
+			bullets:add(Magic:new(x, y, 50*self.side*self.type.imgturn, 1, typeMagic, self.name))
+			self.cooldown = self.type.cooldown or 0
+		end
 	end
 
 end
 
-function Enemy:standartMovement()
+function Enemy:move(dt, speed, direction)
+	local xveloc, yveloc = self.body:getLinearVelocity()
+	if self.movDirection == 1 then
+		self.ax = self.ax + 5 * dt
+	else
+		self.ax = -self.ax + 5 *dt
+	end
+	if (math.abs(xveloc) < plen(speed)) then
+		self.body:setLinearVelocity(xveloc + self.movDirection * direction * math.min(math.max(plen(0.03),math.abs(self.ax)),plen(0.03)),yveloc)
+	end
+end
+
+function Enemy:standartMovement(dt)
 	--check for the floor (in future)
 	if self.behaviour.movement_bd == "move" then
+		local speed, direction = 0.35, 1
+		self:move(dt,speed,direction)
 
-		local xveloc, yveloc = self.body:getLinearVelocity()
-
-		if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:applyForce(100000, 0)
+	--[[	if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:applyForce(100000, 0)
 		elseif (xveloc > -plen(0.45)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0)
 		elseif (self.movDirection == 0) then
 			if (xveloc > 0.2) then
@@ -187,9 +306,17 @@ function Enemy:standartMovement()
 			end
 		end
 
+		player.vx = player.vx + player.ax * dt
+ 		player.vy = player.vy + player.ay * dt
+ 		player.x = player.x + player.vx * dt
+ 		player.y = player.y + player.vy * dt
+	]]--
 	elseif self.behaviour.movement_bd == "slow_move" then
 
-		local xveloc, yveloc = self.body:getLinearVelocity()
+		local speed, direction = 0.15, 1
+		self:move(dt,speed,direction)
+
+		--[[local xveloc, yveloc = self.body:getLinearVelocity()
 
 		if (xveloc < plen(0.09)) and (self.movDirection == 1) then self.body:applyForce(100000, 0)
 		elseif (xveloc > -plen(0.09)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0)
@@ -200,13 +327,13 @@ function Enemy:standartMovement()
 				self.body:applyForce(10000, 0)
 			end
 		end
-
+		]]--
 
 	end
 
 end
 
-function Enemy:trigerredMovement()
+function Enemy:trigerredMovement(dt)
 	local xveloc, yveloc = self.body:getLinearVelocity()
 	local x1, y1 = self.body:getPosition()
 	local x2, y2 = player1.body:getPosition()
@@ -219,9 +346,13 @@ function Enemy:trigerredMovement()
 			self.movDirection = -1
 			self.side = -1 * self.type.imgturn
 		end
+		local speed, direction  = 0.55, 1
+		self:move(dt,speed,direction)
+		--[[
 		if (xveloc < plen(0.55)) and (self.movDirection == 1) then self.body:applyForce(100000, 0)
 		elseif (xveloc > -plen(055)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0)
 		end
+		]]--
 	elseif self.behaviour.movement_ad == "aggressive" then
 		if (x1 < x2) then
 			self.movDirection = 1
@@ -238,14 +369,30 @@ function Enemy:trigerredMovement()
 			self.canAttack = true
 			--end
 		elseif (flen(math.abs(x2 - x1)) > self.behaviour.playerdist) then
+			local speed, direction = 0.5, 1
+			self:move(dt,speed,direction)
+			--[[
 			if (xveloc < plen(0.3)) and (self.movDirection == 1) then self.body:applyForce(100000, 0)
 			elseif (xveloc > -plen(0.3)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0) end
+			]]--
 			self.canAttack = false
 		elseif (flen(math.abs(x2 - x1)) < self.behaviour.playerdist) then
+			local speed, direction = 0.15, -1
+			self:move(dt,speed,direction)
+			--[[
 			if (xveloc < plen(0.15)) and (self.movDirection == -1) then self.body:applyForce(100000, 0)
 			elseif (xveloc > -plen(0.15)) and (self.movDirection == 1) then self.body:applyForce(-100000, 0) end
+			]]--
 			self.canAttack = true
 		end
+	end
+	xveloc, yveloc = self.body:getLinearVelocity()
+	self:checkForObstacle()
+	if (self.nearObstacle) then --(self.readytojump > 0.1) and (self.behaviour.canJump == true) and (xveloc ~= 0) then
+		--self.body:applyForce(-self.movDirection * 100000 / 2, 0)
+		self:jump()
+		self.readytojump = 0
+		self.nearObstacle = false
 	end
 	--check for the floor (in future)
 	--[[
@@ -265,11 +412,13 @@ function Enemy:trigerredMovement()
 end
 
 function Enemy:detect()
+	self.noise = nil
+	self.smell = nil
+	local x1, y1 = self.body:getPosition()
+	local x2, y2 = player1.body:getPosition()
 	if self.behaviour.sensor.vision then
-		local x1, y1 = self.body:getPosition()
-		local x2, y2 = player1.body:getPosition()
 		local canBeSeen = false
-		world:rayCast(x1, y1, x2, y2, rayCast_vision)
+		world:rayCast(x1, y1, x2, y2, self.vision_ray)
 		--if ((self.movDirection == 1) and (x2 > x1)) or ((self.movDirection == -1) and (x1 < x2))then local canBeSeen = true end
 		if ((self.movDirection == 1) and (x2 > x1)) or ((self.movDirection == -1) and (x2 < x1)) then canBeSeen = true end
 		for i, hit in ipairs(Ray.hitList) do
@@ -307,26 +456,84 @@ function Enemy:detect()
 		return canBeSeen
 	end
 	if self.behaviour.sensor.smell then
-
-
+		world:rayCast(x1, y1, x2, y2, self.smell_ray)
+		if self.smell ~= nil then
+			if self.smell.fraction <= 0.8 then return true end
+			self.smell = nil
+		end
 		return false
 	end
 	if self.behaviour.sensor.noise then
-
-
+		--check for distance and if it then detect
+		world:rayCast(x1, y1, x2, y2, self.noise_ray)
+		if self.noise ~= nil then
+			if self.noise.fraction <= 0.85 then return true end
+			self.noise = nil
+		end
 		return false
 	end
 end
 
 function Enemy:update(dt)
 	-- every tic function
+	local xveloc, yveloc = self.body:getLinearVelocity()
+	local xv, yv = player1.body:getLinearVelocity()
+	--[[
+	if (xveloc <= 0.008) and (xveloc >= -0.008) then
+		self.readytojump = self.readytojump + dt
+	else self.readytojump = 0 end
+	--]]
+
+	-- DETECTION PHASE _________________________________________________________
 	self.player_detect = self:detect()
-	if self.player_detect then self.timer = self.type.timer end
-	if (self.type.manaMax ~= nil) and (self.mana < self.type.manaMax) then self.mana = self.mana + dt*10 end
-	if self.canAttack then self:attack() end
+	if self.player_detect then
+		if self.smell ~= nil then
+			self.smell_detection_time = self.smell_detection_time + dt * 2
+			--self.body:setLinearVelocity(0, yveloc)
+		elseif self.noise ~= nil then
+			--self.body:setLinearVelocity(0, yveloc)
+		else
+			self.timer = self.type.timer
+			self.detection_time = 0
+		end
+	else self.smell_detection_time = 0 end
+
+	-- Cooldown , Mana , Attack checks__________________________________________
+
+	if (self.type.manaMax ~= nil) and (self.mana < self.type.manaMax) then self.mana = self.mana + dt*7 end
+	if (self.cooldown >= 0) then self.cooldown = self.cooldown - dt end
+	if self.canAttack == true then self:attack() self.canAttack = false end
+
+	-- SMELL____________________________________________________________________
+
+	if (self.smell ~= nil) and (self.smell_detection_time >= self.behaviour.smell_detection_time) then
+		self.timer = self.type.timer
+	end
+
+	-- NOISE____________________________________________________________________
+	if self.noise ~= nil then
+		if math.abs(xv) >= plen(0.45) and (self.noise_time >= 1) then
+			self.timer = self.type.timer
+			self.noise_time = 0
+		elseif math.abs(xv) >= plen(0.1) then
+			self.noise_time = self.noise_time + dt *2
+			self.body:setLinearVelocity(0, yveloc)
+		end
+	end
+
+	-- MOVEMENT_________________________________________________________________
 	if self.timer > 0 then
 		self.timer = self.timer - dt
-		self:trigerredMovement()
+		self:trigerredMovement(dt)
+	--elseif (((self.smell ~= nil) and (self.smell_detection_time > 0)) or (self.noise ~= nil ))  then
+	elseif self.noise_time > 0 or self.smell_detection_time > 0 then
+		if self.noise_time > 0 then
+			self.noise_time = self.noise_time - dt
+		end
+		if self.smell_detection_time > 0 then
+			self.smell_detection_time = self.smell_detection_time - dt
+		end
+	--	self.body:setLinearVelocity(0, yveloc)
 	else
 		self.step = self.step - 1
 		if self.step == 0 then
@@ -334,7 +541,7 @@ function Enemy:update(dt)
 			self.movDirection = self.side * self.imgturn
 			self.step = love.math.random(1000,1000)
 		end
-		self:standartMovement()
+		self:standartMovement(dt)
 	end
 end
 
@@ -364,7 +571,7 @@ function Enemy:draw()
 	elseif self.side == -1 then
 		love.graphics.draw(self.image, x+plen(self.width), y, 0, self.scale*self.side, self.scale)
 	end
-
+	--love.graphics.rectangle("fill", self.x2, self.y1, self.movDirection * math.abs(self.x2 - self.x1), self.movDirection  * math.abs(self.y2 - self.y1) )
 	self:drawHP()
 end
 
