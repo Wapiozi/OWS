@@ -375,13 +375,13 @@ function love.draw()
 	love.graphics.setColor(1, 1, 1)
 
 	if not inventoryMode then bullets:CheckDraw() end
+	envir:CheckDraw()
+	envirsh:CheckDraw()
 	envirsh:CheckDraw()
 	walls:CheckDraw()
 	particles:CheckDraw()
 	enemies:CheckDraw()
 	items:CheckDraw()
-	envir:CheckDraw()
-	envirsh:CheckDraw()
 	npcs:CheckDraw()
 	player1:draw()
 

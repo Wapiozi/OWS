@@ -3,17 +3,25 @@ Mana = {fire = 1, water = 2, air = 3, earth = 4}
 
 ------------------Magic----------------------------------------------------
 
+--[[
+	magicType.type
+		1 - ballistic
+		2 - ballistic shotgun
+		3 - laser
+		4 - area
+
+]]
+
 Magic = {}
 Magic.__index = Magic
 
 function Magic:init()
 	MagicTypeFire = {
+		type = 1,
 		image = FireballImg,
 		color = { r = 1, g = 0.3, b = 0.0},
 		psystem = FireImg, --ParticleSystem
 		size = 0.028,
-		Restitution = 0,
-		Friction = 0.1,
 		Damage = 10,
 		ImpulseCoef = 50000, --speed of magic
 		mass = 1,
@@ -24,12 +32,11 @@ function Magic:init()
 	}
 
 	MagicTypeWater = {
+		type = 1,
 		image = WaterballImg,
 		color = { r = 0.01, g = 0.01, b = 0.41},
-		psystem = nil,
+		psystem = FireImg,
 		size = 0.0417,
-		Restitution = 0,
-		Friction = 100,
 		Damage = 25,
 		ImpulseCoef = 5000,
 		mass = 5,
@@ -40,12 +47,11 @@ function Magic:init()
 	}
 
 	MagicTypeAir = {
+		type = 1,
 		image = AirballImg,
 		color = { r = 0.05, g = 0.05, b = 0.05},
-		psystem = nil,
+		psystem = FireImg,
 		size = 0.0417,
-		Restitution = 0,
-		Friction = 0.01,
 		Damage = 5,
 		ImpulseCoef = 500000,
 		mass = 0.1,
@@ -56,12 +62,11 @@ function Magic:init()
 	}
 
 	MagicTypeIce = {
+		type = 1,
 		image = IceballImg,
 		color = { r = 0.01, g = 0.01, b = 0.56},
-		psystem = nil,
+		psystem = FireImg,
 		size = 0.02,
-		Restitution = 1.5,
-		Friction = 0.01,
 		Damage = 15,
 		ImpulseCoef = 100000,
 		mass = 2,
@@ -74,12 +79,11 @@ function Magic:init()
 	}
 
 	MagicTypeGround = {
+		type = 1,
 		image = GroundballImg,
 		color = { r = 0.01, g = 0.54, b = 0.01},
-		psystem = nil,
+		psystem = FireImg,
 		size = 0.0347,
-		Restitution = 0.4,
-		Friction = 4,
 		Damage = 40,
 		ImpulseCoef = 25000,
 		mass = 20,
@@ -111,10 +115,10 @@ function Magic:canShoot(player, magicType)
 	if player.mana ~= nil and magicType.mana ~= nil then
 		if player.mana >= magicType.mana then
 			player.mana = player.mana - magicType.mana
-			return true
+			return magicType.aim, true
 		end
 	end
-	return false
+	return magicType.aim, false
 end
 
 
@@ -134,8 +138,8 @@ function Magic:new(x, y, vx, vy, type, owner)
 	self.body:setBullet(true)
 	self.shape = love.physics.newRectangleShape(pcoords(self.width, self.height))
 	self.fixture = love.physics.newFixture(self.body, self.shape)
-	self.fixture:setRestitution(type.Restitution)
-	self.fixture:setFriction(type.Friction)
+	self.fixture:setRestitution(1.5)
+	self.fixture:setFriction(1)
 	self.body:setMass(type.mass)
 	self.body:applyLinearImpulse(self.type.ImpulseCoef*vx, self.type.ImpulseCoef*vy)
 	self.body:applyAngularImpulse(math.random(1000)+1000)
@@ -149,7 +153,7 @@ function Magic:new(x, y, vx, vy, type, owner)
 	self.canDelete = false
 
 
-	particles:add(Particle:new(FireImg, self.body))
+	if type.psystem then particles:add(Particle:new(type.psystem, self.body)) end
 	lights:add(flen(x), flen(y), 0.1, false, self.body, self.type.color.r, self.type.color.g, self.type.color.b)--1, 0.3, 0)
 
 	if self.type.Init ~= nil then self.type.Init() end
@@ -169,11 +173,10 @@ function Magic:delete()
 	self.fixture:destroy()
 	self.shape:release()
 	self.body:destroy()
-	self.partic = nil
 end
 
 function Magic:update(dt)
-	if self.partic ~= nil then self.partic:update(dt) end
+
 end
 
 function Magic:collision()

@@ -50,8 +50,6 @@ function Player:new(x, y)
 	self.fixture:setFriction(plen(0.001))
 	self.body:setMass(70) -- 70kg wizard
 	self.fixture:setCategory(2)
-
-	self.fixture:setMask(10)
 	self.fixture:setUserData(self)
 	return self
 end
@@ -184,19 +182,29 @@ function Player:shoot(gesture)
 		if gesture[i] == 1 then
 
 		elseif gesture[i] == 2 then
-			if Magic:canShoot(self, MagicTypeGround) then bullets:add(Magic:new(x, y, vx, vy, MagicTypeGround, "player")) end
+			local canAim, canShoot = Magic:canShoot(self, MagicTypeGround)
+			if not canAim then vx, vy = 1*self.side, 0 end
+			if canShoot then bullets:add(Magic:new(x, y, vx, vy, MagicTypeGround, "player")) end
 		elseif gesture[i] == 3 then
-			if Magic:canShoot(self, MagicTypeWater) then bullets:add(Magic:new(x, y, vx, vy, MagicTypeWater, "player")) end
+			local canAim, canShoot = Magic:canShoot(self, MagicTypeWater)
+			if not canAim then vx, vy = 1*self.side, 0 end
+			if canAim then bullets:add(Magic:new(x, y, vx, vy, MagicTypeWater, "player")) end
 		elseif gesture[i] == 4 then
-			if Magic:canShoot(self, MagicTypeFire) then bullets:add(Magic:new(x, y, vx, vy, MagicTypeFire, "player")) end
+			local canAim, canShoot = Magic:canShoot(self, MagicTypeFire)
+			if not canAim then vx, vy = 1*self.side, 0 end
+			if canAim then bullets:add(Magic:new(x, y, vx, vy, MagicTypeFire, "player")) end
 		elseif gesture[i] == 5 then
 
 		elseif gesture[i] == 6 then
-			if Magic:canShoot(self, MagicTypeAir) then bullets:add(Magic:new(x, y, vx, vy, MagicTypeAir, "player")) end
+			local canAim, canShoot = Magic:canShoot(self, MagicTypeAir)
+			if not canAim then vx, vy = 1*self.side, 0 end
+			if canShoot then bullets:add(Magic:new(x, y, vx, vy, MagicTypeAir, "player")) end
 		elseif gesture[i] == 7 then
 
 		elseif gesture[i] == 8 then
-			if Magic:canShoot(self, MagicTypeIce) then bullets:add(Magic:new(x, y, 1*self.side, 0, MagicTypeIce, "player")) end
+			local canAim, canShoot = Magic:canShoot(self, MagicTypeIce)
+			if not canAim then vx, vy = 1*self.side, 0 end
+			if canShoot then bullets:add(Magic:new(x, y, vx, vy, MagicTypeIce, "player")) end
 		end
 		i = i+1
 	end
