@@ -125,7 +125,7 @@ function Magic:init()
 
 		x, y = fcoords(x, y)
 		particles:add(Particle:new(MagicTypeTinyLaser.psystem, nil, false, x, y, 0.1))
-		return 0
+		return 1
 	end
 
 end
