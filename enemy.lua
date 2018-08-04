@@ -550,6 +550,8 @@ end
 
 function Enemy:update(dt)
 	-- every tic function
+	if self.body:isDestroyed() then return end
+
 	local xveloc, yveloc = self.body:getLinearVelocity()
 	local xv, yv = player1.body:getLinearVelocity()
 	--[[
@@ -685,5 +687,5 @@ end
 function Enemy:getDamage(dmg, magic)
 	self.timer = self.type.timer
 	self.hp = self.hp-dmg
-	if self.hp < 0 then self.canDelete = true end
+	if self.hp < 0 then self:destroy() end
 end
