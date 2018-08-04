@@ -162,7 +162,7 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	self.air_r   = red[a]
 	]]--
 	self.fixture:setCategory(3)
-	self.fixture:setMask(3)
+	self.fixture:setMask(3,10)
 
 	--------------------------------methods-------------------------------------
 

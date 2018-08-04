@@ -313,8 +313,7 @@ function love.load(arg)
 	inventory1 = Inventory:new()
 	inventoryMode = false
 	released = true
-
-	player1 = Player:new(100, 0.2, 0.8)
+	
 	--lights:addBody(player1)
 	--enemies:add(Enemy:new(EnemyTypeRat, 1.5, 0.8))
 --	enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
