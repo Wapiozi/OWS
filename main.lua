@@ -398,10 +398,10 @@ function love.update(dt)
 
 
 	love.graphics.setColor(255,255,255)
-	but_a = suit.Button("<-",{id=1, cornerRadius=20} , 100,500, 40,40)
-  but_s = suit.Button("_",{id=2, cornerRadius=20} , 140,500, 40,40)
-	but_d = suit.Button("->",{id=3, cornerRadius=20} , 180,500, 40,40)
-	but_w = suit.Button("^",{id=4, cornerRadius=20} , 140,460, 40,40)
+	but_a = suit.Button("<-",{id=1, cornerRadius=plen(0.05)} , plen(0.1),plen(0.7), plen(0.15), plen(0.15))
+  but_s = suit.Button(" ",{id=2, cornerRadius=plen(0.05)} , plen(0.25),plen(0.7), plen(0.15), plen(0.15))
+	but_d = suit.Button("->",{id=3, cornerRadius=plen(0.05)} , plen(0.40),plen(0.7), plen(0.15), plen(0.15))
+	but_w = suit.Button("^",{id=4, cornerRadius=plen(0.05)} , plen(0.25),plen(0.55), plen(0.15), plen(0.15))
 
 	if (but_d.hit) then
 		player1:moveRight()
