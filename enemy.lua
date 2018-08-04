@@ -18,6 +18,32 @@ function Enemy:init()
 			3) ...
 	]]--
 
+	EnemyTypeBat = {
+		image = EnemyBatImg,
+		imgturn = -1,
+		size = 0.15,
+		Restitution = 0,
+		Friction = 0.1,
+		Damage = 0, -- later
+		hp = 100,
+		Reload = 0,
+		mass = 70,
+		manaMax = 100,
+		cooldown = 1.2,
+
+		behaviour = {
+			movement_bd = "fly_stay",
+			movement_ad = "fly_aggressive",
+			attack = "fly_contact",
+			sensor = {vision = false, smell = false, noise = true},
+			noise_dist = 0.1,
+			playerdist = 0,
+		}, -- movement_bd = before detect | ad = after detect
+
+		timer = 5,
+		Init = nil
+	}
+
 	EnemyTypeRat = {
 		image = EnemyRatImg,
 		imgturn = -1,
@@ -32,7 +58,9 @@ function Enemy:init()
 		behaviour = {
 			movement_bd = "move",
 			movement_ad = "victim",
-			sensor = {vision = true, smell = false, noise = true},
+			sensor = {vision = true, smell = false, noise = false},
+			smell_detection_time = 2,
+			noise_dist = 0.1,
 			playerdist = 0,
 			canJump = true
 		},
@@ -65,7 +93,9 @@ function Enemy:init()
 				[2] = MagicTypeGround,
 				[3] = MagicTypeIce
 			},
-			sensor = {vision = true, smell = false, noise = true},
+			sensor = {vision = false, smell = true, noise = false},
+			smell_detection_time = 3,
+			noise_dist = 0.1,
 			playerdist = 0.35,
 			canJump = true
 		}, -- movement_bd = before detect | ad = after detect
@@ -117,6 +147,8 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	self.cooldown = self.type.cooldown or 0
 	self.canJump= self.behaviour.canJump or false
 	self.nearObstacle = false
+	self.smell_detection_time = 0
+	self.noise_time = 0
 
 	 -- also, there should be some agilities of different classes
 	 -- for ex. immortal, reduce fire dmg or smth like that
@@ -144,6 +176,30 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 		table.insert(Ray.hitList, hit)
 
 		return 1 -- Continues with ray cast through all shapes.
+	end
+
+	self.smell_ray = function(fixture, x1, y2, x2, y2, fraction)
+		obj = fixture:getUserData()
+		if obj.name == "player" then
+			self.smell = {}
+			self.smell.fixture = fixture
+			self.smell.obj = obj
+			self.smell.fraction = fraction
+			return 0
+		end
+		return 1
+	end
+
+	self.noise_ray = function(fixture, x1, y2, x2, y2, fraction)
+		obj = fixture:getUserData()
+		if obj.name == "player" then
+			self.noise = {}
+			self.noise.fixture = fixture
+			self.noise.obj = obj
+			self.noise.fraction = fraction
+			return 0
+		end
+		return 1
 	end
 
 	self.getObstacle = function(fixture)
@@ -313,7 +369,7 @@ function Enemy:trigerredMovement(dt)
 			self.canAttack = true
 			--end
 		elseif (flen(math.abs(x2 - x1)) > self.behaviour.playerdist) then
-			local speed, direction = 0.55, 1
+			local speed, direction = 0.5, 1
 			self:move(dt,speed,direction)
 			--[[
 			if (xveloc < plen(0.3)) and (self.movDirection == 1) then self.body:applyForce(100000, 0)
@@ -356,9 +412,11 @@ function Enemy:trigerredMovement(dt)
 end
 
 function Enemy:detect()
+	self.noise = nil
+	self.smell = nil
+	local x1, y1 = self.body:getPosition()
+	local x2, y2 = player1.body:getPosition()
 	if self.behaviour.sensor.vision then
-		local x1, y1 = self.body:getPosition()
-		local x2, y2 = player1.body:getPosition()
 		local canBeSeen = false
 		world:rayCast(x1, y1, x2, y2, self.vision_ray)
 		--if ((self.movDirection == 1) and (x2 > x1)) or ((self.movDirection == -1) and (x1 < x2))then local canBeSeen = true end
@@ -398,13 +456,20 @@ function Enemy:detect()
 		return canBeSeen
 	end
 	if self.behaviour.sensor.smell then
-
-
+		world:rayCast(x1, y1, x2, y2, self.smell_ray)
+		if self.smell ~= nil then
+			if self.smell.fraction <= 0.8 then return true end
+			self.smell = nil
+		end
 		return false
 	end
 	if self.behaviour.sensor.noise then
-
-
+		--check for distance and if it then detect
+		world:rayCast(x1, y1, x2, y2, self.noise_ray)
+		if self.noise ~= nil then
+			if self.noise.fraction <= 0.85 then return true end
+			self.noise = nil
+		end
 		return false
 	end
 end
@@ -412,19 +477,63 @@ end
 function Enemy:update(dt)
 	-- every tic function
 	local xveloc, yveloc = self.body:getLinearVelocity()
+	local xv, yv = player1.body:getLinearVelocity()
 	--[[
 	if (xveloc <= 0.008) and (xveloc >= -0.008) then
 		self.readytojump = self.readytojump + dt
 	else self.readytojump = 0 end
 	--]]
+
+	-- DETECTION PHASE _________________________________________________________
 	self.player_detect = self:detect()
-	if self.player_detect then self.timer = self.type.timer end
+	if self.player_detect then
+		if self.smell ~= nil then
+			self.smell_detection_time = self.smell_detection_time + dt * 2
+			--self.body:setLinearVelocity(0, yveloc)
+		elseif self.noise ~= nil then
+			--self.body:setLinearVelocity(0, yveloc)
+		else
+			self.timer = self.type.timer
+			self.detection_time = 0
+		end
+	else self.smell_detection_time = 0 end
+
+	-- Cooldown , Mana , Attack checks__________________________________________
+
 	if (self.type.manaMax ~= nil) and (self.mana < self.type.manaMax) then self.mana = self.mana + dt*7 end
 	if (self.cooldown >= 0) then self.cooldown = self.cooldown - dt end
 	if self.canAttack == true then self:attack() self.canAttack = false end
+
+	-- SMELL____________________________________________________________________
+
+	if (self.smell ~= nil) and (self.smell_detection_time >= self.behaviour.smell_detection_time) then
+		self.timer = self.type.timer
+	end
+
+	-- NOISE____________________________________________________________________
+	if self.noise ~= nil then
+		if math.abs(xv) >= plen(0.45) and (self.noise_time >= 1) then
+			self.timer = self.type.timer
+			self.noise_time = 0
+		elseif math.abs(xv) >= plen(0.1) then
+			self.noise_time = self.noise_time + dt *2
+			self.body:setLinearVelocity(0, yveloc)
+		end
+	end
+
+	-- MOVEMENT_________________________________________________________________
 	if self.timer > 0 then
 		self.timer = self.timer - dt
 		self:trigerredMovement(dt)
+	--elseif (((self.smell ~= nil) and (self.smell_detection_time > 0)) or (self.noise ~= nil ))  then
+	elseif self.noise_time > 0 or self.smell_detection_time > 0 then
+		if self.noise_time > 0 then
+			self.noise_time = self.noise_time - dt
+		end
+		if self.smell_detection_time > 0 then
+			self.smell_detection_time = self.smell_detection_time - dt
+		end
+	--	self.body:setLinearVelocity(0, yveloc)
 	else
 		self.step = self.step - 1
 		if self.step == 0 then
