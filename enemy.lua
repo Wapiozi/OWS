@@ -93,7 +93,7 @@ function Enemy:init()
 				[2] = MagicTypeGround,
 				[3] = MagicTypeIce
 			},
-			sensor = {vision = false, smell = true, noise = false},
+			sensor = {vision = true, smell = true, noise = false},
 			smell_detection_time = 3,
 			noise_dist = 0.1,
 			playerdist = 0.35,
@@ -150,6 +150,8 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	self.smell_detection_time = 0
 	self.noise_time = 0
 
+	self.target = player1
+
 	 -- also, there should be some agilities of different classes
 	 -- for ex. immortal, reduce fire dmg or smth like that
 
@@ -162,7 +164,7 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	self.air_r   = red[a]
 	]]--
 	self.fixture:setCategory(3)
-	self.fixture:setMask(3,10)
+	self.fixture:setMask(3)
 
 	--------------------------------methods-------------------------------------
 
@@ -266,12 +268,16 @@ end
 
 function Enemy:attack()
 	local x, y = self:getMagicCoords()
+	local curx, cury = pcoords(self:getMagicCoords())
+	local xx, yy = self.target.body:getPosition()
+	local dist = getDist(curx, cury, xx, yy)
+	local vx, vy = (xx - curx)/dist, (yy - cury)/dist
 	if self.behaviour.attack == "magic" then
 		local typeMagic = math.random(self.behaviour.magic_type.q)
 		--love.event.quit(typeMagic)
 		typeMagic = self.behaviour.magic_type[typeMagic]
 		if (Magic:canShoot(self, typeMagic)) and (self.cooldown < 0) then
-			bullets:add(Magic:new(x, y, 50*self.side*self.type.imgturn, 1, typeMagic, self.name))
+			bullets:add(Magic:new(x, y, vx, vy, typeMagic, self.name))
 			self.cooldown = self.type.cooldown or 0
 		end
 	end
