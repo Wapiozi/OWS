@@ -122,6 +122,20 @@ function npc:new(type, x, y) -- + class of enemy, warior, magician..
 	self.fixture:setMask(2, 10)
 	self.fixture:setUserData(self)
 
+    --------------------------------methods-------------------------------------
+
+    self.vision_ray = function(fixture, x1, y2, x2, y2, fraction)
+		local hit = {}
+		hit.fixture = fixture
+		hit.x, hit.y = x1, y1
+		hit.xn, hit.yn = x2, y2
+		hit.fraction = fraction
+
+		table.insert(Ray.hitList, hit)
+
+		return 1 -- Continues with ray cast through all shapes.
+	end
+
 	return self
 end
 
@@ -200,7 +214,7 @@ function npc:detect()
 		local x1, y1 = self.body:getPosition()
 		local x2, y2 = player1.body:getPosition()
 		local canBeSeen = false
-		world:rayCast(x1, y1, x2, y2, rayCast_vision)
+		world:rayCast(x1, y1, x2, y2, self.vision_ray)
 		--if ((self.movDirection == 1) and (x2 > x1)) or ((self.movDirection == -1) and (x1 < x2))then local canBeSeen = true end
 		if ((self.movDirection == 1) and (x2 > x1)) or ((self.movDirection == -1) and (x2 < x1)) then canBeSeen = true end
 		for i, hit in ipairs(Ray.hitList) do
