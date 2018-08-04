@@ -1,0 +1,3 @@
+special power - no
+ii - moving randomly to left or right and sometimes jumping
+ii(when see player) - want to eat him...
