@@ -11,6 +11,8 @@ libparticles = require("particles")
 liblighting = require("lighting")
 libenv = require("envobjects")
 libnpc = require("npc")
+suit = require ("SUIT")
+--input = {text = ""}
 
 world = nil
 inventoryOpen = false
@@ -230,11 +232,14 @@ function love.load(arg)
 	BlueBrick = love.graphics.newImage("brick2.png") BlueBrick:setWrap("repeat", "repeat")
 	ChestImg = love.graphics.newImage("chest.png")
 	TorchImg = love.graphics.newImage("torch.png")
+
 	--NPC
 	NpcMerchantImg = love.graphics.newImage("merchant.png")
 	NpcChallengeImg = love.graphics.newImage("challenge.png")
 
-
+	--SUIT
+	--font = love.graphics.newFont("NotoSansHans-Regular.otf", 20)
+	--love.graphics.setFont(font)
 
 	--------------------------------------------------------------
 
@@ -352,6 +357,7 @@ function love.update(dt)
 			i = i+1
 		end
 	end
+
 	-----------------------------------------------------
 
 	local dx = camera._x + width / 2 - player1.body:getX()
@@ -386,6 +392,28 @@ function love.update(dt)
 
 	-- Clear fixture hit list.
 	Ray.hitList = {}
+
+
+	love.graphics.setColor(255,255,255)
+	but_a = suit.Button("<-",{id=1, cornerRadius=20} , 100,500, 40,40)
+  but_s = suit.Button("_",{id=2, cornerRadius=20} , 140,500, 40,40)
+	but_d = suit.Button("->",{id=3, cornerRadius=20} , 180,500, 40,40)
+	but_w = suit.Button("^",{id=4, cornerRadius=20} , 140,460, 40,40)
+
+	if (but_d.hit) then
+		player1:moveRight()
+		player1:moveRight()
+	elseif (but_a.hit) then
+		player1:moveLeft()
+		player1:moveLeft()
+	elseif (but_a.left) or (but_d.left) then
+		player1.movDirection = 0
+	end
+
+	if (but_w.hit) then
+		player1:jump()
+	end
+
 end
 
 function love.draw()
@@ -429,6 +457,8 @@ function love.draw()
 	end
 
 	camera:unset()
+	suit.draw()
+
 	if inventoryOpen then
 		inventory1:draw()
 		inventory1:checkInventoryMode()
