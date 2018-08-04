@@ -9,13 +9,13 @@ Magic.__index = Magic
 function Magic:init()
 	MagicTypeFire = {
 		image = FireballImg,
-		color = { r = 0.44, g = 0.01, b = 0.01},
+		color = { r = 1, g = 0.3, b = 0.0},
 		psystem = FireImg, --ParticleSystem
 		size = 0.028,
 		Restitution = 0,
 		Friction = 0.1,
 		Damage = 10,
-		ImpulseCoef = 1000, --speed of magic
+		ImpulseCoef = 50000, --speed of magic
 		mass = 1,
 		mana = 10, --used mana
 		aim = true,
@@ -31,7 +31,7 @@ function Magic:init()
 		Restitution = 0,
 		Friction = 100,
 		Damage = 25,
-		ImpulseCoef = 100,
+		ImpulseCoef = 5000,
 		mass = 5,
 		mana = 20,
 		aim = true,
@@ -47,7 +47,7 @@ function Magic:init()
 		Restitution = 0,
 		Friction = 0.01,
 		Damage = 5,
-		ImpulseCoef = 10000,
+		ImpulseCoef = 500000,
 		mass = 0.1,
 		mana = 5,
 		aim = true,
@@ -63,7 +63,7 @@ function Magic:init()
 		Restitution = 1.5,
 		Friction = 0.01,
 		Damage = 15,
-		ImpulseCoef = 2000,
+		ImpulseCoef = 100000,
 		mass = 2,
 		mana = 10,
 		aim = false,
@@ -81,7 +81,7 @@ function Magic:init()
 		Restitution = 0.4,
 		Friction = 4,
 		Damage = 40,
-		ImpulseCoef = 500,
+		ImpulseCoef = 25000,
 		mass = 20,
 		mana = 20,
 		aim = false,
@@ -138,7 +138,7 @@ function Magic:new(x, y, vx, vy, type, owner)
 	self.fixture:setFriction(type.Friction)
 	self.body:setMass(type.mass)
 	self.body:applyLinearImpulse(self.type.ImpulseCoef*vx, self.type.ImpulseCoef*vy)
-	self.body:applyAngularImpulse(1000)
+	self.body:applyAngularImpulse(math.random(1000)+1000)
 	self.body:setAngle(45)
 	self.fixture:setCategory(6)
 	self.fixture:setUserData(self)
@@ -150,7 +150,7 @@ function Magic:new(x, y, vx, vy, type, owner)
 
 
 	particles:add(Particle:new(FireImg, self.body))
-	lights:add(flen(x), flen(y), 0.05, false, self.body, self.type.color.r, self.type.color.g, self.type.color.b)--1, 0.3, 0)
+	lights:add(flen(x), flen(y), 0.1, false, self.body, self.type.color.r, self.type.color.g, self.type.color.b)--1, 0.3, 0)
 
 	if self.type.Init ~= nil then self.type.Init() end
 
