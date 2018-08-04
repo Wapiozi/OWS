@@ -317,10 +317,10 @@ function love.update(dt)
 	camera:move(dx*4*dt,dy*10*dt)
 
 	enemies:update(dt)
+	player1:update(dt)
 	world:update(dt)
 	bullets:update(dt)
 	particles:update(dt)
-	player1:update(dt)
 	envir:update(dt)
 	envirsh:update(dt)
 

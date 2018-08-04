@@ -32,23 +32,13 @@ function Player:new(x, y)
 	self.objCnt = 0
 	self.contCallback = function(obj)
 		if not obj.body:isDestroyed() then
-			local curx, cury = self.body:getPosition()
+			local curx, cury = pcoords(self:getMagicCoords())
 		    local xx, yy = obj.body:getPosition()
-		    world:rayCast(curx, cury, xx, yy, self.rayCallback)
+			local dist = getDist(curx, cury, xx, yy)
+			local vx, vy = (xx - curx)/dist, (yy - cury)/dist
+		    self.objCnt = self.objCnt + 1
+			self.aimList[self.objCnt] = {obj = obj, vx = vx, vy = vy, dist = dist}
 		end
-	end
-
-	self.rayCallback = function(fixt, xx, yy, xn, yn, fraction)
-	    local obj = fixt:getUserData()
-
-	    if obj ~= nil and obj.name == "enemy" then
-	        self.objCnt = self.objCnt + 1
-			local curx, cury = self:getMagicCoords()
-			curx, cury = pcoords(curx, cury)
-
-	        self.aimList[self.objCnt] = {obj = obj, x = xx, y = yy, fraction = fraction, dist = getDist(curx, cury, xx, yy)}
-	    end
-	    return 0
 	end
 
 	self.body = love.physics.newBody(world, x, y, "dynamic")  --create new dynamic body in world
@@ -173,13 +163,19 @@ function Player:shoot(gesture)
 	local closestEnemy = self.aimList[1]
 
 	for i = 2, self.objCnt do
-		if self.aimList[i].dist < closestEnemy.dist then closestEnemy = self.aimList[i] end
+		if self.aimList[i].dist < closestEnemy.dist then
+			if self.side > 0 and self.aimList[i].vx > 0 then closestEnemy = self.aimList[i]
+			elseif self.side < 0 and self.aimList[i].vx < 0 then closestEnemy = self.aimList[i] end
+		end
 	end
 
 	local x, y = self:getMagicCoords()
 	local xx, yy = pcoords(self:getMagicCoords())
-	local ex, ey = closestEnemy.obj.body:getPosition()
-	local vx, vy = (ex - xx)/closestEnemy.dist, (ey - yy)/closestEnemy.dist
+	local vx, vy = 1*self.side, 0
+	if closestEnemy ~= nil and closestEnemy.obj ~= nil then
+		if self.side > 0 and closestEnemy.vx > 0 then vx, vy = closestEnemy.vx, closestEnemy.vy
+		elseif self.side < 0 and closestEnemy.vx < 0 then vx, vy = closestEnemy.vx, closestEnemy.vy end
+	end
 
 	local i = 1
 	while gesture[i] ~= 10 do   --check for end code
