@@ -34,43 +34,6 @@ function Player:new(x, y)
 		if not obj.body:isDestroyed() then
 			local curx, cury = self.body:getPosition()
 		    local xx, yy = obj.body:getPosition()
-<<<<<<< HEAD
-			local aimChoosen = nil
-		    world:rayCast(curx, cury, xx, yy, self.rayCallback)
-			for i, aims in ipairs(self.aimList) do
-				local obj = aims.fixture:getUserData()
-				if (obj.name == "enemy") then
-					if aims.fraction > 0.92 then
-						if enemy_fraction ~= nil then
-							if aims.fraction < enemy_fraction then
-								enemy_fraction = math.min(aims.fraction, enemy_fraction)
-								aimChoosen = obj
-							end
-						else
-							local enemy_fraction = aims.fraction
-							aimChoosen = obj
-						end
-					end
-				end
-			end
-			return aimChoosen
-		end
-	end
-
-	self.rayCallback = function(fixture, x1, y2, x2, y2, fraction)
-	    local obj = fixt:getUserData()
-
-	    if obj ~= nil and obj.name == "enemy" then
-			local aims = {}
-			aims.fixture = fixture
-			aims.x, aims.y = x1, y1
-			aims.xn, hit.yn = x2, y2
-			aims.fraction = fraction
-
-			table.insert(self.aimList, aims)
-			--[[
-			self.objCnt = self.objCnt + 1
-=======
 		    world:rayCast(curx, cury, xx, yy, self.rayCallback)
 		end
 	end
@@ -80,19 +43,12 @@ function Player:new(x, y)
 
 	    if obj ~= nil and obj.name == "enemy" then
 	        self.objCnt = self.objCnt + 1
->>>>>>> a23f9de5b71004d5751f009b9c846a8cf8516303
 			local curx, cury = self:getMagicCoords()
 			curx, cury = pcoords(curx, cury)
 
 	        self.aimList[self.objCnt] = {obj = obj, x = xx, y = yy, fraction = fraction, dist = getDist(curx, cury, xx, yy)}
-<<<<<<< HEAD
-			]]--
-	    end
-	    return 1
-=======
 	    end
 	    return 0
->>>>>>> a23f9de5b71004d5751f009b9c846a8cf8516303
 	end
 
 	self.body = love.physics.newBody(world, x, y, "dynamic")  --create new dynamic body in world

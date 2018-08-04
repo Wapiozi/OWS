@@ -278,19 +278,19 @@ function love.load(arg)
 	walls:add(Brick:new(0-0.05, 0.5, 0.1, 1, "wall"))
 
 	envir:add(EnvObject:new(2, 0.5, ChestImg, true, 1000, 0.3))
-	envirsh:add(Torch:new(0.5, 0.1))
+	--envirsh:add(Torch:new(0.5, 0.1))
 	envirsh:add(Transition:new(1, 0.9))
 
-	enemies:add(Enemy:new(EnemyTypeRat, 0.4, 0.8))
-	enemies:add(Enemy:new(EnemyTypeMadwizard, 0.1, 0.8))
-
+	enemies:add(Enemy:new(EnemyTypeRat, 0.9, 0.8))
+	enemies:add(Enemy:new(EnemyTypeMadwizard, 0.8, 0.8))
+--[[
 	items:add(Item:new(0.5,0.8,WandObj))
 	items:add(Item:new(0.6,0.8,WandObj))
 	items:add(Item:new(0.7,0.8,WandObj))
 	items:add(Item:new(0.8,0.8,ClothObj))
 	items:add(Item:new(0.9,0.8,ClothObj))
 	items:add(Item:new(0.2,0.8,ClothObj))
-
+]]--
 	func = lights:addBodyFunc()
 	walls:exec(func)
 	envir:exec(func)
