@@ -39,22 +39,22 @@ function npc:init()
 	}
 
   NpcTypeChallenge = {
-  image = NpcChallengeImg,
-  imgturn = -1,
-  size = 0.2,
-  Restitution = 0,
-  Friction = 0.09,
-  Damage = 0,
-  hp = 1000,
-  Reload = 0,
-  mass = 70,
+     image = NpcChallengeImg,
+     imgturn = -1,
+     size = 0.2,
+     Restitution = 0,
+     Friction = 0.09,
+     Damage = 0,
+     hp = 1000,
+     Reload = 0,
+     mass = 70,
 
-  behaviour = {
-    movement_bd = "slow_move",
-    movement_ad = "neutral",
-    sensor = {vision = true, smell = false, noise = true},
-    playerdist = 0
-  },
+     behaviour = {
+        movement_bd = "slow_move",
+        movement_ad = "neutral",
+        sensor = {vision = true, smell = false, noise = true},
+        playerdist = 0
+     },
 
   timer = 5,
   Init = nil
@@ -66,7 +66,7 @@ end
 
 
 function npc:new(type, x, y) -- + class of enemy, warior, magician..
-  txt = {}
+    txt = {}
 
 	self = setmetatable({}, self)
 
@@ -77,7 +77,7 @@ function npc:new(type, x, y) -- + class of enemy, warior, magician..
 	self.imgturn = self.type.imgturn
 	self.scale, self.width, self.height = imageProps(self.type.size, self.image)
 
-  txt.image = MessageImg
+    txt.image = MessageImg
 
 	self.body = love.physics.newBody(world, x, y, "dynamic")
 	self.body:setAngle(0)
@@ -95,8 +95,6 @@ function npc:new(type, x, y) -- + class of enemy, warior, magician..
 	self.fixture = love.physics.newFixture(self.body, self.shape)
 	self.fixture:setRestitution(0.1)
 	self.fixture:setFriction(5)
-
-    self.fixture:setCategory(7)
 
 	self.canAttack = false
 
@@ -181,20 +179,20 @@ function npc:standartMovement()
 end
 
 function npc:trigerredMovement()
-  local xveloc, yveloc = self.body:getLinearVelocity()
-  local x1, y1 = self.body:getPosition()
-  local x2, y2 = player1.body:getPosition()
-  if self.behaviour.movement_ad == "neutral" then
-    if (x1 > x2) then
-      self.movDirection = 1
-      self.side = 1 * self.type.imgturn
-    else
-      self.movDirection = -1
-      self.side = -1 * self.type.imgturn
-    end
+    local xveloc, yveloc = self.body:getLinearVelocity()
+    local x1, y1 = self.body:getPosition()
+    local x2, y2 = player1.body:getPosition()
+    if self.behaviour.movement_ad == "neutral" then
+        if (x1 > x2) then
+            self.movDirection = 1
+            self.side = 1 * self.type.imgturn
+        else
+            self.movDirection = -1
+            self.side = -1 * self.type.imgturn
+        end
     --if (xveloc < plen(0.55)) and (self.movDirection == 1) then self.body:applyForce(100000, 0)
     --elseif (xveloc > -plen(055)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0)
-  end
+    end
 end
 
 function npc:detect()
@@ -219,23 +217,6 @@ function npc:detect()
 				else canBeSeen = false end
 			end
 		end
-		--local RayLeng1th = plen(0.2)
-		--local x2 = x1 + (RayLength * self.side)
-		--local y2 = y1 + plen(0.1)
-		--local y3 = y1 - plen(0.1)
-		--local xn, yn, fraction = self.fixture:rayCast(x1, y1, x2, y1, RayLength, 1)
-
-		--[[
-		while (xn ~= nil) and (xn <= RayLength) do
-			hitx, hity = x1 + (x2 - x1) * fraction, y1 + (y1 - y1) * fraction
-			if player1.fixture:testPoint(hitx, hity) then
-				return true
-			end
-			local x1 = hitx
-			local xn, yn, fraction = self.fixture:rayCast(x1, y1, x2, y1, RayLength, 1)
-		end
-		]]--
-		-- Clear fixture hit list.
 		Ray.hitList = {}
 		return canBeSeen
 	end
@@ -319,4 +300,3 @@ function npc:getDamage(dmg, magic)
 	self.hp = self.hp-dmg
 	if self.hp < 0 then self:destroy() end
 end
-return(self)
