@@ -103,6 +103,53 @@ function Enemy:init()
 		timer = 5,
 		Init = nil
 	}
+
+	NpcTypeMerchant = {
+		image = NpcMerchantImg,
+		imgturn = 1,
+		size = 0.2,
+		Restitution = 0,
+		Friction = 0.09,
+		Damage = 0,
+		hp = 1000,
+		Reload = 0,
+		mass = 70,
+
+		behaviour = {
+			movement_bd = "slow_move",
+			movement_ad = "neutral",
+			sensor = {vision = true, smell = false, noise = true},
+			playerdist = 0.1
+		},
+
+		timer = 5,
+		Init = nil
+		--Collis = nil
+	}
+
+NpcTypeChallenge = {
+    image = NpcChallengeImg,
+    imgturn = 1,
+    size = 0.2,
+    Restitution = 0,
+    Friction = 0.09,
+    Damage = 0,
+    hp = 1000,
+    Reload = 0,
+    mass = 70,
+	question = true,
+
+    behaviour = {
+        movement_bd = "slow_move",
+        movement_ad = "neutral",
+        sensor = {vision = true, smell = false, noise = true},
+        playerdist = 0.12
+    },
+
+    timer = 5,
+    Init = nil
+    --Collis = nil
+}
 end
 
 function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
@@ -149,6 +196,7 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	self.nearObstacle = false
 	self.smell_detection_time = 0
 	self.noise_time = 0
+	self.question = self.type.question or false
 
 	self.target = player1
 
@@ -344,7 +392,27 @@ function Enemy:trigerredMovement(dt)
 	local x1, y1 = self.body:getPosition()
 	local x2, y2 = player1.body:getPosition()
 
-	if self.behaviour.movement_ad == "victim" then
+	if self.behaviour.movement_ad == "neutral" then
+		if (x1 < x2) then
+			self.movDirection = 1
+			self.side = 1 * self.type.imgturn
+		else
+			self.movDirection = -1
+			self.side = -1 * self.type.imgturn
+		end
+		if ((flen(math.abs(x2 - x1)) < self.behaviour.playerdist + 0.02) and (flen(math.abs(x2 - x1)) > self.behaviour.playerdist - 0.02) ) then
+			self.body:setLinearVelocity(0, yveloc)
+			self.canAttack = true
+		elseif (flen(math.abs(x2 - x1)) > self.behaviour.playerdist) then
+			local speed, direction = 0.15, 1
+			self:move(dt,speed,direction)
+		elseif (flen(math.abs(x2 - x1)) < self.behaviour.playerdist) then
+			local speed, direction = 0.05, -1
+			self:move(dt,speed,direction)
+		end
+
+
+	elseif self.behaviour.movement_ad == "victim" then
 		if (x1 > x2) then
 			self.movDirection = 1
 			self.side = 1 * self.type.imgturn
@@ -563,6 +631,20 @@ function Enemy:drawHP()
 	love.graphics.rectangle("fill", x, y-plen(0.01), (x1-x)*len, plen(0.01))
 
 	love.graphics.setColor(1, 1, 1)
+end
+
+function Enemy:work()
+	if self.question == true then
+		local x1, y1 = self.body:getPosition()
+		local x2, y2 = player1.body:getPosition()
+		x1, y1 = fcoords(x1, y1)
+		x2, y2 = fcoords(x2, y2)
+		if ((math.abs(x1-x2)<0.15) and (math.abs(y1-y2)<0.15) and (self.question == true)) then
+			love.graphics.setColor(1, 1, 1, 1)
+			love.graphics.draw(MessageImg, 0, 400)
+			love.graphics.printf("That's where the story begins. You'll go through challenges and hard task and maybe even become a great and powerfull magician, but for now all you have this magic stuff of wizardry good luck surviving!", 200, 530 ,700,left,0,1.5)
+		end
+	end
 end
 
 function Enemy:draw()

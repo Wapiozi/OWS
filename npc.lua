@@ -38,27 +38,27 @@ function npc:init()
 		--Collis = nil
 	}
 
-  NpcTypeChallenge = {
-     image = NpcChallengeImg,
-     imgturn = -1,
-     size = 0.2,
-     Restitution = 0,
-     Friction = 0.09,
-     Damage = 0,
-     hp = 1000,
-     Reload = 0,
-     mass = 70,
+NpcTypeChallenge = {
+    image = NpcChallengeImg,
+    imgturn = -1,
+    size = 0.2,
+    Restitution = 0,
+    Friction = 0.09,
+    Damage = 0,
+    hp = 1000,
+    Reload = 0,
+    mass = 70,
 
-     behaviour = {
+    behaviour = {
         movement_bd = "slow_move",
         movement_ad = "neutral",
         sensor = {vision = true, smell = false, noise = true},
         playerdist = 0
-     },
+    },
 
-  timer = 5,
-  Init = nil
-  --Collis = nil
+    timer = 5,
+    Init = nil
+    --Collis = nil
 }
 
 end

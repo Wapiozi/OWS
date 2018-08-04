@@ -10,7 +10,7 @@ libcont = require("container")
 libparticles = require("particles")
 liblighting = require("lighting")
 libenv = require("envobjects")
-libnpc = require("npc")
+--libnpc = require("npc")
 utf8 = require("utf8")
 
 world = nil
@@ -272,7 +272,7 @@ function love.load(arg)
 	particles = Container:new() -- (Category 7) by now no category
 	envir = Container:new()	--shadowed EnvObjects
 	envirsh = Container:new() --non shadowed EnvObjects
-	npcs = Container:new() --Category 7
+	--npcs = Container:new() --Category 7
 
 	player1 = Player:new(0.2, 0.8)
 	inventory1 = Inventory:new()
@@ -283,7 +283,7 @@ function love.load(arg)
 	Item:init()
 	Inventory:init()
 	Enemy:init()
-	npc:init()
+	--npc:init()
 
 	lights = Lights:create()
 
@@ -304,9 +304,9 @@ function love.load(arg)
 	--envirsh:add(Torch:new(0.5, 0.1))
 	envirsh:add(Transition:new(1, 0.9))
 
-	enemies:add(Enemy:new(EnemyTypeRat, 0.9, 0.8))
-	enemies:add(Enemy:new(EnemyTypeMadwizard, 0.8, 0.8))
-
+	--enemies:add(Enemy:new(EnemyTypeRat, 0.9, 0.8))
+	--enemies:add(Enemy:new(EnemyTypeMadwizard, 0.8, 0.8))   nado vernutj potom
+	enemies:add(Enemy:new(NpcTypeChallenge, 0.9, 0.8))
 	func = lights:addBodyFunc()
 	walls:exec(func)
 
@@ -314,8 +314,12 @@ function love.load(arg)
 	inventoryMode = false
 	released = true
 
-	npcs:add(npc:new(NpcTypeMerchant,0.8,0.8))
-	npcs:add(npc:new(NpcTypeChallenge,0.4,0.8))
+	--lights:addBody(player1)
+	--enemies:add(Enemy:new(EnemyTypeRat, 1.5, 0.8))
+--	enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
+
+	--npcs:add(npc:new(NpcTypeMerchant,0.8,0.8))
+	--npcs:add(npc:new(NpcTypeChallenge,0.4,0.8))
 
 --	items:add(Item:new(0.5,0.8,WandObj))
 	--items:add(Item:new(0.6,0.8,WandObj))
@@ -352,7 +356,7 @@ function love.update(dt)
 	enemies:update(dt)
 	player1:update(dt)
 	world:update(dt)
-	npcs:update(dt) --new FICHA
+	--npcs:update(dt) --new FICHA
 	bullets:update(dt)
 	particles:update(dt)
 	envir:update(dt)
@@ -382,7 +386,9 @@ function love.draw()
 	particles:CheckDraw()
 	enemies:CheckDraw()
 	items:CheckDraw()
-	npcs:CheckDraw()
+	envir:CheckDraw()
+	envirsh:CheckDraw()
+	--npcs:CheckDraw()
 	player1:draw()
 
 	lights:endDraw()
@@ -402,7 +408,7 @@ function love.draw()
 
 	camera:unset()
 
-	npcs:exec(npc.work)
+	enemies:exec(Enemy.work)
 
 	if inventoryOpen then
 		inventory1:draw()
