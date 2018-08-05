@@ -125,6 +125,11 @@ function Magic:init()
 
 	end
 
+	MagicTypeGround.Collis = function(px, py)
+		px, py = fcoords(px, py)
+		bullets:add(Magic:new(px, py, 0, 0, MagicTypeFuckingExplosion))
+	end
+
 	MagicTypeTinyLaser.Collis = function(fixt, x, y, xn, yn, fraction)
 		obj = fixt:getUserData()
 
