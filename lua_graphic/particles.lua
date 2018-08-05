@@ -2,7 +2,7 @@
 Particle = {}
 Particle.__index = Particle
 
-function Particle:new(image, body, toUp, x, y, emissionTime)
+function Particle:new(image, body, toUp, x, y, emissionTime, accel)
 	self = setmetatable({}, self)
 
 	self.body = body
@@ -13,8 +13,8 @@ function Particle:new(image, body, toUp, x, y, emissionTime)
 	self.partic:setParticleLifetime(0.1, 0.3)
 	self.partic:setEmissionRate(100)
 	self.partic:setSizeVariation(0.01)
-	if toUp then
-		self.partic:setLinearAcceleration(-2000, 0, 2000, 2000)
+	if accel ~= nil then 
+		self.partic:setLinearAcceleration(-accel, -accel, accel, accel)
 	else
 		self.partic:setLinearAcceleration(-2000, -2000, 2000, 2000)
 	end

@@ -1,6 +1,3 @@
-Mana = {fire = 1, water = 2, air = 3, earth = 4}
-
-
 ------------------Magic----------------------------------------------------
 
 --[[
@@ -110,6 +107,20 @@ function Magic:init()
 		Collis = nil
 	}
 
+	MagicTypeFuckingExplosion = {
+		type = 4,
+		color = {r = 1, g = 1, b = 1},
+		psystem = FireImg,
+		radius = 0.2,
+		Damage = 10,
+		mana = 20,
+		fade = 5,
+		aim = false,
+		ricochet = false,
+		Init = nil,
+		Collis = nil
+	}
+
 	MagicTypeFire.Collis = function(px, py)
 
 	end
@@ -126,6 +137,18 @@ function Magic:init()
 		x, y = fcoords(x, y)
 		particles:add(Particle:new(MagicTypeTinyLaser.psystem, nil, false, x, y, 0.1))
 		return 1
+	end
+
+	MagicTypeFuckingExplosion.Collis = function(fixt)
+		obj = fixt:getUserData()
+
+		if obj ~= nil and obj.name ~= nil then
+			if obj.name == "player" or obj.name == "enemy" then
+				obj:getDamage(MagicTypeFuckingExplosion.Damage)
+			end
+		end
+
+		return true
 	end
 
 end
@@ -169,9 +192,6 @@ function Magic:laserInit(x, y, vx, vy, type, scale)
 
 	world:rayCast(x, y, x + plen(self.type.maxLen)*vx, y + plen(self.type.maxLen)*vy, type.Collis)
 
-	if (xx == 0) then xx = 0.00000001 end
-	if (yy == 0) then yy = 0.00000001 end
-
 	if (vx < 0) and (vy >= 0) then
 		vx = -vx
 		self.angle = math.atan(vx/vy) + math.pi/2
@@ -187,6 +207,15 @@ function Magic:laserInit(x, y, vx, vy, type, scale)
 	end
 end
 
+function Magic:areaInit(x, y, type)
+	world:queryBoundingBox(x - plen(type.radius), y - plen(type.radius), x + plen(type.radius), y + plen(type.radius), type.Collis)
+
+	self.lifetime = 0
+
+	x, y = fcoords(x, y)
+	particles:add(Particle:new(type.psystem, nil, false, x, y, 0.1, 10000))
+end
+
 
 function Magic:new(x, y, vx, vy, type, owner)
 	self = setmetatable({}, self)
@@ -200,12 +229,14 @@ function Magic:new(x, y, vx, vy, type, owner)
 	if self.type.Init ~= nil then self.type.Init() end
 
 	self.image = self.type.image
-	self.scale, self.width, self.height = imageProps(self.type.size, self.image)
+	if self.image ~= nil then self.scale, self.width, self.height = imageProps(self.type.size, self.image) end
 
 	if type.type == 1 then
 		self:ballisticInit(x, y, vx, vy, self.type)
 	elseif type.type == 3 then
 		self:laserInit(x, y, vx, vy, self.type, self.scale)
+	elseif type.type == 4 then
+		self:areaInit(x, y, self.type)
 	end
 
 	self.damage = self.type.Damage
@@ -246,6 +277,9 @@ function Magic:update(dt)
 		self.alphaCol = math.max(self.type.fade - self.lifetime, 0)/self.type.fade
 
 		if self.alphaCol == 0 then self:delete() end
+	elseif self.type.type == 4 then
+		self.lifetime = self.lifetime + dt
+		if self.lifetime > self.type.fade then self:delete() end
 	end
 end
 
