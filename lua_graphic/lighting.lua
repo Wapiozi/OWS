@@ -21,7 +21,7 @@ function Lights:create()
 
 	self.pdegs = {{0, 0}}
 
-	self.shadowThread = love.thread.newThread("lightsCalc.lua")
+	self.shadowThread = love.thread.newThread("lua_graphic/lightsCalc.lua")
 
 	for i = 1, 100 do
 		local data = {0, 0, 0, 0}   --{x, y, 0, bright}
@@ -37,7 +37,7 @@ function Lights:create()
 	end
 
 	self.count = 0
-	self.shader = love.graphics.newShader("lights.frag", "lights.vert")
+	self.shader = love.graphics.newShader("shaders/lights.frag", "shaders/lights.vert")
 	return self
 end
 
