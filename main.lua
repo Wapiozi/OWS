@@ -133,11 +133,27 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 		obj1.side = obj1.side * -1
 		obj1.movDirection = obj1.side * obj1.imgturn
 		obj1.step = love.math.random(1000,1000)
+		--if obj2.type.enemyType == 'fly' then
+		--	obj1.movDirectionY = obj1.movDirectionY * -1
+		--end
 	end
 	if (obj2 ~= nil) and (obj2.name == "enemy") and (obj2.behaviour.movement ~= "stop") and (obj2.player_detect == false) and (obj1 ~= nil) and ((obj1.name ~= "brick") or (obj1.mean ~= "floor")) and (obj2.name ~= "magic") then
 		obj2.side = obj2.side * -1
 		obj2.movDirection = obj2.side * obj2.imgturn
 		obj2.step = love.math.random(1000,1000)
+		--if obj2.type.enemyType == 'fly' then
+		--	obj2.movDirectionY = obj2.movDirectionY * -1
+		--end
+	end
+
+	if (obj1 ~= nil) and (obj2 ~= nil) and (obj1.name == "enemy") and (obj1.behaviour.attack == "fly_contact") and (obj2.name == 'player') then
+		obj2:getDamage(obj1.type.Damage)
+		obj2.body:applyLinearImpulse(50000 * obj1.movDirection, 5000 * obj1.movDirectionY)
+	end
+
+	if (obj1 ~= nil) and (obj2 ~= nil) and (obj2.name == "enemy") and (obj2.behaviour.attack == "fly_contact") and (obj1.name == 'player') then
+		obj1:getDamage(obj2.type.Damage)
+		obj1.body:applyLinearImpulse(50000 * obj2.movDirection, 5000 * obj2.movDirectionY)
 	end
 
 end
@@ -269,29 +285,35 @@ function love.load(arg)
 	MinecraftInv = love.graphics.newImage("sprites/inventory/minecraft.png")
 	InvborderImg = love.graphics.newImage("sprites/inventory/inventory_border.png")
 	MessageImg = love.graphics.newImage("sprites/creatures/message.png")
-	-- enemies
-		EnemyMadwizardImg = love.graphics.newImage("sprites/creatures/EnemyMadwizard.png")
-		EnemyRatImg = love.graphics.newImage("sprites/creatures/EnemyRat.png")
-	-- magic
-	FireballImg = love.graphics.newImage("sprites/magic/Fireball.png")
-	WaterballImg = love.graphics.newImage("sprites/magic/Fireball.png")
-	AirballImg = love.graphics.newImage("sprites/magic/Fireball.png")
-	IceballImg = love.graphics.newImage("sprites/magic/Fireball.png")
-	GroundballImg = love.graphics.newImage("sprites/magic/Fireball.png")
-	WandSdImg = love.graphics.newImage("sprites/items/palka.png")
-	ClothSdImg = love.graphics.newImage("sprites/items/majka.png")
-	BrickImg = love.graphics.newImage("sprites/bg/brick.png")
-	FireImg = love.graphics.newImage("sprites/particles/fire.png")
-	BlueBrick = love.graphics.newImage("sprites/bg/brick2.png") BlueBrick:setWrap("repeat", "repeat")
-	ChestImg = love.graphics.newImage("sprites/env_obj/chest.png")
-	TorchImg = love.graphics.newImage("sprites/env_obj/torch.png")
 	TransitionImg = love.graphics.newImage("sprites/WTF_BALLS/Enemy.jpg")
-	LaserImg = love.graphics.newImage("sprites/magic/laser.png") LaserImg:setWrap("repeat", "repeat")
-	FireeImg = love.graphics.newImage("sprites/particles/firee.png")
-	SpikeImg = love.graphics.newImage("sprites/traps/spikes.png")
-	--NPC
-	NpcMerchantImg = love.graphics.newImage("sprites/creatures/merchant.png")
-	NpcChallengeImg = love.graphics.newImage("sprites/creatures/challenge.png")
+	--creatures
+		-- enemies
+			EnemyMadwizardImg = love.graphics.newImage("sprites/creatures/EnemyMadwizard.png")
+			EnemyRatImg = love.graphics.newImage("sprites/creatures/EnemyRat.png")
+			EnemyBatImg = love.graphics.newImage("sprites/creatures/EnemyRat.png")
+		--NPC
+			NpcMerchantImg = love.graphics.newImage("sprites/creatures/merchant.png")
+			NpcChallengeImg = love.graphics.newImage("sprites/creatures/challenge.png")
+	-- magic
+		FireballImg = love.graphics.newImage("sprites/magic/Fireball.png")
+		WaterballImg = love.graphics.newImage("sprites/magic/Fireball.png")
+		AirballImg = love.graphics.newImage("sprites/magic/Fireball.png")
+		IceballImg = love.graphics.newImage("sprites/magic/Fireball.png")
+		GroundballImg = love.graphics.newImage("sprites/magic/Fireball.png")
+		LaserImg = love.graphics.newImage("sprites/magic/laser.png") LaserImg:setWrap("repeat", "repeat")
+	-- objects
+		-- items
+			WandSdImg = love.graphics.newImage("sprites/items/palka.png")
+			ClothSdImg = love.graphics.newImage("sprites/items/majka.png")
+		-- interior
+			ChestImg = love.graphics.newImage("sprites/env_obj/chest.png")
+			TorchImg = love.graphics.newImage("sprites/env_obj/torch.png")
+	-- bg
+		BrickImg = love.graphics.newImage("sprites/bg/brick.png")
+		BlueBrick = love.graphics.newImage("sprites/bg/brick2.png") BlueBrick:setWrap("repeat", "repeat")
+	-- particles
+		FireImg = love.graphics.newImage("sprites/particles/fire.png")
+		FireeImg = love.graphics.newImage("sprites/particles/firee.png")
 
 
 

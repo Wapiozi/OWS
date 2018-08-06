@@ -18,13 +18,16 @@ function Enemy:init()
 			3) ...
 	]]--
 
+
+-- FLY ENEMIES _________________________________________________________________
 	EnemyTypeBat = {
+		enemyType = 'fly',
 		image = EnemyBatImg,
 		imgturn = -1,
-		size = 0.15,
+		size = 0.05,
 		Restitution = 0,
 		Friction = 0.1,
-		Damage = 0, -- later
+		Damage = 10, -- later
 		hp = 100,
 		Reload = 0,
 		mass = 70,
@@ -36,7 +39,7 @@ function Enemy:init()
 			movement_bd = "fly_stay",
 			movement_ad = "fly_aggressive",
 			attack = "fly_contact",
-			sensor = {vision = false, smell = false, noise = true},
+			sensor = {vision = true, smell = false, noise = false},
 			noise_dist = 0.1,
 			playerdist = 0,
 		}, -- movement_bd = before detect | ad = after detect
@@ -45,7 +48,10 @@ function Enemy:init()
 		Init = nil
 	}
 
+
+--GROUND ENEMIES________________________________________________________________
 	EnemyTypeRat = {
+		enemyType = 'ground',
 		image = EnemyRatImg,
 		imgturn = -1,
 		size = 0.028,
@@ -73,6 +79,7 @@ function Enemy:init()
 	}
 
 	EnemyTypeMadwizard = {
+		enemyType = 'ground',
 		image = EnemyMadwizardImg,
 		imgturn = -1,
 		size = 0.2,
@@ -107,7 +114,9 @@ function Enemy:init()
 		Init = nil
 	}
 
+--NPC___________________________________________________________________________
 	NpcTypeMerchant = {
+		enemyType = 'ground',
 		image = NpcMerchantImg,
 		imgturn = 1,
 		size = 0.2,
@@ -117,7 +126,7 @@ function Enemy:init()
 		hp = 1000,
 		Reload = 0,
 		mass = 70,
-		ghost = true,
+		ghost = false,
 
 		behaviour = {
 			movement_bd = "slow_move",
@@ -132,6 +141,7 @@ function Enemy:init()
 	}
 
 NpcTypeChallenge = {
+	enemyType = 'ground',
     image = NpcChallengeImg,
     imgturn = 1,
     size = 0.2,
@@ -187,6 +197,7 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	self.canAttack = false
 	self.readytojump = 0
 	self.ax = 0
+	self.ay = 0
 
 	self.body:setMass(self.type.mass)
 
@@ -202,6 +213,7 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	self.smell_detection_time = 0
 	self.noise_time = 0
 	self.question = self.type.question or false
+	self.movDirectionY = 1
 
 	self.target = player1
 
@@ -352,44 +364,52 @@ function Enemy:move(dt, speed, direction)
 	end
 end
 
+function Enemy:fly(dt, speed, dx, dy)
+	local xveloc, yveloc = self.body:getLinearVelocity()
+	if (dx == 0) then
+		self.body:setLinearVelocity(0,0.001)
+	else
+		if self.movDirection == 1 then
+			self.ax = self.ax + 5 * dt
+		else
+			self.ax = -self.ax + 5 *dt
+		end
+
+		if self.movDirectionY == 1 then
+			self.ay = self.ay + 5 * dt
+		else
+			self.ay = -self.ay + 5 *dt
+		end
+
+		if (math.abs(xveloc) < plen(speed)) then
+			xveloc = xveloc + self.movDirection * dx * math.min(math.max(plen(0.03),math.abs(self.ay)),plen(0.03))
+		end
+
+		if (math.abs(yveloc) < plen(speed)) then
+			yveloc = yveloc + self.movDirectionY * dy * math.min(math.max(plen(0.03),math.abs(self.ay)),plen(0.03))
+		end
+
+		self.body:setLinearVelocity(xveloc,yveloc)
+	end
+end
+
 function Enemy:standartMovement(dt)
 	--check for the floor (in future)
-	if self.behaviour.movement_bd == "move" then
+
+	--FLY--
+	if self.behaviour.movement_bd == "fly_stay" then
+		local speed, direction = 0.35, 0
+		self:fly(dt,speed,direction)
+
+
+	--MOVE--
+	elseif self.behaviour.movement_bd == "move" then
 		local speed, direction = 0.35, 1
 		self:move(dt,speed,direction)
 
-	--[[	if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:applyForce(100000, 0)
-		elseif (xveloc > -plen(0.45)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0)
-		elseif (self.movDirection == 0) then
-			if (xveloc > 0.2) then
-				self.body:applyForce(-10000, 0)
-			elseif (xveloc < -0.2) then
-				self.body:applyForce(10000, 0)
-			end
-		end
-
-		player.vx = player.vx + player.ax * dt
- 		player.vy = player.vy + player.ay * dt
- 		player.x = player.x + player.vx * dt
- 		player.y = player.y + player.vy * dt
-	]]--
 	elseif self.behaviour.movement_bd == "slow_move" then
-
 		local speed, direction = 0.15, 1
 		self:move(dt,speed,direction)
-
-		--[[local xveloc, yveloc = self.body:getLinearVelocity()
-
-		if (xveloc < plen(0.09)) and (self.movDirection == 1) then self.body:applyForce(100000, 0)
-		elseif (xveloc > -plen(0.09)) and (self.movDirection == -1) then self.body:applyForce(-100000, 0)
-		elseif (self.movDirection == 0) then
-			if (xveloc > 0.2) then
-				self.body:applyForce(-10000, 0)
-			elseif (xveloc < -0.2) then
-				self.body:applyForce(10000, 0)
-			end
-		end
-		]]--
 
 	end
 
@@ -400,7 +420,25 @@ function Enemy:trigerredMovement(dt)
 	local x1, y1 = self.body:getPosition()
 	local x2, y2 = player1.body:getPosition()
 
-	if self.behaviour.movement_ad == "neutral" then
+
+	--FLY--
+
+	if self.behaviour.movement_ad == "fly_aggressive" then
+		if (x1 < x2) then
+			self.movDirection = 1
+			self.side = 1 * self.type.imgturn
+		else
+			self.movDirection = -1
+			self.side = -1 * self.type.imgturn
+		end
+		local speed, directionX, directionY = 0.35, 1, 1
+		self:fly(dt,speed,directionX, directionY)
+
+
+	elseif
+	--MOVE--
+
+	--[[elseif]] self.behaviour.movement_ad == "neutral" then
 		if (x1 < x2) then
 			self.movDirection = 1
 			self.side = 1 * self.type.imgturn
@@ -577,6 +615,8 @@ function Enemy:update(dt)
 
 	local xveloc, yveloc = self.body:getLinearVelocity()
 	local xv, yv = player1.body:getLinearVelocity()
+	local x1, y1 = self.body:getPosition()
+	local x2, y2 = player1.body:getPosition()
 	--[[
 	if (xveloc <= 0.008) and (xveloc >= -0.008) then
 		self.readytojump = self.readytojump + dt
@@ -621,10 +661,18 @@ function Enemy:update(dt)
 	end
 
 	-- MOVEMENT_________________________________________________________________
+
+	if self.type.enemyType == 'fly' then
+		if (y2 >= y1 + plen(0.2)) then
+			self.movDirectionY = 1
+		else
+			self.movDirectionY = -1
+		end
+	end
+
 	if self.timer > 0 then
 		self.timer = self.timer - dt
 		self:trigerredMovement(dt)
-	--elseif (((self.smell ~= nil) and (self.smell_detection_time > 0)) or (self.noise ~= nil ))  then
 	elseif self.noise_time > 0 or self.smell_detection_time > 0 then
 		if self.noise_time > 0 then
 			self.noise_time = self.noise_time - dt
@@ -632,7 +680,6 @@ function Enemy:update(dt)
 		if self.smell_detection_time > 0 then
 			self.smell_detection_time = self.smell_detection_time - dt
 		end
-	--	self.body:setLinearVelocity(0, yveloc)
 	else
 		self.step = self.step - 1
 		if self.step == 0 then
