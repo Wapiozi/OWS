@@ -1,6 +1,6 @@
 local spawnPoints = {
     [1] = {x = 0.2, y = 0.8},
-    [2] = {x = 1, 0.9}
+    [2] = {x = 1, y = 0.9}
 
 }
 
@@ -37,4 +37,6 @@ function loadMap(transitionInd)
 	items:add(Item:new(0.8,0.8,ClothObj))
 	items:add(Item:new(0.9,0.8,ClothObj))
 	items:add(Item:new(0.2,0.8,ClothObj))
+
+    backgr = love.graphics.newQuad(0, 0, plen(16/9*2), plen(1), BrickImg:getDimensions())
 end

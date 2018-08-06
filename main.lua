@@ -52,6 +52,16 @@ function getDist(x1, y1, x2, y2)
     return dist
 end
 
+destroyer = {}
+destroyer.__index = destroyer
+
+function destroyer:destroy()
+	self.canDelete = true
+	if self.fixture ~= nil then self.fixture:destroy() end
+	if self.shape ~= nil then self.shape:release() end
+	if self.body ~= nil then self.body:destroy() end
+end
+
 --------------WORLD CALLBACK--------------------------------------
 
 --[[
@@ -255,6 +265,14 @@ function love.mousereleased(x, y, button)
 end
 
 function eraseMap()
+	enemies:exec(destroyer.destroy)
+	items:exec(destroyer.destroy)
+	walls:exec(destroyer.destroy)
+	traps:exec(destroyer.destroy)
+	bullets:exec(destroyer.destroy)
+	envir:exec(destroyer.destroy)
+	envirsh:exec(destroyer.destroy)
+
 	enemies = Container:new() -- Category 3
 	items = Container:new() --Category 4
 	walls = Container:new()  -- Category 5
@@ -264,6 +282,7 @@ function eraseMap()
 	envir = Container:new()	--shadowed EnvObjects
 	envirsh = Container:new() --non shadowed EnvObjects
 
+	lights = nil
 	lights = Lights:create()
 end
 
@@ -271,8 +290,6 @@ function endLoadMap()
 	func = lights:addBodyFunc()
 	envir:exec(func)
 	walls:exec(func)
-
-	backgr = love.graphics.newQuad(0, 0, plen(16/9*2), plen(1), BrickImg:getDimensions())
 end
 
 -- Standart ------------------------------------------------------------
@@ -308,6 +325,7 @@ function love.load(arg)
 		-- interior
 			ChestImg = love.graphics.newImage("sprites/env_obj/chest.png")
 			TorchImg = love.graphics.newImage("sprites/env_obj/torch.png")
+			SpikeImg = love.graphics.newImage("sprites/traps/spikes.png")
 	-- bg
 		BrickImg = love.graphics.newImage("sprites/bg/brick.png")
 		BlueBrick = love.graphics.newImage("sprites/bg/brick2.png") BlueBrick:setWrap("repeat", "repeat")
@@ -351,7 +369,18 @@ function love.load(arg)
 	---------------CREATING ROOM--------------------------
 	currentMap = require("maps/start")
 
-	eraseMap()
+	enemies = Container:new() -- Category 3
+	items = Container:new() --Category 4
+	walls = Container:new()  -- Category 5
+	traps = Container:new()
+	bullets = Container:new()  -- Category 6
+	particles = Container:new() -- (Category 7) by now no category
+	envir = Container:new()	--shadowed EnvObjects
+	envirsh = Container:new() --non shadowed EnvObjects
+
+	lights = nil
+	lights = Lights:create()
+
 	loadMap(1)
 	endLoadMap()
 

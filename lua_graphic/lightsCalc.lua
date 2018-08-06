@@ -176,16 +176,16 @@ for j = 1, 100 do
 				local l1, l2 = len({x = lights[j][1], y = lights[j][2]}, p1), len({x = lights[j][1], y = lights[j][2]}, p2)
 				local l3, l4 = len({x = lights[j][1], y = lights[j][2]}, p3), len({x = lights[j][1], y = lights[j][2]}, p4)
 
-				if l1 < l2 and l1 < l3 and l1 < l4 then
+				if l1 <= l2 and l1 <= l3 and l1 <= l4 then
 					addTri(j, {x = cur.x2, y = cur.y2}, {x = cur.x3, y = cur.y3})
 					addTri(j, {x = cur.x3, y = cur.y3}, {x = cur.x4, y = cur.y4})
-				elseif l2 < l1 and l2 < l3 and l2 < l4 then
+				elseif l2 <= l1 and l2 <= l3 and l2 <= l4 then
 					addTri(j, {x = cur.x3, y = cur.y3}, {x = cur.x4, y = cur.y4})
 					addTri(j, {x = cur.x4, y = cur.y4}, {x = cur.x1, y = cur.y1})
-				elseif l3 < l1 and l3 < l2 and l3 < l4 then
+				elseif l3 <= l1 and l3 <= l2 and l3 <= l4 then
 					addTri(j, {x = cur.x1, y = cur.y1}, {x = cur.x2, y = cur.y2})
 					addTri(j, {x = cur.x4, y = cur.y4}, {x = cur.x1, y = cur.y1})
-				elseif l4 < l1 and l4 < l2 and l4 < l3 then
+				elseif l4 <= l1 and l4 <= l2 and l4 <= l3 then
 					addTri(j, {x = cur.x1, y = cur.y1}, {x = cur.x2, y = cur.y2})
 					addTri(j, {x = cur.x2, y = cur.y2}, {x = cur.x3, y = cur.y3})
 				end
