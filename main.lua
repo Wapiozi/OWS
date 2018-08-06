@@ -10,6 +10,7 @@ libcont = require("container")
 libparticles = require("lua_graphic/particles")
 liblighting = require("lua_graphic/lighting")
 libenv = require("lua_objects/envobjects")
+libtraps = require("lua_objects/traps")
 --libnpc = require("npc")
 utf8 = require("utf8")
 
@@ -84,16 +85,26 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 				obj1:collidedWithFloor()
 			end
 
+			if (obj1.name == "trap") then
+				obj2:getDamage(obj1:attack(obj2))
+			elseif (obj2.name == "trap") then
+				obj1:getDamage(obj2:attack(obj1))
+			end
+
 		end
 
 		if obj1.name == "enemy" or obj2.name == "enemy" then
 
 			if (obj1.name == "magic") and (obj1.owner ~= "enemy") then
 				obj2:getDamage(obj1.damage)
-
 			elseif (obj2.name == "magic") and (obj2.owner ~= "enemy") then
 				obj1:getDamage(obj2.damage)
+			end
 
+			if (obj1.name == "trap") then
+				obj2:getDamage(obj1:attack(obj2))
+			elseif (obj2.name == "trap") then
+				obj1:getDamage(obj2:attack(obj1))
 			end
 
 		end
@@ -126,7 +137,7 @@ function endContact(f1, f2, cont)
 
 	if (obj1 ~= nil) and (obj2 ~= nil) then
 		if obj1.name == 'player' or obj2.name == 'player' then
-
+--Haha, classic
 			if obj1.name == 'item' then
 				obj1.ItemCanBeTaken = false
 			elseif obj2.name == 'item' then
@@ -244,6 +255,7 @@ function love.load(arg)
 	TransitionImg = love.graphics.newImage("sprites/WTF_BALLS/Enemy.jpg")
 	LaserImg = love.graphics.newImage("sprites/magic/laser.png") LaserImg:setWrap("repeat", "repeat")
 	FireeImg = love.graphics.newImage("sprites/particles/firee.png")
+	SpikeImg = love.graphics.newImage("sprites/traps/spikes.png")
 	--NPC
 	NpcMerchantImg = love.graphics.newImage("sprites/creatures/merchant.png")
 	NpcChallengeImg = love.graphics.newImage("sprites/creatures/challenge.png")
@@ -270,6 +282,7 @@ function love.load(arg)
 	enemies = Container:new() -- Category 3
 	items = Container:new() --Category 4
 	walls = Container:new()  -- Category 5
+	traps = Container:new()
 	bullets = Container:new()  -- Category 6
 	particles = Container:new() -- (Category 7) by now no category
 	envir = Container:new()	--shadowed EnvObjects
@@ -285,6 +298,7 @@ function love.load(arg)
 	Item:init()
 	Inventory:init()
 	Enemy:init()
+	Traps:init()
 	--npc:init()
 
 	lights = Lights:create()
@@ -299,6 +313,8 @@ function love.load(arg)
 	walls:add(Brick:new(16/9*2+0.05, 0.5, 0.1, 1, "wall"))
 	walls:add(Brick:new(16/9, 1+0.05, 16/9*2, 0.1, "floor"))
 	walls:add(Brick:new(0-0.05, 0.5, 0.1, 1, "wall"))
+
+	traps:add(Traps:new(1.4, 0.995, TrapTypeSpikes))
 
 	envir:add(EnvObject:new(1, 0.5, ChestImg, true, 10000, 0.3))
 	envirsh:add(Torch:new(0.5, 0.1))
@@ -363,6 +379,7 @@ function love.update(dt)
 	particles:update(dt)
 	envir:update(dt)
 	envirsh:update(dt)
+	traps:update(dt)
 
 	-- Clear fixture hit list.
 	Ray.hitList = {}
@@ -384,6 +401,7 @@ function love.draw()
 	envirsh:CheckDraw()
 	envir:CheckDraw()
 	walls:CheckDraw()
+	traps:CheckDraw()
 	particles:CheckDraw()
 	enemies:CheckDraw()
 	items:CheckDraw()
