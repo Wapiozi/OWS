@@ -367,7 +367,7 @@ end
 function Enemy:fly(dt, speed, dx, dy)
 	local xveloc, yveloc = self.body:getLinearVelocity()
 	if (dx == 0) then
-		self.body:setLinearVelocity(0,0.001)
+		self.body:setLinearVelocity(0,plen(-0.0256))
 	else
 		if self.movDirection == 1 then
 			self.ax = self.ax + 5 * dt
@@ -427,12 +427,14 @@ function Enemy:trigerredMovement(dt)
 		if (x1 < x2) then
 			self.movDirection = 1
 			self.side = 1 * self.type.imgturn
+			local speed, directionX, directionY = 0.35, 1, 1
+			self:fly(dt,speed,directionX, directionY)
 		else
 			self.movDirection = -1
 			self.side = -1 * self.type.imgturn
+			local speed, directionX, directionY = 0.35, 1, 1
+			self:fly(dt,speed,directionX, directionY)
 		end
-		local speed, directionX, directionY = 0.35, 1, 1
-		self:fly(dt,speed,directionX, directionY)
 
 
 	elseif
