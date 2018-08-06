@@ -135,13 +135,13 @@ function Transition:interact(obj)
     if self.state then self.state = false elseif (not self.state) and self.canInteract then self.state = true end
 
     if self.state then
-        currentMap = require(self.nextLocation)
+        currentMap = dofile(self.nextLocation..".lua")
 
     	eraseMap()
     	loadMap(self.spawnInd)
     	endLoadMap()
 
-        return 
+        return
     elseif self.joint ~= nil and (not self.joint:isDestroyed()) then
 
     end

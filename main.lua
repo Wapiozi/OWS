@@ -367,7 +367,7 @@ function love.load(arg)
 	camera:setPosition(0,screenWidth/2)
 
 	---------------CREATING ROOM--------------------------
-	currentMap = require("maps/start")
+	currentMap = dofile("maps/start"..".lua")
 
 	enemies = Container:new() -- Category 3
 	items = Container:new() --Category 4
