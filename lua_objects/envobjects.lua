@@ -107,7 +107,7 @@ end
 Transition = {} --door to another location
 Transition.__index = Transition
 
-function Transition:new(x, y, nextLocation)
+function Transition:new(x, y, nextLocation, spawnInd)
     self = setmetatable({}, self)
 
 	x, y = pcoords(x, y)
@@ -123,6 +123,7 @@ function Transition:new(x, y, nextLocation)
     self.fixture:setUserData(self)
     self.obstacle = true
     self.nextLocation = nextLocation
+    self.spawnInd = spawnInd
     self.angle = angle or 0
     self.canDelete = false
     self.state = false --off
@@ -134,7 +135,13 @@ function Transition:interact(obj)
     if self.state then self.state = false elseif (not self.state) and self.canInteract then self.state = true end
 
     if self.state then
-        --go to next location
+        currentMap = dofile(self.nextLocation..".lua")
+
+    	eraseMap()
+    	loadMap(self.spawnInd)
+    	endLoadMap()
+
+        return
     elseif self.joint ~= nil and (not self.joint:isDestroyed()) then
 
     end

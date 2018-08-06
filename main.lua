@@ -52,6 +52,16 @@ function getDist(x1, y1, x2, y2)
     return dist
 end
 
+destroyer = {}
+destroyer.__index = destroyer
+
+function destroyer:destroy()
+	self.canDelete = true
+	if self.fixture ~= nil then self.fixture:destroy() end
+	if self.shape ~= nil then self.shape:release() end
+	if self.body ~= nil then self.body:destroy() end
+end
+
 --------------WORLD CALLBACK--------------------------------------
 
 --[[
@@ -284,6 +294,34 @@ function love.mousereleased(x, y, button)
 	end
 end
 
+function eraseMap()
+	enemies:exec(destroyer.destroy)
+	items:exec(destroyer.destroy)
+	walls:exec(destroyer.destroy)
+	traps:exec(destroyer.destroy)
+	bullets:exec(destroyer.destroy)
+	envir:exec(destroyer.destroy)
+	envirsh:exec(destroyer.destroy)
+
+	enemies = Container:new() -- Category 3
+	items = Container:new() --Category 4
+	walls = Container:new()  -- Category 5
+	traps = Container:new()
+	bullets = Container:new()  -- Category 6
+	particles = Container:new() -- (Category 7) by now no category
+	envir = Container:new()	--shadowed EnvObjects
+	envirsh = Container:new() --non shadowed EnvObjects
+
+	lights = nil
+	lights = Lights:create()
+end
+
+function endLoadMap()
+	func = lights:addBodyFunc()
+	envir:exec(func)
+	walls:exec(func)
+end
+
 -- Standart ------------------------------------------------------------
 
 function love.load(arg)
@@ -317,7 +355,10 @@ function love.load(arg)
 		-- interior
 			ChestImg = love.graphics.newImage("sprites/env_obj/chest.png")
 			TorchImg = love.graphics.newImage("sprites/env_obj/torch.png")
+<<<<<<< HEAD
 		-- traps
+=======
+>>>>>>> 4a6dd8922511c0b22322d2c33b340fc53e8e7757
 			SpikeImg = love.graphics.newImage("sprites/traps/spikes.png")
 	-- bg
 		BrickImg = love.graphics.newImage("sprites/bg/brick.png")
@@ -337,6 +378,12 @@ function love.load(arg)
 	world = love.physics.newWorld(0, 9.81*100) --we need the whole world
 	world:setCallbacks(beginContact, endContact, preSolve, postSolve)
 
+	Magic:init()
+	Item:init()
+	Inventory:init()
+	Enemy:init()
+	Traps:init()
+
 	Ray = {
 		x1 = 0,
 		y1 = 0,
@@ -344,6 +391,17 @@ function love.load(arg)
 		y2 = 0,
 		hitList = {}
 	}
+
+	player1 = Player:new(0.2, 0.8)
+	inventory1 = Inventory:new()
+	inventoryMode = false
+	released = true
+
+	camera:setBounds(0, 0, screenWidth * 2  , screenHeight)
+	camera:setPosition(0,screenWidth/2)
+
+	---------------CREATING ROOM--------------------------
+	currentMap = dofile("maps/start"..".lua")
 
 	enemies = Container:new() -- Category 3
 	items = Container:new() --Category 4
@@ -353,76 +411,14 @@ function love.load(arg)
 	particles = Container:new() -- (Category 7) by now no category
 	envir = Container:new()	--shadowed EnvObjects
 	envirsh = Container:new() --non shadowed EnvObjects
-	--npcs = Container:new() --Category 7
 
-	player1 = Player:new(0.2, 0.8)
-	inventory1 = Inventory:new()
-	inventoryMode = false
-	released = true
-
-	Magic:init()
-	Item:init()
-	Inventory:init()
-	Enemy:init()
-	Traps:init()
-	--npc:init()
-
+	lights = nil
 	lights = Lights:create()
 
-	---------------CREATING ROOM--------------------------
-
-	lights:add(0.6, 0.6, 0.06, true, nil, 1, 0.6, 0.6)
-	lights:add(1, 0.4, 0.1, true, nil, 0.6, 1, 0.6)
-	lights:add(1.4, 0.6, 0.06, true, nil, 0.6, 0.6, 1)
-
-	walls:add(Brick:new(16/9, 0-0.05, 16/9*2, 0.1, "floor"))
-	walls:add(Brick:new(16/9*2+0.05, 0.5, 0.1, 1, "wall"))
-	walls:add(Brick:new(16/9, 1+0.05, 16/9*2, 0.1, "floor"))
-	walls:add(Brick:new(0-0.05, 0.5, 0.1, 1, "wall"))
-
-	traps:add(Traps:new(1.4, 0.995, TrapTypeSpikes))
-
-	envir:add(EnvObject:new(1, 0.5, ChestImg, true, 10000, 0.3))
-	envirsh:add(Torch:new(0.5, 0.1))
-	envir:add(EnvObject:new(2, 0.5, ChestImg, true, 1000, 0.3))
-	--envirsh:add(Torch:new(0.5, 0.1))
-	envirsh:add(Transition:new(1, 0.9))
-
-	--enemies:add(Enemy:new(EnemyTypeRat, 0.9, 0.8))
-	--enemies:add(Enemy:new(EnemyTypeMadwizard, 0.8, 0.8))   nado vernutj potom
-	--!!enemies:add(Enemy:new(NpcTypeChallenge, 0.9, 0.8))
-	func = lights:addBodyFunc()
-	walls:exec(func)
-
-	inventory1 = Inventory:new()
-	inventoryMode = false
-	released = true
-
-	--lights:addBody(player1)
-	--!!enemies:add(Enemy:new(EnemyTypeRat, 1.5, 0.8))
-	--!!enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
-	enemies:add(Enemy:new(EnemyTypeBat, 0.5, 0.5))
-
-	--npcs:add(npc:new(NpcTypeMerchant,0.8,0.8))
-	--npcs:add(npc:new(NpcTypeChallenge,0.4,0.8))
-
---	items:add(Item:new(0.5,0.8,WandObj))
-	--items:add(Item:new(0.6,0.8,WandObj))
-	--items:add(Item:new(0.7,0.8,WandObj))
-	--items:add(Item:new(0.8,0.8,ClothObj))
-	--items:add(Item:new(0.9,0.8,ClothObj))
-	--items:add(Item:new(0.2,0.8,ClothObj))
-
-	--items:exec(func)
-	--enemies:exec(func)
-	envir:exec(func)
+	loadMap(1)
+	endLoadMap()
 
 	----------------END OF CREATING ROOM------------------
-
-	camera:setBounds(0, 0, screenWidth * 2  , screenHeight)
-	camera:setPosition(0,screenWidth/2)
-
-	backgr = love.graphics.newQuad(0, 0, plen(16/9*2), plen(1), BrickImg:getDimensions())
 end
 
 

@@ -94,13 +94,13 @@ vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords 
 	}
 
 	if (resCol.r > 1) {
-		resCol.r = pow(resCol.r, 0.4);
+		resCol.r = pow(resCol.r, 0.3);
 	}
 	if (resCol.g > 1) {
-		resCol.g = pow(resCol.g, 0.4);
+		resCol.g = pow(resCol.g, 0.3);
 	}
 	if (resCol.b > 1) {
-		resCol.b = pow(resCol.b, 0.4);
+		resCol.b = pow(resCol.b, 0.3);
 	}
 
 	col.rgb = col.rgb*resCol;
