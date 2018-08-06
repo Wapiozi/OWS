@@ -50,6 +50,9 @@ function Player:new(x, y)
 	self.fixture:setFriction(plen(0.001))
 	self.body:setMass(70) -- 70kg wizard
 	self.fixture:setCategory(2)
+	self.fixture:setMask(7)
+	--self.fixture:setGroupIndex(-1)
+
 	self.fixture:setUserData(self)
 	return self
 end
