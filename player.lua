@@ -98,6 +98,10 @@ function Player:getCoords()
 	return fcoords(x, y)
 end
 
+function Player:setPosition(x, y)
+	self.body:setPosition(pcoords(x, y))
+end
+
 function Player:getMagicCoords()  --where magic need to spawn
 	local x, y = self:getCoords()
 	x = x + (self.width/2 + 0.03)*self.side
