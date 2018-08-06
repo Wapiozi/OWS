@@ -355,10 +355,7 @@ function love.load(arg)
 		-- interior
 			ChestImg = love.graphics.newImage("sprites/env_obj/chest.png")
 			TorchImg = love.graphics.newImage("sprites/env_obj/torch.png")
-<<<<<<< HEAD
 		-- traps
-=======
->>>>>>> 4a6dd8922511c0b22322d2c33b340fc53e8e7757
 			SpikeImg = love.graphics.newImage("sprites/traps/spikes.png")
 	-- bg
 		BrickImg = love.graphics.newImage("sprites/bg/brick.png")
