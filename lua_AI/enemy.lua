@@ -30,6 +30,7 @@ function Enemy:init()
 		mass = 70,
 		manaMax = 100,
 		cooldown = 1.2,
+		ghost = false,
 
 		behaviour = {
 			movement_bd = "fly_stay",
@@ -54,6 +55,7 @@ function Enemy:init()
 		hp = 1,
 		Reload = 0,
 		mass = 70,
+		ghost = false,
 
 		behaviour = {
 			movement_bd = "move",
@@ -82,6 +84,7 @@ function Enemy:init()
 		mass = 70,
 		manaMax = 100,
 		cooldown = 1.2,
+		ghost = false,
 
 		behaviour = {
 			movement_bd = "slow_move",
@@ -114,10 +117,11 @@ function Enemy:init()
 		hp = 1000,
 		Reload = 0,
 		mass = 70,
+		ghost = true,
 
 		behaviour = {
 			movement_bd = "slow_move",
-			movement_ad = "neutral",
+			movement_ad = "follow",
 			sensor = {vision = true, smell = false, noise = true},
 			playerdist = 0.1
 		},
@@ -138,12 +142,13 @@ NpcTypeChallenge = {
     Reload = 0,
     mass = 70,
 	question = true,
+	ghost = true,
 
     behaviour = {
         movement_bd = "slow_move",
         movement_ad = "neutral",
         sensor = {vision = true, smell = false, noise = true},
-        playerdist = 0.12
+        playerdist = 0.14
     },
 
     timer = 5,
@@ -211,7 +216,10 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	self.water_r = red[w]
 	self.air_r   = red[a]
 	]]--
-	self.fixture:setCategory(3)
+	--if self.type.ghost then self.fixture:setGroupIndex(-1) end
+	--if self.type.ghost then self.fixture.setMask(2,3) end--else
+	if not self.type.ghost then self.fixture:setCategory(3)
+	else self.fixture:setCategory(7) end
 	self.fixture:setMask(3)
 
 	--------------------------------methods-------------------------------------
@@ -400,9 +408,24 @@ function Enemy:trigerredMovement(dt)
 			self.movDirection = -1
 			self.side = -1 * self.type.imgturn
 		end
+		if (flen(math.abs(x2 - x1)) < self.behaviour.playerdist) then
+			local speed, direction = 0.05, -1
+			self:move(dt,speed,direction)
+		else
+			self.body:setLinearVelocity(0, yveloc)
+		end
+
+
+	elseif self.behaviour.movement_ad == "follow" then
+		if (x1 < x2) then
+			self.movDirection = 1
+			self.side = 1 * self.type.imgturn
+		else
+			self.movDirection = -1
+			self.side = -1 * self.type.imgturn
+		end
 		if ((flen(math.abs(x2 - x1)) < self.behaviour.playerdist + 0.02) and (flen(math.abs(x2 - x1)) > self.behaviour.playerdist - 0.02) ) then
 			self.body:setLinearVelocity(0, yveloc)
-			self.canAttack = true
 		elseif (flen(math.abs(x2 - x1)) > self.behaviour.playerdist) then
 			local speed, direction = 0.15, 1
 			self:move(dt,speed,direction)

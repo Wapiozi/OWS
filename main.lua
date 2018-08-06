@@ -52,6 +52,18 @@ function getDist(x1, y1, x2, y2)
 end
 
 --------------WORLD CALLBACK--------------------------------------
+
+--[[
+function internalContactFilter(fixtureA, fixtureB)
+	obj1 = fixtureA:getUserData()
+	obj2 = fixtureB:getUserData()
+
+	if obj1.notCollide == obj2.index then
+
+
+	end
+end
+]]--
 function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 	obj1 = f1:getUserData()
 	obj2 = f2:getUserData()
