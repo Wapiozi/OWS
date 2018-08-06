@@ -12,6 +12,7 @@ liblighting = require("lighting")
 libenv = require("envobjects")
 libnpc = require("npc")
 suit = require ("SUIT")
+libbuttons = require ("Buttons")
 --input = {text = ""}
 utf8 = require("utf8")
 
@@ -221,7 +222,6 @@ end
 
 function love.load(arg)
 	-----------RESOURCES LOAD----------------------------------
-
 	-- Sprites
 	PlayerImg = love.graphics.newImage("Player.png")
 	MinecraftInv = love.graphics.newImage("minecraft.png")
@@ -251,7 +251,7 @@ function love.load(arg)
 	--SUIT
 	--font = love.graphics.newFont("NotoSansHans-Regular.otf", 20)
 	--love.graphics.setFont(font)
-
+	--normal, hovered, active, mask = generateImageButton()
 	--------------------------------------------------------------
 
 	love.window.setMode(1280,720)
@@ -342,6 +342,8 @@ function love.load(arg)
 	camera:setPosition(0,screenWidth/2)
 
 	backgr = love.graphics.newQuad(0, 0, plen(16/9*2), plen(1), BrickImg:getDimensions())
+
+	--Buttons:load()
 end
 
 
@@ -396,14 +398,15 @@ function love.update(dt)
 	-- Clear fixture hit list.
 	Ray.hitList = {}
 
-
+	--[[
 	love.graphics.setColor(255,255,255)
+	--but_img = suit.ImageButton(normal,{id=5, mask = mask, hovered = hovered, active = active},plen(0.4),plen(0.4))
 	but_a = suit.Button("<-",{id=1, cornerRadius=plen(0.05)} , plen(0.1),plen(0.7), plen(0.15), plen(0.15))
   but_s = suit.Button(" ",{id=2, cornerRadius=plen(0.05)} , plen(0.25),plen(0.7), plen(0.15), plen(0.15))
 	but_d = suit.Button("->",{id=3, cornerRadius=plen(0.05)} , plen(0.40),plen(0.7), plen(0.15), plen(0.15))
 	but_w = suit.Button("^",{id=4, cornerRadius=plen(0.05)} , plen(0.25),plen(0.55), plen(0.15), plen(0.15))
-
-	if (but_d.hit) then
+	]]--
+	--[[if (but_d.hit) then
 		player1:moveRight()
 		player1:moveRight()
 	elseif (but_a.hit) then
@@ -416,7 +419,9 @@ function love.update(dt)
 	if (but_w.hit) then
 		player1:jump()
 	end
-
+	]]--
+	Buttons:load(1) --W A S D buttons
+	Buttons:update(1) --W A S D buttons
 end
 
 function love.draw()
@@ -458,7 +463,8 @@ function love.draw()
 	end
 
 	camera:unset()
-	suit.draw()
+	--suit.draw()
+	Buttons:draw(1) --W A S D buttons
 	npcs:exec(npc.work)
 
 	if inventoryOpen then
@@ -482,3 +488,18 @@ end
 function math.clamp(x, min, max)
 	return x < min and min or (x > max and max or x)
 end
+
+--[[function generateImageButton()
+
+		local stripey = function( x, y, r, g, b, a )
+				return function(x,y)
+   				local r = math.min(r * math.sin(x*100)*2, 1)
+	   			local g = math.min(g * math.cos(x*150)*2, 1)
+   				local b = math.min(b * math.sin(x*50)*2, 1)
+   				return r,g,b,a
+				end
+		end
+    local normal, hovered, active = love.image.newImageData(200,100), love.image.newImageData(200,100), love.image.newImageData(200,100)
+    normal:mapPixel(stripey(.48, .74,.74,.74,.74,.48))
+    return BrickImg, FireImg, FireballImg, normal
+end]]--
