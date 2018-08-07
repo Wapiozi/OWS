@@ -1,6 +1,13 @@
 Graph = {}
 Graph.__index = Graph
 
+vertexSorter = {}
+
+function vertexSorter.__lt(next)
+	if self.dist < next.dist then return true end
+	return false
+end
+
 function Graph:new()
 	self = setmetatable({}, self)
     self.vertexQuantity = 0
@@ -37,7 +44,8 @@ end
 
 function Graph:BFS(ind)
     av[1] = plen(100)
-    -- sort av acording distance
+	setmetatable(av[1], vertexSorter)
+    table.sort(av)
     if (self[ind].visited == false) then
         self[ind].visited = true
         for i = 1,self[ind].nb.q do
@@ -45,9 +53,10 @@ function Graph:BFS(ind)
                 self[ind].nb[i].dist = math.min(self[ind].nb[i].dist, self[ind].nb[i].length)
                 av.q = av.q + 1
                 av[av.q] = self[ind].nb[i]
+				setmetatable(av[av.q], vertexSorter)
             end
         end
-        -- sort av acording distance
+        table.sort(av)
         self:BFS(av[1])
     end
 end
