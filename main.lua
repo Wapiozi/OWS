@@ -11,6 +11,8 @@ libparticles = require("lua_graphic/particles")
 liblighting = require("lua_graphic/lighting")
 libenv = require("lua_objects/envobjects")
 libtraps = require("lua_objects/traps")
+suit = require ("SUIT")
+libbuttons = require ("Buttons")
 --libnpc = require("npc")
 utf8 = require("utf8")
 
@@ -326,7 +328,6 @@ end
 
 function love.load(arg)
 	-----------RESOURCES LOAD----------------------------------
-
 	-- Sprites
 	PlayerImg = love.graphics.newImage("sprites/creatures/Player.png")
 	MinecraftInv = love.graphics.newImage("sprites/inventory/minecraft.png")
@@ -364,8 +365,10 @@ function love.load(arg)
 		FireImg = love.graphics.newImage("sprites/particles/fire.png")
 		FireeImg = love.graphics.newImage("sprites/particles/firee.png")
 
-
-
+	--SUIT
+	--font = love.graphics.newFont("NotoSansHans-Regular.otf", 20)
+	--love.graphics.setFont(font)
+	--normal, hovered, active, mask = generateImageButton()
 	--------------------------------------------------------------
 
 	love.window.setMode(1280,720)
@@ -424,6 +427,33 @@ function love.update(dt)
 	----------------PROCESSING GESTURE----------------------
 	gesture = getLastMovement()
 	local i = 1
+	if gesture ~= nil then
+		while gesture[i] ~= 10 do   --check for end code
+			if gesture[i] == 1 then
+			elseif gesture[i] == 2 then
+				local x, y = player1:getMagicCoords()
+				if Magic:canShoot(player1, MagicTypeGround) then bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeGround, "player")) end
+			elseif gesture[i] == 3 then
+				local x, y = player1:getMagicCoords()
+				if Magic:canShoot(player1, MagicTypeWater) then bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeWater, "player")) end
+			elseif gesture[i] == 4 then
+				local x, y = player1:getMagicCoords()
+				if Magic:canShoot(player1, MagicTypeFire) then bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeFire, "player")) end
+			elseif gesture[i] == 5 then
+
+			elseif gesture[i] == 6 then
+				local x, y = player1:getMagicCoords()
+				if Magic:canShoot(player1, MagicTypeAir) then bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeAir, "player")) end
+			elseif gesture[i] == 7 then
+
+			elseif gesture[i] == 8 then
+				local x, y = player1:getMagicCoords()
+				if Magic:canShoot(player1, MagicTypeIce) then bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeIce, "player")) end
+			end
+			i = i+1
+		end
+	end
+
 	if gesture ~= nil then player1:shoot(gesture) end
 	-----------------------------------------------------
 
@@ -443,6 +473,31 @@ function love.update(dt)
 
 	-- Clear fixture hit list.
 	Ray.hitList = {}
+
+	--[[
+	love.graphics.setColor(255,255,255)
+	--but_img = suit.ImageButton(normal,{id=5, mask = mask, hovered = hovered, active = active},plen(0.4),plen(0.4))
+	but_a = suit.Button("<-",{id=1, cornerRadius=plen(0.05)} , plen(0.1),plen(0.7), plen(0.15), plen(0.15))
+  but_s = suit.Button(" ",{id=2, cornerRadius=plen(0.05)} , plen(0.25),plen(0.7), plen(0.15), plen(0.15))
+	but_d = suit.Button("->",{id=3, cornerRadius=plen(0.05)} , plen(0.40),plen(0.7), plen(0.15), plen(0.15))
+	but_w = suit.Button("^",{id=4, cornerRadius=plen(0.05)} , plen(0.25),plen(0.55), plen(0.15), plen(0.15))
+	]]--
+	--[[if (but_d.hit) then
+		player1:moveRight()
+		player1:moveRight()
+	elseif (but_a.hit) then
+		player1:moveLeft()
+		player1:moveLeft()
+	elseif (but_a.left) or (but_d.left) then
+		player1.movDirection = 0
+	end
+
+	if (but_w.hit) then
+		player1:jump()
+	end
+	]]--
+	Buttons:load(1) --W A S D buttons
+	Buttons:update(1) --W A S D buttons
 end
 
 function love.draw()
@@ -484,7 +539,7 @@ function love.draw()
 	end
 
 	camera:unset()
-
+	Buttons:draw(1) --W A S D buttons
 	enemies:exec(Enemy.work)
 
 	if inventoryOpen then
@@ -508,3 +563,18 @@ end
 function math.clamp(x, min, max)
 	return x < min and min or (x > max and max or x)
 end
+
+--[[function generateImageButton()
+
+		local stripey = function( x, y, r, g, b, a )
+				return function(x,y)
+   				local r = math.min(r * math.sin(x*100)*2, 1)
+	   			local g = math.min(g * math.cos(x*150)*2, 1)
+   				local b = math.min(b * math.sin(x*50)*2, 1)
+   				return r,g,b,a
+				end
+		end
+    local normal, hovered, active = love.image.newImageData(200,100), love.image.newImageData(200,100), love.image.newImageData(200,100)
+    normal:mapPixel(stripey(.48, .74,.74,.74,.74,.48))
+    return BrickImg, FireImg, FireballImg, normal
+end]]--
