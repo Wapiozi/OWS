@@ -16,17 +16,17 @@ end
 
 function Buttons:update(but)
   if but==1 then --W A S D buttons
-    if (but_d.hit) then
-		    player1:moveRight()
-		    player1:moveRight()
-  	elseif (but_a.hit) then
-		    player1:moveLeft()
-		    player1:moveLeft()
-	  elseif (but_a.left) or (but_d.left) then
+    if (but_d.hovered) then
+        player1:moveRight()
+        player1:moveRight()
+    elseif (but_a.hovered) then
+        player1:moveLeft()
+        player1:moveLeft()
+	  else
 		    player1.movDirection = 0
 	  end
 
-	  if (but_w.hit) then
+	  if (but_w.hovered) then
 		    player1:jump()
 	  end
   end
