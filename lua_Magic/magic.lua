@@ -20,7 +20,7 @@ function Magic:init()
 		psystem = FireImg, --ParticleSystem
 		size = 0.028,
 		Damage = 10,
-		ImpulseCoef = 50000, --speed of magic
+		ImpulseCoef = 5000, --speed of magic
 		mass = 1,
 		mana = 10, --used mana
 		aim = true,
@@ -35,7 +35,7 @@ function Magic:init()
 		psystem = FireImg,
 		size = 0.0417,
 		Damage = 25,
-		ImpulseCoef = 5000,
+		ImpulseCoef = 500,
 		mass = 5,
 		mana = 20,
 		aim = true,
@@ -82,8 +82,8 @@ function Magic:init()
 		psystem = FireImg,
 		size = 0.0347,
 		Damage = 40,
-		ImpulseCoef = 25000,
-		mass = 20,
+		ImpulseCoef = 100,
+		mass = 50,
 		mana = 20,
 		aim = false,
 		ricochet = false,
@@ -176,7 +176,7 @@ function Magic:ballisticInit(x, y, vx, vy, type)
 	self.fixture:setRestitution(1.5)
 	self.fixture:setFriction(1)
 	self.body:setMass(type.mass)
-	self.body:applyLinearImpulse(self.type.ImpulseCoef*vx, self.type.ImpulseCoef*vy)
+	self.body:applyLinearImpulse(self.type.ImpulseCoef*plen(vx), self.type.ImpulseCoef*plen(vy))
 	self.body:applyAngularImpulse(math.random(1000)+1000)
 	self.body:setAngle(45)
 	self.fixture:setCategory(6)
