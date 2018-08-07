@@ -22,7 +22,7 @@ function Buttons:update(but)
     elseif (but_a.hovered) then
         player1:moveLeft()
         player1:moveLeft()
-	  else
+	  elseif not key == "a" and not key == "d" then
 		    player1.movDirection = 0
 	  end
 
