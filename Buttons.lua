@@ -1,4 +1,5 @@
 -- Buttons Implementation --------------------------------------------
+suit = require ("SUIT")
 Buttons = {}
 Buttons.__index = Buttons
 Buttons.type = 'Buttons'
@@ -16,17 +17,17 @@ end
 
 function Buttons:update(but)
   if but==1 then --W A S D buttons
-    if (but_d.hovered) then
+    if suit.isActive(3) then
         player1:moveRight()
         player1:moveRight()
-    elseif (but_a.hovered) then
+    elseif suit.isActive(1) then
         player1:moveLeft()
         player1:moveLeft()
-	  elseif not key == "a" and not key == "d" then
+	  elseif (not love.keyboard.isDown("a")) and (not love.keyboard.isDown("d")) then
 		    player1.movDirection = 0
 	  end
 
-	  if (but_w.hovered) then
+	  if suit.isActive(4) then
 		    player1:jump()
 	  end
   end
