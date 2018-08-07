@@ -18,6 +18,7 @@ utf8 = require("utf8")
 
 world = nil
 inventoryOpen = false
+questMenuOpen = false
 
 function pcoords(fx, fy)    --real coordinates to pixel coordinates
 	local px = fx*screenHeight
@@ -189,6 +190,14 @@ function love.keypressed(key)
 			inventoryOpen = true
 		end
 	end
+
+	if (key == "j") then
+		if questMenuOpen then
+			questMenuOpen = false
+		elseif not questMenuOpen then
+			questMenuOpen = true
+  	end
+ 	end
 
 	if (key == 'c') then
 		local tmfunc = function(obj)
@@ -422,6 +431,10 @@ function love.update(dt)
 	]]--
 	Buttons:load(1) --W A S D buttons
 	Buttons:update(1) --W A S D buttons
+	if questMenuOpen then
+		Buttons:load(2) --W A S D buttons
+  	Buttons:update(2) --W A S D buttons
+  end
 end
 
 function love.draw()
