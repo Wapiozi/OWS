@@ -3,7 +3,7 @@ Graph.__index = Graph
 
 vertexSorter = {}
 
-function vertexSorter.__lt(next)
+function vertexSorter:__lt(next)
 	if self.dist < next.dist then return true end
 	return false
 end
