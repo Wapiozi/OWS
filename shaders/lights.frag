@@ -75,7 +75,7 @@ vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords 
 		isLightened = true;
 		angle = getDegr(curLight.xy, curPos);
 
-		for (i = prev; i <= int(curLight.z); i++) {
+		for (i = prev; i < int(curLight.z); i++) {
 			if (rayIsBetw(pdegs[i], angle)) {
 				if (!inTriang(triangles[i], curLight, curPos)) {
 					isLightened = false;
@@ -89,7 +89,7 @@ vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords 
 			resCol = resCol + colors[j].rgb*lights[j].w*atten;
 		}
 
-		prev = int(curLight.z+1);
+		prev = int(curLight.z);
 		j++;
 	}
 
