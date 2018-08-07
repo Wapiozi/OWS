@@ -436,7 +436,8 @@ function Enemy:trigerredMovement(dt)
 	if self.behaviour.movement_ad == "fly_aggressive" then
 		if (self.attackTimer <= 0) then
 			self.fixture:setFriction(0)
-			if math.abs(x1 - x2) > plen(0.25) or math.abs(y1 - y2) > plen(0.25) then
+			local radius = math.abs(x1 - x2) + math.abs(y1 - y2)
+			if (self.cooldown > 0 or flen(radius) >= 0.3 ) or (flen(radius) >= 0.3) then
 				if (x1 < x2) then
 					self.movDirection = 1
 					self.side = 1 * self.type.imgturn
@@ -450,6 +451,7 @@ function Enemy:trigerredMovement(dt)
 				end
 			elseif self.behaviour.attack == "fly_contact" then
 				self.attackTimer = 2
+				self.cooldown = 5
 				self.cx, self.cy = x2, y2
 				self.x1, self.y1 = self.body:getPosition()
 
@@ -702,7 +704,7 @@ function Enemy:update(dt)
 	-- MOVEMENT_________________________________________________________________
 
 	if self.type.enemyType == 'fly' then
-		if (y2 >= y1 + plen(0.25)) then
+		if (y2 >= y1 + plen(0.2)) then
 			self.movDirectionY = 1
 		else
 			self.movDirectionY = -1
