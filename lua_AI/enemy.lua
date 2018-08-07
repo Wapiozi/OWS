@@ -399,7 +399,11 @@ function Enemy:fly(dt, speed, dx, dy, cx, cy)
 
 	else
 		self.body:setLinearVelocity((self.cx - self.x1) * plen(10),  (self.cy - self.y1) * plen(10))
-
+		local x, y = self.body:getPosition()
+		if ((math.abs(x - self.x1) > plen(0.5)) or (math.abs(y - self.y1) > plen(0.5))) then
+			self:fly(0,0,0)
+			self.attackTimer = 0
+		end
 	end
 end
 
