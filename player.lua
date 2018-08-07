@@ -27,6 +27,7 @@ function Player:new(x, y)
 	self.maxHP = 200
 	self.maxJumps = 2
 	self.jumpCount = 0
+	self.nearEnemies = 0
 
 	self.aimList = {}
 	self.objCnt = 0
@@ -143,7 +144,6 @@ end
 
 function Player:update(dt)
 	local xveloc, yveloc = self.body:getLinearVelocity()
-
 	if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:setLinearVelocity(plen(0.45), yveloc)
 	elseif (xveloc > -plen(0.45)) and (self.movDirection == -1) then self.body:setLinearVelocity(-plen(0.45), yveloc)
 	elseif (self.movDirection == 0) then
@@ -156,7 +156,6 @@ function Player:update(dt)
 	if self.mana < self.maxMana then
 		self.mana = math.min(self.mana + self.manaPerSecond*dt, self.maxMana)
 	end
-
 	self.aimList = {}
 	self.objCnt = 0
 	enemies:exec(self.contCallback)

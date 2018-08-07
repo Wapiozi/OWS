@@ -116,7 +116,7 @@ function Enemy:init()
 
 --NPC___________________________________________________________________________
 	NpcTypeMerchant = {
-		enemyType = 'ground',
+		enemyType = 'npc',
 		image = NpcMerchantImg,
 		imgturn = 1,
 		size = 0.2,
@@ -141,7 +141,7 @@ function Enemy:init()
 	}
 
 NpcTypeChallenge = {
-	enemyType = 'ground',
+	enemyType = 'npc',
     image = NpcChallengeImg,
     imgturn = 1,
     size = 0.2,
@@ -213,7 +213,10 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	self.smell_detection_time = 0
 	self.noise_time = 0
 	self.question = self.type.question or false
-	self.movDirectionY = 1
+	if self.type.enemyType == "fly" then
+		self.movDirectionY = 1
+		self.attackTimer = 0
+	end
 
 	self.target = player1
 
@@ -364,11 +367,11 @@ function Enemy:move(dt, speed, direction)
 	end
 end
 
-function Enemy:fly(dt, speed, dx, dy)
+function Enemy:fly(dt, speed, dx, dy, cx, cy)
 	local xveloc, yveloc = self.body:getLinearVelocity()
 	if (dx == 0) then
 		self.body:setLinearVelocity(0,plen(-0.0256))
-	else
+	elseif (cx == nil) and (cy == nil) then
 		if self.movDirection == 1 then
 			self.ax = self.ax + 5 * dt
 		else
@@ -382,14 +385,21 @@ function Enemy:fly(dt, speed, dx, dy)
 		end
 
 		if (math.abs(xveloc) < plen(speed)) then
-			xveloc = xveloc + self.movDirection * dx * math.min(math.max(plen(0.03),math.abs(self.ay)),plen(0.03))
+			xveloc = xveloc + self.movDirection * dx * plen(0.03)--math.min(math.max(plen(0.03),math.abs(self.ay)),plen(0.03))
 		end
 
 		if (math.abs(yveloc) < plen(speed)) then
-			yveloc = yveloc + self.movDirectionY * dy * math.min(math.max(plen(0.03),math.abs(self.ay)),plen(0.03))
+			yveloc = yveloc + self.movDirectionY * dy * plen(0.05)--math.min(math.max(plen(0.03),math.abs(self.ay)),plen(0.03))
 		end
 
+		if xveloc > 0 then xveloc = xveloc - plen(0.01) else xveloc = xveloc + plen(0.01) end
+		if yveloc > 0 then yveloc = yveloc - plen(0.01) else yveloc = yveloc + plen(0.005) end
+
 		self.body:setLinearVelocity(xveloc,yveloc)
+
+	else
+		self.body:setLinearVelocity((self.cx - self.x1) * plen(10),  (self.cy - self.y1) * plen(10))
+
 	end
 end
 
@@ -424,19 +434,43 @@ function Enemy:trigerredMovement(dt)
 	--FLY--
 
 	if self.behaviour.movement_ad == "fly_aggressive" then
-		if (x1 < x2) then
-			self.movDirection = 1
-			self.side = 1 * self.type.imgturn
-			local speed, directionX, directionY = 0.35, 1, 1
-			self:fly(dt,speed,directionX, directionY)
-		else
-			self.movDirection = -1
-			self.side = -1 * self.type.imgturn
-			local speed, directionX, directionY = 0.35, 1, 1
-			self:fly(dt,speed,directionX, directionY)
+		if (self.attackTimer <= 0) then
+			self.fixture:setFriction(0)
+			if math.abs(x1 - x2) > plen(0.25) or math.abs(y1 - y2) > plen(0.25) then
+				if (x1 < x2) then
+					self.movDirection = 1
+					self.side = 1 * self.type.imgturn
+					local speed, directionX, directionY = 0.35, 1, 1
+					self:fly(dt,speed,directionX, directionY)
+				else
+					self.movDirection = -1
+					self.side = -1 * self.type.imgturn
+					local speed, directionX, directionY = 0.35, 1, 1
+					self:fly(dt,speed,directionX, directionY)
+				end
+			elseif self.behaviour.attack == "fly_contact" then
+				self.attackTimer = 2
+				self.cx, self.cy = x2, y2
+				self.x1, self.y1 = self.body:getPosition()
+
+				--self.body:setFixedRotation(false)
+				--if (x1 > x2) then self.cx = 1 else self.cx = -1 end
+				--if (y1 > y2) then self.cy = -1 else self.cy = 1 end
+				--world:rayCast(x1, y1, x2, y2, self.chooseDirection)
+			end
+		elseif (self.attackTimer <= 0.5) then
+			--self.body:setAngularVelocity(0)
+			--self.body:setAngle(0)
+			--self.body:setFixedRotation(true)
+			self.fixture:setFriction(100)
+			self.attackTimer = self.attackTimer - dt
+			local speed, directionX, directionY = 0.55, 1, 1
+			self:fly(dt,speed,directionX, directionY, self.cx, self.cy)
+		elseif (self.attackTimer <= 2) then
+			self.attackTimer = self.attackTimer - dt
+			self:fly(dt,0,0)
+			--self.body:setAngularVelocity(self.body:getAngularVelocity() + 0.09)
 		end
-
-
 	elseif
 	--MOVE--
 
@@ -619,6 +653,9 @@ function Enemy:update(dt)
 	local xv, yv = player1.body:getLinearVelocity()
 	local x1, y1 = self.body:getPosition()
 	local x2, y2 = player1.body:getPosition()
+	if ((math.abs(x1-x2)<plen(0.8)) and (math.abs(y1-y2)<plen(0.4)) and (self.type.enemyType ~= "npc") ) then
+		player1.nearEnemies = true
+	end
 	--[[
 	if (xveloc <= 0.008) and (xveloc >= -0.008) then
 		self.readytojump = self.readytojump + dt
@@ -665,7 +702,7 @@ function Enemy:update(dt)
 	-- MOVEMENT_________________________________________________________________
 
 	if self.type.enemyType == 'fly' then
-		if (y2 >= y1 + plen(0.2)) then
+		if (y2 >= y1 + plen(0.25)) then
 			self.movDirectionY = 1
 		else
 			self.movDirectionY = -1
@@ -713,7 +750,7 @@ function Enemy:work()
 		local x2, y2 = player1.body:getPosition()
 		x1, y1 = fcoords(x1, y1)
 		x2, y2 = fcoords(x2, y2)
-		if ((math.abs(x1-x2)<0.15) and (math.abs(y1-y2)<0.15) and (self.question == true)) then
+		if ((math.abs(x1-x2)<0.15) and (math.abs(y1-y2)<0.15) and (player1.nearEnemies == false)) then
 			love.graphics.setColor(1, 1, 1, 1)
 			love.graphics.draw(MessageImg, 0, 400)
 			love.graphics.printf("That's where the story begins. You'll go through challenges and hard task and maybe even become a great and powerfull magician, but for now all you have this magic stuff of wizardry good luck surviving!", 200, 530 ,700,left,0,1.5)
@@ -729,9 +766,9 @@ function Enemy:draw()
 
 	local x, y = self.body:getWorldPoints(self.shape:getPoints())
 	if self.side == 1 then
-		love.graphics.draw(self.image, x, y, 0, self.scale, self.scale)
+		love.graphics.draw(self.image, x, y, self.body:getAngle(), self.scale, self.scale)
 	elseif self.side == -1 then
-		love.graphics.draw(self.image, x+plen(self.width), y, 0, self.scale*self.side, self.scale)
+		love.graphics.draw(self.image, x+plen(self.width), y, self.body:getAngle(), self.scale*self.side, self.scale)
 	end
 	--love.graphics.rectangle("fill", self.x2, self.y1, self.movDirection * math.abs(self.x2 - self.x1), self.movDirection  * math.abs(self.y2 - self.y1) )
 	self:drawHP()

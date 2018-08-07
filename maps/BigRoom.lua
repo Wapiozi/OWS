@@ -24,6 +24,10 @@ function loadMap(transitionInd)
     walls:add(Brick:new(2, 2.6-0.005, 2, 0.01, "floor", 0, LaserImg))
     walls:add(Brick:new(3, 2.8-0.005, 2, 0.01, "floor", 0, LaserImg))
 
+    --enemies:add(Enemy:new(NpcTypeChallenge, 0.9, 0.8))
+	enemies:add(Enemy:new(EnemyTypeBat, 1, 2))
+	--enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
+
     envirsh:add(Transition:new(1, 2.9, "maps/start", 1))
 
     backgr = love.graphics.newQuad(0, 0, plen(16/9*4), plen(3), BrickImg:getDimensions())

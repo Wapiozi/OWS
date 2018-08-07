@@ -430,7 +430,7 @@ function love.update(dt)
 	local dx = camera._x + screenWidth / 2 - player1.body:getX()
 	local dy = camera._y + screenHeight / 2 - player1.body:getY()
 	camera:move(dx*4*dt,dy*10*dt)
-
+	player1.nearEnemies = false
 	enemies:update(dt)
 	player1:update(dt)
 	world:update(dt)
