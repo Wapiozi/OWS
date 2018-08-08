@@ -6,6 +6,7 @@ function Brick:new(x, y, sizex, sizey, mean, angle, image)
 	self = setmetatable({}, self)
 
 	x, y = pcoords(x, y)
+	self.sizex, self.sizey = sizex, sizey
 	sizex, sizey = pcoords(sizex, sizey)
 
 	self.name = "brick"
@@ -22,8 +23,6 @@ function Brick:new(x, y, sizex, sizey, mean, angle, image)
 	self.image:setWrap("repeat", "repeat")
 	self.quad = love.graphics.newQuad(x, y, sizex, sizey, pcoords(self.width, self.height))
 
-	self.angle = angle or 0
-
 	self.fixture:setCategory(5)
 	self.fixture:setUserData(self)
 
@@ -32,5 +31,20 @@ end
 
 function Brick:draw()
 	local x, y = self.body:getWorldPoints(self.shape:getPoints())
-	love.graphics.draw(self.image, self.quad, x, y, self.angle)
+	love.graphics.draw(self.image, self.quad, x, y, self.body:getAngle())
+end
+
+function Brick:resize(sizex, sizey)
+	self.sizex, self.sizey = sizex, sizey
+	sizex, sizey = pcoords(sizex, sizey)
+
+	self.fixture:destroy()
+	self.shape:release()
+	self.shape = love.physics.newRectangleShape(sizex, sizey)
+	self.fixture = love.physics.newFixture(self.body, self.shape)
+	local x, y = self.body:getWorldPoints(self.shape:getPoints())
+	self.quad = love.graphics.newQuad(x, y, sizex, sizey, pcoords(self.width, self.height))
+	self.fixture:setCategory(5)
+	self.fixture:setUserData(self)
+	print("aa")
 end

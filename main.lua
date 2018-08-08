@@ -426,33 +426,6 @@ end
 function love.update(dt)
 	----------------PROCESSING GESTURE----------------------
 	gesture = getLastMovement()
-	local i = 1
-	if gesture ~= nil then
-		while gesture[i] ~= 10 do   --check for end code
-			if gesture[i] == 1 then
-			elseif gesture[i] == 2 then
-				local x, y = player1:getMagicCoords()
-				if Magic:canShoot(player1, MagicTypeGround) then bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeGround, "player")) end
-			elseif gesture[i] == 3 then
-				local x, y = player1:getMagicCoords()
-				if Magic:canShoot(player1, MagicTypeWater) then bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeWater, "player")) end
-			elseif gesture[i] == 4 then
-				local x, y = player1:getMagicCoords()
-				if Magic:canShoot(player1, MagicTypeFire) then bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeFire, "player")) end
-			elseif gesture[i] == 5 then
-
-			elseif gesture[i] == 6 then
-				local x, y = player1:getMagicCoords()
-				if Magic:canShoot(player1, MagicTypeAir) then bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeAir, "player")) end
-			elseif gesture[i] == 7 then
-
-			elseif gesture[i] == 8 then
-				local x, y = player1:getMagicCoords()
-				if Magic:canShoot(player1, MagicTypeIce) then bullets:add(Magic:new(x, y, 50*player1.side, 1, MagicTypeIce, "player")) end
-			end
-			i = i+1
-		end
-	end
 
 	if gesture ~= nil then player1:shoot(gesture) end
 	-----------------------------------------------------
