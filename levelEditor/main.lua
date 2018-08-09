@@ -160,6 +160,7 @@ function love.keypressed(key)
 end
 
 function love.mousepressed(x, y, button, istouch, presses)
+	if x < 340 and y < 200 then return end
 	x = camera._x + x
 	y = camera._y + y
 	world:queryBoundingBox(x - 10, y - 10, x + 10, y + 10, catch)
