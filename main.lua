@@ -483,8 +483,8 @@ function love.update(dt)
 	Buttons:load(1) --W A S D buttons
 	Buttons:update(1) --W A S D buttons
 	if questMenuOpen then
-		Buttons:load(2) --It's QUEST MENU, Bae!
-  	Buttons:update(2) --It's QUEST MENU, Bae!
+		Buttons:load(2) --W A S D buttons
+  	Buttons:update(2) --W A S D buttons
   end
 end
 
