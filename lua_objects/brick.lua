@@ -46,5 +46,4 @@ function Brick:resize(sizex, sizey)
 	self.quad = love.graphics.newQuad(x, y, sizex, sizey, pcoords(self.width, self.height))
 	self.fixture:setCategory(5)
 	self.fixture:setUserData(self)
-	print("aa")
 end

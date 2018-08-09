@@ -764,7 +764,7 @@ function Enemy:drawHP()
 end
 
 function Enemy:work()
-	if self.question == true then
+	if self.question == true and (not self.body:isDestroyed()) then
 		local x1, y1 = self.body:getPosition()
 		local x2, y2 = player1.body:getPosition()
 		x1, y1 = fcoords(x1, y1)
@@ -782,6 +782,7 @@ function Enemy:draw()
 	-- self:choose_sprite(red)
 	-- 		find max red[] and choose a sprite
 	--love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
+	if self.body:isDestroyed() then return end
 
 	local x, y = self.body:getWorldPoints(self.shape:getPoints())
 	if self.side == 1 then

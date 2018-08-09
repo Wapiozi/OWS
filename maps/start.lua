@@ -1,4 +1,4 @@
-local spawnPoints = {
+spawnPoints = {
     [1] = {x = 0.2, y = 0.8},
     [2] = {x = 1, y = 0.9}
 
