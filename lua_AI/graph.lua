@@ -120,5 +120,8 @@ function Graph:draw()
 			end
 		end
 	end
-	print("fuck")
+end
+
+function Graph:destroy()
+	self = {}
 end
