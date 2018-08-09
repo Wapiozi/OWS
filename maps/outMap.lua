@@ -1,9 +1,9 @@
-spawnPoints = { 
+spawnPoints = {
  {x = 2.5419443766276,y = 2.4844445122613},
 {x = 1,y = 2.9},
 
-} 
- 
+}
+
 function loadMap(transitionInd)
 player1:setPosition(spawnPoints[transitionInd].x,spawnPoints[transitionInd].y)
 camera:setBounds(0,0,screenWidth*4,screenHeight*3)
@@ -27,5 +27,5 @@ lights:add(1.4638888888889,2.6472220526801,0.5,false,nil,1,1,0.745)
 lights:add(5,2.4486111111111,0.5,false,nil,1,1,0.71)
 lights:add(1.0611111111111,2.1444444444444,0.5,false,nil,1,1,0.705)
 envirsh:add(Transition:new(2.5419443766276,2.4844445122613,"maps/BigRoom",nil))
-envirsh:add(Transition:new(1,2.9,"maps/start",nil))
+envirsh:add(Transition:new(1,2.9,"maps/level1",nil))
 end
