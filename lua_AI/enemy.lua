@@ -226,6 +226,8 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	self.smell_detection_time = 0
 	self.noise_time = 0
 	self.question = self.type.question or false
+	self.searching = false
+
 	if self.type.enemyType == "fly" then
 		self.movDirectionY = 1
 		self.attackTimer = 0
