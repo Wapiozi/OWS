@@ -168,6 +168,7 @@ end
 disableMovement = false
 
 function love.mousemoved( x, y, dx, dy, istouch )
+	if x < 340 and y < 200 then return end
 	x = camera._x + x
 	y = camera._y + y
 	if obj ~= nil and love.mouse.isDown(1) then
@@ -412,6 +413,9 @@ function love.draw()
 	player1:draw()
 
 	camera:unset()
+
+	love.graphics.line(340, 0, 340, 200)
+	love.graphics.line(0, 200 , 340, 200)
 
 	suit.draw()
 
