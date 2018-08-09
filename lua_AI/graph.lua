@@ -28,11 +28,12 @@ function Graph:addNB(i, nb)
     ]]
     self[i].nb = nb
     for j = 1, nb.q do
-        self[j].nb.q = self[j].nb.q + 1
-		self[j].nb[self[j].nb.q] = {}
-		self[j].nb[self[j].nb.q].vertex = i
+		local vec = self[i].nb[j].vertex
+        self[vec].nb.q = self[vec].nb.q + 1
+		self[vec].nb[self[vec].nb.q] = {}
+		self[vec].nb[self[vec].nb.q].vertex = vec
 		self[i].nb[j].length = getDist(self[i].x, self[i].y, self[j].x, self[j].y)
-        self[j].nb[self[j].nb.q].length = self[i].nb[j].length
+        self[vec].nb[self[vec].nb.q].length = self[i].nb[j].length
     end
 end
 
