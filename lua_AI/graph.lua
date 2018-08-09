@@ -19,7 +19,7 @@ function Graph:addNB(i, nb)
         nb = {
             q = quantity of connected vertexes
             [1].vertex = j
-            [1].distance = getDist(self[i].x, self[i].y, self[j].x, self[j].y)
+            [1].length = getDist(self[i].x, self[i].y, self[j].x, self[j].y)
             [2]
             ...
             [q]
@@ -28,17 +28,18 @@ function Graph:addNB(i, nb)
     ]]
     self[i].nb = nb
     for j = 1, nb.q do
-		self[j].nb[self[j].nb.q].vertex = i
         self[j].nb.q = self[j].nb.q + 1
-        self[j].nb[self[j].nb.q].length = getDist(self[i].x, self[i].y, self[j].x, self[j].y)
+		self[j].nb[self[j].nb.q] = {}
+		self[j].nb[self[j].nb.q].vertex = i
+		self[i].nb[j].length = getDist(self[i].x, self[i].y, self[j].x, self[j].y)
+        self[j].nb[self[j].nb.q].length = self[i].nb[j].length
     end
 end
 
-function Graph:addVertex(x, y, nb)
+function Graph:addVertex(x1, y1, nb)
     self.vertexQuantity = self.vertexQuantity  + 1
-    i = self.vertexQuantity
-    self[i].x = x
-    self[i].y = y
+    local i = self.vertexQuantity
+    self[i] = {x = x1, y = y1}
     if nb ~= nil then self:addNB(i,nb) end
 end
 
@@ -92,6 +93,7 @@ end
 function Graph:whereToGo(enemy1)
 	local x1, y1 = enemy1.body:getPosition()
 	local x2, y2 = player1.body:getPosition()
+	x1, y1, x2, y2 = fcoords(x1, y1), fcoords(x2, y2)
 	local start, finish = 1, 1
 	for i = 1,self.vertexQuantity do
 		if ( math.abs(self[i].x - x1) + math.abs(self[i].y - y1) ) < ( math.abs(self[start].x - x1) + math.abs(self[start].y - y1) ) then

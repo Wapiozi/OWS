@@ -29,4 +29,5 @@ lights:add(1.0611111111111,2.1444444444444,0.5,false,nil,1,1,0.705)
 envirsh:add(Transition:new(2.5419443766276,2.4844445122613,"maps/BigRoom",2))
 envirsh:add(Transition:new(1,2.9,"maps/start",1))
 envirsh:add(Transition:new(3,2.9,"maps/SunFlow",1))
+envirsh:add(Transition:new(2.5,2.9,"maps/level1",nil))
 end
