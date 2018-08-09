@@ -3,6 +3,7 @@ libmagic = require("lua_Magic/magic")
 libitems = require("lua_objects/items")
 libinven = require("inventory")
 libenemy = require("lua_AI/enemy")
+libgraph = require("lua_AI/graph")
 libplayer = require("player")
 libcamera = require("camera")
 libbrick = require("lua_objects/brick")
@@ -392,6 +393,7 @@ function love.load(arg)
 		hitList = {}
 	}
 
+	graph1 = Graph:new()
 	player1 = Player:new(0.2, 0.8)
 	inventory1 = Inventory:new()
 	inventoryMode = false
