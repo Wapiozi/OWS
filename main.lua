@@ -314,6 +314,7 @@ function eraseMap()
 	bullets:exec(destroyer.destroy)
 	envir:exec(destroyer.destroy)
 	envirsh:exec(destroyer.destroy)
+	if graph1 ~= nil and graph1.destroy ~= nil then graph1:destroy() end
 
 	enemies = Container:new() -- Category 3
 	items = Container:new() --Category 4
@@ -323,6 +324,7 @@ function eraseMap()
 	particles = Container:new() -- (Category 7) by now no category
 	envir = Container:new()	--shadowed EnvObjects
 	envirsh = Container:new() --non shadowed EnvObjects
+	graph1 = Graph:new()
 
 	lights = nil
 	lights = Lights:create()
