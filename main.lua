@@ -13,6 +13,7 @@ libenv = require("lua_objects/envobjects")
 libtraps = require("lua_objects/traps")
 suit = require ("SUIT")
 libbuttons = require ("Buttons")
+libdialogs = require ("Dialogs")
 --libnpc = require("npc")
 utf8 = require("utf8")
 
@@ -490,20 +491,6 @@ function love.update(dt)
   but_s = suit.Button(" ",{id=2, cornerRadius=plen(0.05)} , plen(0.25),plen(0.7), plen(0.15), plen(0.15))
 	but_d = suit.Button("->",{id=3, cornerRadius=plen(0.05)} , plen(0.40),plen(0.7), plen(0.15), plen(0.15))
 	but_w = suit.Button("^",{id=4, cornerRadius=plen(0.05)} , plen(0.25),plen(0.55), plen(0.15), plen(0.15))
-	]]--
-	--[[if (but_d.hit) then
-		player1:moveRight()
-		player1:moveRight()
-	elseif (but_a.hit) then
-		player1:moveLeft()
-		player1:moveLeft()
-	elseif (but_a.left) or (but_d.left) then
-		player1.movDirection = 0
-	end
-
-	if (but_w.hit) then
-		player1:jump()
-	end
 	]]--
 	Buttons:load(1) --W A S D buttons
 	Buttons:update(1) --W A S D buttons

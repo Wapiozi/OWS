@@ -1,8 +1,9 @@
 -- Buttons Implementation --------------------------------------------
-suit = require ("SUIT")
 Buttons = {}
 Buttons.__index = Buttons
 Buttons.type = 'Buttons'
+
+questMenuButton = false
 
 function Buttons:load(but)
   if but==1 then --W A S D buttons
@@ -17,7 +18,7 @@ function Buttons:load(but)
     but_menu = suit.Button("It's quest-MENU, bitch, press this button", plen(0.95),plen(0.1), plen(0.5), plen(0.025))
   end
   if but==3 then --It's also part of QUEST
-    lab_menu = suit.Label("Mathafaka Mathafaka Mathafaka",plen(0.9),plen(0.2), plen(0.5), plen(0.025))
+    lab_menu = suit.Label("Mathafaka Mathafaka Mathafaka",plen(0.85),plen(0.2), plen(0.5), plen(0.025))
   end
 end
 
@@ -39,7 +40,14 @@ function Buttons:update(but)
   end
 
   if but==2 then --It's QUEST MENU, Bae!
-    if but_menu.hovered then
+    if but_menu.hit then
+      if questMenuButton then
+  			questMenuButton = false
+  		elseif not questMenuButton then
+  			questMenuButton = true
+  		end
+    end
+    if questMenuButton == true then
       Buttons:load(3)
     end
   end
