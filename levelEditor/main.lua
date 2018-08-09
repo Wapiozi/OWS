@@ -209,6 +209,7 @@ typeInp = {text = ""}
 nextLocInp = {text = ""}
 spawnIndInp = {text = ""}
 brightInp = {text = ""}
+outpFileInp = {text = "outMap"}
 rval = {value = 0, max = 1}
 gval = {value = 0, max = 1}
 bval = {value = 0, max = 1}
@@ -366,11 +367,13 @@ function love.update(dt)
 
 	camera:setPosition(curPos.x,curPos.y)
 
+	suit.Input(outpFileInp, 1100, 10, 170, 30)
+
 	if suit.Button("Create", 10,10, 50,30).hit then
 		showAll = true
     end
-	if suit.Button("Export map", 1190, 10, 80, 30).hit then
-		file = io.open("outMap.lua", "w")
+	if suit.Button("Export map", 1190, 50, 80, 30).hit then
+		file = io.open(outpFileInp.text .. ".lua", "w")
 		io.output(file)
 
 		io.write("spawnPoints = { \n ")
