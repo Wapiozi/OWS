@@ -122,8 +122,8 @@ function Transition:new(x, y, nextLocation, spawnInd)
     self.fixture:setSensor(true)
     self.fixture:setUserData(self)
     self.obstacle = true
-    self.nextLocation = nextLocation
-    self.spawnInd = spawnInd
+    self.nextLocation = nextLocation or "maps/start"
+    self.spawnInd = spawnInd or 1
     self.angle = angle or 0
     self.canDelete = false
     self.state = false --off

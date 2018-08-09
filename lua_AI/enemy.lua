@@ -45,7 +45,8 @@ function Enemy:init()
 		}, -- movement_bd = before detect | ad = after detect
 
 		timer = 5,
-		Init = nil
+		Init = nil,
+		name = "EnemyTypeBat"
 	}
 
 
@@ -74,7 +75,8 @@ function Enemy:init()
 		},
 
 		timer = 5,
-		Init = nil
+		Init = nil,
+		name = "EnemyTypeRat"
 		--Collis = nil
 	}
 
@@ -111,7 +113,8 @@ function Enemy:init()
 		}, -- movement_bd = before detect | ad = after detect
 
 		timer = 5,
-		Init = nil
+		Init = nil,
+		name = "EnemyTypeMadwizard"
 	}
 
 --NPC___________________________________________________________________________
@@ -136,35 +139,45 @@ function Enemy:init()
 		},
 
 		timer = 5,
-		Init = nil
+		Init = nil,
+		name = "NpcTypeMerchant"
 		--Collis = nil
 	}
 
-NpcTypeChallenge = {
-	enemyType = 'npc',
-    image = NpcChallengeImg,
-    imgturn = 1,
-    size = 0.2,
-    Restitution = 0,
-    Friction = 0.09,
-    Damage = 0,
-    hp = 1000,
-    Reload = 0,
-    mass = 70,
-	question = true,
-	ghost = true,
+	NpcTypeChallenge = {
+		enemyType = 'npc',
+	    image = NpcChallengeImg,
+	    imgturn = 1,
+	    size = 0.2,
+	    Restitution = 0,
+	    Friction = 0.09,
+	    Damage = 0,
+	    hp = 1000,
+	    Reload = 0,
+	    mass = 70,
+		question = true,
+		ghost = true,
 
-    behaviour = {
-        movement_bd = "slow_move",
-        movement_ad = "neutral",
-        sensor = {vision = true, smell = false, noise = true},
-        playerdist = 0.14
-    },
+	    behaviour = {
+	        movement_bd = "slow_move",
+	        movement_ad = "neutral",
+	        sensor = {vision = true, smell = false, noise = true},
+	        playerdist = 0.14
+	    },
 
-    timer = 5,
-    Init = nil
-    --Collis = nil
-}
+	    timer = 5,
+	    Init = nil,
+		name = "NpcTypeChallenge"
+	    --Collis = nil
+	}
+
+	EnemyTypes = {}  --needed for level editor
+	EnemyTypes[1] = EnemyTypeBat
+	EnemyTypes[2] = EnemyTypeRat
+	EnemyTypes[3] = EnemyTypeMadwizard
+	EnemyTypes[4] = NpcTypeMerchant
+	EnemyTypes[5] = NpcTypeChallenge
+
 end
 
 function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
@@ -213,6 +226,8 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	self.smell_detection_time = 0
 	self.noise_time = 0
 	self.question = self.type.question or false
+	self.searching = false
+
 	if self.type.enemyType == "fly" then
 		self.movDirectionY = 1
 		self.attackTimer = 0
@@ -751,7 +766,7 @@ function Enemy:drawHP()
 end
 
 function Enemy:work()
-	if self.question == true then
+	if self.question == true and (not self.body:isDestroyed()) then
 		local x1, y1 = self.body:getPosition()
 		local x2, y2 = player1.body:getPosition()
 		x1, y1 = fcoords(x1, y1)
@@ -770,6 +785,7 @@ function Enemy:draw()
 	-- self:choose_sprite(red)
 	-- 		find max red[] and choose a sprite
 	--love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
+	if self.body:isDestroyed() then return end
 
 	local x, y = self.body:getWorldPoints(self.shape:getPoints())
 	if self.side == 1 then

@@ -1,9 +1,16 @@
+#ifdef GL_ES
+precision mediump float;
+#endif
+
 extern vec4[100] lights;  //lightSources
 extern vec4[100] colors;
 extern vec4[300] triangles;  //p1, p2 from triangles
 extern vec2[300] pdegs;  //p1deg, p2deg from triangles
 
 extern vec2 camPos;
+
+varying vec4 pos;
+
 vec4 nul = vec4(0, 0, 0, 0);
 vec4 ful = vec4(1, 1, 1, 1);
 vec2 vect = vec2(0, 0);
@@ -59,6 +66,7 @@ vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords 
 	float atten = 0.0;
 	float angle = 0.0;
 	vec2 curPos = screen_coords+camPos;
+	//vec2 curPos = pos.xy;
 	vec4 curLight = lights[0];
 	vec3 resCol = vec3(0, 0, 0);
 	int j = 0;
