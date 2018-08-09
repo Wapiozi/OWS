@@ -39,8 +39,9 @@ function loadMap(transitionInd)
 	items:add(Item:new(0.2,0.8,ClothObj))
 
     graph1:addVertex(0.5, 0.1, {q = 0})
-    graph1:addVertex(0.8, 0.1, {q = 1,[1] = {vertex = 1}})
+    graph1:addVertex(0.8, 0.4, {q = 1,[1] = {vertex = 1}})
     graph1:addVertex(1.5, 0.1, {q = 1,[1] = {vertex = 2}})
+    graph1:addVertex(2, 0.2, {q = 1,[1] = {vertex = 2}})
 
     backgr = love.graphics.newQuad(0, 0, plen(16/9*2), plen(1), BrickImg:getDimensions())
 end

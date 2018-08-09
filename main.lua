@@ -513,6 +513,8 @@ function love.draw()
 
 	lights:endDraw()
 
+	graph1:draw()
+
 	if lights.triGl ~= nil and lights.lightss ~= nil and false then  --lighting debugger
 		j = 1
 		prev = 1

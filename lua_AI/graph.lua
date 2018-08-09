@@ -105,3 +105,19 @@ function Graph:whereToGo(enemy1)
 	end
 	return self:getPath(start,finish)
 end
+
+function Graph:draw()
+	for i = 1, self.vertexQuantity do
+		local x, y = pcoords(self[i].x, self[i].y)
+		love.graphics.circle("line", x, y, 10)
+		if self[i].nb ~= nil then
+
+			for j = 1, self[i].nb.q do
+				local xx, yy = pcoords(self[self[i].nb[j].vertex].x, self[self[i].nb[j].vertex].y)
+				love.graphics.line(x, y, xx, yy)
+				print(i, self[i].nb[j].vertex)
+			end
+		end
+	end
+	print("fuck")
+end
