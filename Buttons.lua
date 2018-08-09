@@ -13,6 +13,12 @@ function Buttons:load(but)
     but_d = suit.Button("->",{id=3, cornerRadius=plen(0.05)} , plen(0.40),plen(0.7), plen(0.15), plen(0.15))
     but_w = suit.Button("^",{id=4, cornerRadius=plen(0.05)} , plen(0.25),plen(0.55), plen(0.15), plen(0.15))
   end
+  if but==2 then --It's QUEST MENU, Bae!
+    but_menu = suit.Button("It's quest-MENU, bitch, press this button", plen(0.95),plen(0.1), plen(0.5), plen(0.025))
+  end
+  if but==3 then --It's also part of QUEST
+    lab_menu = suit.Label("Mathafaka Mathafaka Mathafaka",plen(0.9),plen(0.2), plen(0.5), plen(0.025))
+  end
 end
 
 function Buttons:update(but)
@@ -27,9 +33,15 @@ function Buttons:update(but)
 		    player1.movDirection = 0
 	  end
 
-	  if suit.isActive(4) then
+	  if suit.isHit(4) then
 		    player1:jump()
 	  end
+  end
+
+  if but==2 then --It's QUEST MENU, Bae!
+    if but_menu.hovered then
+      Buttons:load(3)
+    end
   end
 end
 

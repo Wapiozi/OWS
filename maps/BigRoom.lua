@@ -1,4 +1,4 @@
-local spawnPoints = {
+spawnPoints = {
     [1] = {x = 1, y = 2.9},
     [2] = {x = 2, y = 2.9}
 }
@@ -29,6 +29,7 @@ function loadMap(transitionInd)
 	--enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
 
     envirsh:add(Transition:new(1, 2.9, "maps/start", 1))
+    envirsh:add(Transition:new(2, 2.9, "maps/outMap", 2))
 
     backgr = love.graphics.newQuad(0, 0, plen(16/9*4), plen(3), BrickImg:getDimensions())
 end
