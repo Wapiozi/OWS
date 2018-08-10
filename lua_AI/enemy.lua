@@ -820,7 +820,7 @@ function Enemy:work()
 		if ((math.abs(x1-x2)<0.15) and (math.abs(y1-y2)<0.15) and (player1.nearEnemies == false)) then
 			love.graphics.setColor(1, 1, 1, 1)
 			love.graphics.draw(MessageImg, 0, 400)
-			love.graphics.printf(Dialogs:readStr(1,"DialogsTxt1.txt"), 200, 530 ,700,left,0,1.5)
+			love.graphics.printf(Dialogs:readStr(5,"DialogsTxt1.txt"), 200, 530 ,700,left,0,1.5)
 			--love.graphics.printf("That's where the story begins. You'll go through challenges and hard task and maybe even become a great and powerfull magician, but for now all you have this magic stuff of wizardry good luck surviving!", 200, 530 ,700,left,0,1.5)
 		end
 	end

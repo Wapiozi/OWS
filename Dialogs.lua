@@ -18,11 +18,11 @@ function Dialogs:readStr(str,diaTxt)
       strCount = strCount + 1
     end
     t = file:read(1)
-    if t ~= nil and t ~= "#" then
+    if t ~= nil and t ~= "\n" then
       f = f .. t
       io.input(file)
     end
-    if t == "#" then
+    if t == "\n" then
       strCount = strCount + 1
       if strCount > str then
         stop = 1
