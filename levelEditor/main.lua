@@ -101,6 +101,20 @@ function Graph:checkMouse(xx, yy)
 	return false
 end
 
+function Graph:write()
+	for i = 1, self.vertexQuantity do
+		io.write("graph1:addVertex(" .. ts(self[i].x) .. c .. ts(self[i].y))
+		if self[i].nb ~= nil then
+			io.write(c .. "{q = " .. ts(self[i].nb.q))
+			for j = 1, self[i].nb.q do
+				io.write(c .. "[" .. j .. "] = {vertex = " .. ts(self[i].nb[j].vertex .. "}"))
+			end
+			io.write("}")
+		end
+		io.write(")\n")
+	end
+end
+
 function catch(fixt)
 	obj = fixt:getUserData()
 
@@ -178,6 +192,7 @@ function love.mousepressed(x, y, button, istouch, presses)
 	b = graph1:checkMouse(x, y)
 	if b then
 		neibInp.text = ""
+		if obj.nb == nil then return end
 		for i = 1, obj.nb.q do
 			neibInp.text = neibInp.text .. tostring(obj.nb[i].vertex) .. " "
 		end
@@ -221,6 +236,10 @@ function CreateButtons()
     end
 	if suit.Button("Create Light", 10, 180, 100,30).hit then
 		lights:add(flen(mx+curPos.x), flen(my+curPos.y), 0.2, false, nil, 1, 1, 1)
+		showAll = false
+    end
+	if suit.Button("Create Vertex", 10, 220, 100,30).hit then
+		graph1:addVertex(flen(mx+curPos.x), flen(my+curPos.y))
 		showAll = false
     end
 end
@@ -294,14 +313,13 @@ function ShowProperties()
 	elseif obj.name == "graph" then
 		suit.Input(neibInp, 120, 10, 200, 30)
 
-		print(neibInp.text)
-
 		local neibs = {}
 		local cnt = 0
-		for i, str in string.gmatch(neibInp.text, "%d+") do
-			print(str)
+		local i = 1
+		for str in string.gmatch(neibInp.text, "%d+") do
 			neibs[i] = {vertex = tonumber(str)}
 			cnt = cnt + 1
+			i = i+1
 		end
 		neibs.q = cnt
 
@@ -431,8 +449,9 @@ function love.update(dt)
 		enemies:exec(writeEnemies)
 		lightCont:exec(writeLights)
 		envirsh:exec(writeTransitions)
+		graph1:write()
 
-		io.write("backgr = love.graphics.newQuad(plen(-100), plen(-100), plen(200), plen(200), BrickImg:getDimensions())")
+		io.write("backgr = love.graphics.newQuad(plen(-100), plen(-100), plen(200), plen(200), BrickImg:getDimensions())\n")
 
 		io.write("end")
 
