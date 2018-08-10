@@ -84,7 +84,7 @@ function Enemy:init()
 		enemyType = 'ground',
 		image = EnemyMadwizardImg,
 		imgturn = -1,
-		size = 0.2,
+		size = 0.15,
 		Restitution = 0,
 		Friction = 0.1,
 		Damage = 0, -- later
@@ -226,7 +226,7 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	self.smell_detection_time = 0
 	self.noise_time = 0
 	self.question = self.type.question or false
-	self.searching = false
+	self.searching = {time = 0, state = false}
 
 	if self.type.enemyType == "fly" then
 		self.movDirectionY = 1
@@ -422,23 +422,49 @@ function Enemy:fly(dt, speed, dx, dy, cx, cy)
 	end
 end
 
-function Enemy:standartMovement(dt)
+function Enemy:nearG(g)
+	local x1, y1 = self.body:getPosition()
+	x1, y1 = fcoords(x1, y1)
+	if math.abs(x1 - g.x) + math.abs(x1 - g.y) <= 0.1 then return true else return false end
+end
+
+function Enemy:standartMovement(dt, g)
 	--check for the floor (in future)
+	if g == nil then
+		--FLY--
+		if self.behaviour.movement_bd == "fly_stay" then
+			local speed, direction = 0.35, 0
+			self:fly(dt,speed,direction)
+		--MOVE--
+		elseif self.behaviour.movement_bd == "move" then
+			local speed, direction = 0.35, 1
+			self:move(dt,speed,direction)
+		elseif self.behaviour.movement_bd == "slow_move" then
+			local speed, direction = 0.15, 1
+			self:move(dt,speed,direction)
+		end
+	else
+		local x1, y1 = self.body:getPosition()
+		x1, y1 = fcoords(x1, y1)
+		if g.x <= x1 then
+			self.movDirection = -1
+			self.side = self.movDirection * self.type.imgturn
+		else
+			self.movDirection = 1
+			self.side = self.movDirection * self.type.imgturn
+		end
 
-	--FLY--
-	if self.behaviour.movement_bd == "fly_stay" then
-		local speed, direction = 0.35, 0
-		self:fly(dt,speed,direction)
+		if self.behaviour.movement_bd == "move" then
+			local speed, direction = 0.35, 1
+			self:move(dt,speed,direction)
+		elseif self.behaviour.movement_bd == "slow_move" then
+			local speed, direction = 0.15, 1
+			self:move(dt,speed,direction)
+		end
 
-
-	--MOVE--
-	elseif self.behaviour.movement_bd == "move" then
-		local speed, direction = 0.35, 1
-		self:move(dt,speed,direction)
-
-	elseif self.behaviour.movement_bd == "slow_move" then
-		local speed, direction = 0.15, 1
-		self:move(dt,speed,direction)
+		if nearG(g) then
+			self.MovementGraph.i = self.MovementGraph.i + 1
+		end
 
 	end
 
@@ -695,7 +721,9 @@ function Enemy:update(dt)
 			self.timer = self.type.timer
 			self.detection_time = 0
 		end
-	else self.smell_detection_time = 0 end
+	else
+		self.smell_detection_time = 0
+	end
 
 	-- Cooldown , Mana , Attack checks__________________________________________
 
@@ -733,6 +761,7 @@ function Enemy:update(dt)
 	if self.timer > 0 then
 		self.timer = self.timer - dt
 		self:trigerredMovement(dt)
+		if self.timer <= 0 then self.searching.time = 3 self.searching.state = true end
 	elseif self.noise_time > 0 or self.smell_detection_time > 0 then
 		if self.noise_time > 0 then
 			self.noise_time = self.noise_time - dt
@@ -741,13 +770,27 @@ function Enemy:update(dt)
 			self.smell_detection_time = self.smell_detection_time - dt
 		end
 	else
-		self.step = self.step - 1
-		if self.step == 0 then
-			self.side = self.side * -1
-			self.movDirection = self.side * self.imgturn
-			self.step = love.math.random(1000,1000)
+		if self.searching.state then
+			if self.searching.time > 0 then
+				self.body:setLinearVelocity(0, yveloc)
+				self.searching.time = self.searching.time - dt
+			else
+				self.MovementGraph = graph1:whereToGo(self)
+				self.searching.state = false
+			end
+		elseif self.MovementGraph ~= nil and self.MovementGraph.q ~= self.MovementGraph.i then
+			love.event.quit(0)
+			self:standartMovement(dt,graph1[self.MovementGraph[self.MovementGraph.i]])
+		else
+			self.MovementGraph = nil
+			self.step = self.step - 1
+			if self.step == 0 then
+				self.side = self.side * -1
+				self.movDirection = self.side * self.imgturn
+				self.step = love.math.random(1000,1000)
+			end
+			self:standartMovement(dt)
 		end
-		self:standartMovement(dt)
 	end
 end
 
@@ -774,7 +817,8 @@ function Enemy:work()
 		if ((math.abs(x1-x2)<0.15) and (math.abs(y1-y2)<0.15) and (player1.nearEnemies == false)) then
 			love.graphics.setColor(1, 1, 1, 1)
 			love.graphics.draw(MessageImg, 0, 400)
-			love.graphics.printf("That's where the story begins. You'll go through challenges and hard task and maybe even become a great and powerfull magician, but for now all you have this magic stuff of wizardry good luck surviving!", 200, 530 ,700,left,0,1.5)
+			love.graphics.printf(Dialogs:readStr(1,"DialogsTxt1.txt"), 200, 530 ,700,left,0,1.5)
+			--love.graphics.printf("That's where the story begins. You'll go through challenges and hard task and maybe even become a great and powerfull magician, but for now all you have this magic stuff of wizardry good luck surviving!", 200, 530 ,700,left,0,1.5)
 		end
 	end
 end

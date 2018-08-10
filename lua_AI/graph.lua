@@ -54,17 +54,20 @@ function Graph:dijikstra(ind)
     self[ind].visited = true
 	self.visitCount = self.visitCount + 1
 
-	if (self.prev ~= nil) then self[ind].visitedVertexes = self[prev].visitedVertexes end
-	self[ind].visitedVertexes.q = self[ind].visitedVertexes.q + 1
-	self[ind].visitedVertexes[q] = self.prev
-	self.prev = ind
+	if (self.prev ~= nil) then
+		self[ind].visitedVertexes = self[prev].visitedVertexes
+		self[ind].visitedVertexes.q = self[ind].visitedVertexes.q + 1
+		self[ind].visitedVertexes[q] = self.prev
+		self.prev = ind
+	end
 
     for i = 1,self[ind].nb.q do
-        if self[self[ind].nb[i]].visited == false then
-            self[self[ind].nb[i]].dist = self[ind].dist + self[ind].nb[i].length
+        if self[self[ind].nb[i].vertex].visited == false then
+            self[self[ind].nb[i].vertex].dist = self[ind].dist + self[ind].nb[i].length
             av.q = av.q + 1
+			av[av.q] = {}
             av[av.q].vertex = self[ind].nb[i].vertex
-			av[av.q].dist = self[self[ind].nb[i]].dist
+			av[av.q].dist = self[self[ind].nb[i].vertex].dist
 			setmetatable(av[av.q], vertexSorter)
         end
     end
@@ -86,7 +89,7 @@ function Graph:getPath(start,finish)
         self[i].visited = false
     end
     self[start].dist = 0
-    self[start].visitedVertexes{q = 1, [1] = start}
+    self[start].visitedVertexes = {i = 1, q = 1, [1] = start}
     self:dijikstra(start)
     return self[finish].visitedVertexes
 end
@@ -97,14 +100,16 @@ function Graph:whereToGo(enemy1)
 	x1, y1, x2, y2 = fcoords(x1, y1), fcoords(x2, y2)
 	local start, finish = 1, 1
 	for i = 1,self.vertexQuantity do
-		if ( math.abs(self[i].x - x1) + math.abs(self[i].y - y1) ) < ( math.abs(self[start].x - x1) + math.abs(self[start].y - y1) ) then
+		if ( math.abs(self[i].x - x1) * 10 + math.abs(self[i].y - y1) ) < ( math.abs(self[start].x - x1) * 10 + math.abs(self[start].y - y1) ) then
 			start = i
 		end
-		if ( math.abs(self[i].x - x2) + math.abs(self[i].y - y2) ) < ( math.abs(self[finish].x - x2) + math.abs(self[finish].y - y2) ) then
+		if ( math.abs(self[i].x - x2) * 10 + math.abs(self[i].y - y2) ) < ( math.abs(self[finish].x - x2) * 10 + math.abs(self[finish].y - y2) ) then
 			finish = i
 		end
 	end
-	return self:getPath(start,finish)
+
+	local Visit = self:getPath(start,finish)
+	return Visit
 end
 
 function Graph:draw()
