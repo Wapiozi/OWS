@@ -14,7 +14,11 @@ function Graph:new()
     return self
 end
 
-function Graph:addNB(i, nb)
+function Graph:deleteNB(i,j)
+
+end
+
+function Graph:addNB(i, nb, single)
     --[[
         nb = {
             q = quantity of connected vertexes
@@ -26,7 +30,7 @@ function Graph:addNB(i, nb)
         }
 
     ]]
-    self[i].nb = nb
+	self[i].nb = nb
     for j = 1, nb.q do
 		local vec = self[i].nb[j].vertex
         self[vec].nb.q = self[vec].nb.q + 1
@@ -34,6 +38,13 @@ function Graph:addNB(i, nb)
 		self[vec].nb[self[vec].nb.q].vertex = i
 		self[i].nb[j].length = getDist(self[i].x, self[i].y, self[j].x, self[j].y)
         self[vec].nb[self[vec].nb.q].length = self[i].nb[j].length
+		if math.abs(self[i].x - self[vec].x) >= math.abs(self[i].y - self[vec].y) then
+			self[i].nb[j].state = 'move'
+			self[vec].nb[self[vec].nb.q].state = 'move'
+		else
+			self[i].nb[j].state = 'jump'
+			self[vec].nb[self[vec].nb.q].state = 'jump'
+		end
     end
 end
 
@@ -44,7 +55,7 @@ function Graph:addVertex(x1, y1, nb)
     if nb ~= nil then self:addNB(i,nb) end
 end
 
-function Graph:dijikstra()
+function Graph:dijkstra()
     if av.q ~= 0 then  --delete current vertex from av queue
 		av[1].dist = plen(100)
 		av.q = av.q - 1
@@ -86,7 +97,7 @@ function Graph:dijikstra()
 
 	--if self.visitCount == self.vertexQuantity then return 0 end
 	if av.q == 0 then return 0 end
-	self:dijikstra()
+	self:dijkstra()
 end
 
 function Graph:getPath(start,finish)
@@ -101,7 +112,7 @@ function Graph:getPath(start,finish)
 	av[1] = {}
 	av[1].vertex = start
 	av[1].dist = 0
-    self:dijikstra()
+    self:dijkstra()
     return self[finish].visitedVertexes
 end
 
@@ -110,19 +121,15 @@ function Graph:whereToGo(enemy1)
 	local x2, y2 = fcoords(player1.body:getPosition())
 	local start, finish = 1, 1
 	for i = 1,self.vertexQuantity do
-		if ( math.abs(self[i].x - x1) * 10 + math.abs(self[i].y - y1) ) < ( math.abs(self[start].x - x1) * 10 + math.abs(self[start].y - y1) ) then
+		if ( math.abs(self[i].x - x1) + math.abs(self[i].y - y1) ) < ( math.abs(self[start].x - x1) * 10 + math.abs(self[start].y - y1) ) then
 			start = i
 		end
-		if ( math.abs(self[i].x - x2) * 10 + math.abs(self[i].y - y2) ) < ( math.abs(self[finish].x - x2) * 10 + math.abs(self[finish].y - y2) ) then
+		if ( math.abs(self[i].x - x2) + math.abs(self[i].y - y2) ) < ( math.abs(self[finish].x - x2) * 10 + math.abs(self[finish].y - y2) ) then
 			finish = i
 		end
 	end
 
-	print(self[start].x, self[start].y, self[finish].x, self[finish].y)
-
-	local Visit = self:getPath(start,finish)
-	self.lastPath = Visit
-	return Visit
+	return self:getPath(start,finish)
 end
 
 function Graph:draw()

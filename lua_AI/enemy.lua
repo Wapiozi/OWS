@@ -428,7 +428,7 @@ function Enemy:nearG(g)
 	if math.abs(x1 - g.x) + math.abs(x1 - g.y) <= 0.1 then return true else return false end
 end
 
-function Enemy:standartMovement(dt, g)
+function Enemy:standartMovement(dt, g, next_point)
 	--check for the floor (in future)
 	if g == nil then
 		--FLY--
@@ -454,14 +454,17 @@ function Enemy:standartMovement(dt, g)
 			self.side = self.movDirection * self.type.imgturn
 		end
 
-		if self.behaviour.movement_bd == "move" then
-			local speed, direction = 0.35, 1
-			self:move(dt,speed,direction)
-		elseif self.behaviour.movement_bd == "slow_move" then
-			local speed, direction = 0.15, 1
-			self:move(dt,speed,direction)
+		if g.nb[next_point].state == 'move' then
+			if self.behaviour.movement_bd == "move" then
+				local speed, direction = 0.35, 1
+				self:move(dt,speed,direction)
+			elseif self.behaviour.movement_bd == "slow_move" then
+				local speed, direction = 0.35, 1
+				self:move(dt,speed,direction)
+			end
+		elseif g.nb[next_point].state == 'jump' then
+			self:jump()
 		end
-
 		if self:nearG(g) then
 			self.MovementGraph.i = self.MovementGraph.i + 1
 		end
@@ -772,15 +775,15 @@ function Enemy:update(dt)
 	else
 		if self.searching.state then
 			if self.searching.time > 0 then
+				if self.searching.time == 3 then self.MovementGraph = graph1:whereToGo(self) end
 				self.body:setLinearVelocity(0, yveloc)
 				self.searching.time = self.searching.time - dt
 			else
-				self.MovementGraph = graph1:whereToGo(self)
 				self.searching.state = false
 			end
-		elseif self.MovementGraph ~= nil and self.MovementGraph.q ~= self.MovementGraph.i then
+		elseif self.MovementGraph ~= nil and self.MovementGraph.q - 1 ~= self.MovementGraph.i then
 			--love.event.quit(0)
-			self:standartMovement(dt,graph1[self.MovementGraph[self.MovementGraph.i]])
+			self:standartMovement(dt,graph1[self.MovementGraph[self.MovementGraph.i]],self.MovementGraph[self.MovementGraph.i+1])
 		else
 			self.MovementGraph = nil
 			self.step = self.step - 1
