@@ -6,8 +6,7 @@ libbrick = require("OWS/lua_objects/brick")
 libcont = require("OWS/container")
 libenv = require("OWS/lua_objects/envobjects")
 libtraps = require("OWS/lua_objects/traps")
-ligbraph = require("graph")
-libgraph = require("lua_AI/graph")
+libgraph = require("OWS/lua_AI/graph")
 suit = require ("OWS/SUIT")
 
 world = nil
@@ -91,6 +90,17 @@ deltPos = {x = 0, y = 0}
 obj = nil
 showAll = false
 
+function Graph:checkMouse(xx, yy)
+	for i = 1, self.vertexQuantity do
+		local dist = getDist(xx, yy, pcoords(self[i].x, self[i].y))
+		if dist < 10 then
+			obj = self[i]
+			return true
+		end
+	end
+	return false
+end
+
 function catch(fixt)
 	obj = fixt:getUserData()
 
@@ -165,7 +175,15 @@ function love.mousepressed(x, y, button, istouch, presses)
 	if x < 340 and y < 200 then return end
 	x = camera._x + x
 	y = camera._y + y
-	world:queryBoundingBox(x - 10, y - 10, x + 10, y + 10, catch)
+	b = graph1:checkMouse(x, y)
+	if b then
+		neibInp.text = ""
+		for i = 1, obj.nb.q do
+			neibInp.text = neibInp.text .. tostring(obj.nb[i].vertex) .. " "
+		end
+	else
+		world:queryBoundingBox(x - 10, y - 10, x + 10, y + 10, catch)
+	end
 end
 
 disableMovement = false
@@ -175,7 +193,11 @@ function love.mousemoved( x, y, dx, dy, istouch )
 	x = camera._x + x
 	y = camera._y + y
 	if obj ~= nil and love.mouse.isDown(1) then
-		obj.body:setPosition(x + deltPos.x, y + deltPos.y)
+		if obj.body ~= nil then
+			obj.body:setPosition(x + deltPos.x, y + deltPos.y)
+		else
+			obj.x, obj.y = fcoords(x + deltPos.x, y + deltPos.y)
+		end
 	end
 end
 
@@ -212,6 +234,7 @@ nextLocInp = {text = ""}
 spawnIndInp = {text = ""}
 brightInp = {text = ""}
 outpFileInp = {text = "outMap"}
+neibInp = {text = ""}
 rval = {value = 0, max = 1}
 gval = {value = 0, max = 1}
 bval = {value = 0, max = 1}
@@ -268,6 +291,22 @@ function ShowProperties()
 		if obj.b ~= newb then obj.b = bval.value end
 
 		if newBright ~= nil and newBright ~= obj.bright then obj.bright = newBright end
+	elseif obj.name == "graph" then
+		suit.Input(neibInp, 120, 10, 200, 30)
+
+		print(neibInp.text)
+
+		local neibs = {}
+		local cnt = 0
+		for i, str in string.gmatch(neibInp.text, "%d+") do
+			print(str)
+			neibs[i] = {vertex = tonumber(str)}
+			cnt = cnt + 1
+		end
+		neibs.q = cnt
+
+		obj.nb = neibs
+
 	end
 	if suit.Button("delete", 340, 10, 100, 30).hit then
 		destroyer.destroy(obj)
@@ -340,7 +379,7 @@ function love.load(arg)
 	camera:setPosition(0,screenWidth/2)
 
 	---------------CREATING ROOM--------------------------
-	currentMap = dofile("OWS/maps/start"..".lua")
+	currentMap = dofile("OWS/maps/BigRoom"..".lua")
 
 	enemies = Container:new() -- Category 3
 	items = Container:new() --Category 4
@@ -400,7 +439,7 @@ function love.update(dt)
 		io.close(file)
     end
 	if showAll then CreateButtons() end
-	if obj ~= nil then ShowProperties(obj) end
+	if obj ~= nil then ShowProperties() end
 end
 
 function love.draw()
@@ -419,6 +458,8 @@ function love.draw()
 	items:CheckDraw()
 	lightCont:CheckDraw()
 	player1:draw()
+
+	graph1:draw()
 
 	camera:unset()
 

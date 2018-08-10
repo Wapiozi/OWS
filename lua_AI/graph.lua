@@ -40,7 +40,7 @@ end
 function Graph:addVertex(x1, y1, nb)
     self.vertexQuantity = self.vertexQuantity  + 1
     local i = self.vertexQuantity
-    self[i] = {x = x1, y = y1}
+    self[i] = {x = x1, y = y1, name = "graph"} --name needed for level editor
     if nb ~= nil then self:addNB(i,nb) end
 end
 
@@ -116,7 +116,6 @@ function Graph:draw()
 			for j = 1, self[i].nb.q do
 				local xx, yy = pcoords(self[self[i].nb[j].vertex].x, self[self[i].nb[j].vertex].y)
 				love.graphics.line(x, y, xx, yy)
-				print(i, self[i].nb[j].vertex)
 			end
 		end
 	end
