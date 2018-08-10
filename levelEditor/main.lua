@@ -6,6 +6,8 @@ libbrick = require("OWS/lua_objects/brick")
 libcont = require("OWS/container")
 libenv = require("OWS/lua_objects/envobjects")
 libtraps = require("OWS/lua_objects/traps")
+ligbraph = require("graph")
+libgraph = require("lua_AI/graph")
 suit = require ("OWS/SUIT")
 
 world = nil
@@ -332,11 +334,13 @@ function love.load(arg)
 
 	curPos = {x = 0.2, y = 0.8}
 
+	graph1 = Graph:new()
+
 
 	camera:setPosition(0,screenWidth/2)
 
 	---------------CREATING ROOM--------------------------
-	currentMap = dofile("OWS/maps/BigRoom"..".lua")
+	currentMap = dofile("OWS/maps/start"..".lua")
 
 	enemies = Container:new() -- Category 3
 	items = Container:new() --Category 4
@@ -345,7 +349,7 @@ function love.load(arg)
 	envir = Container:new()	--shadowed EnvObjects
 	envirsh = Container:new() --non shadowed EnvObjects
 
-	--pcall(loadMap, 1)
+	pcall(loadMap, 1)
 
 	backgr = love.graphics.newQuad(plen(-100), plen(-100), plen(200), plen(200), BrickImg:getDimensions())
 
