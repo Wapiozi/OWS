@@ -462,7 +462,7 @@ function Enemy:standartMovement(dt, g)
 			self:move(dt,speed,direction)
 		end
 
-		if nearG(g) then
+		if self:nearG(g) then
 			self.MovementGraph.i = self.MovementGraph.i + 1
 		end
 
@@ -779,7 +779,7 @@ function Enemy:update(dt)
 				self.searching.state = false
 			end
 		elseif self.MovementGraph ~= nil and self.MovementGraph.q ~= self.MovementGraph.i then
-			love.event.quit(0)
+			--love.event.quit(0)
 			self:standartMovement(dt,graph1[self.MovementGraph[self.MovementGraph.i]])
 		else
 			self.MovementGraph = nil
