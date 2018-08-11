@@ -38,7 +38,7 @@ function loadMap(transitionInd)
     --[[5]] graph1:addVertex(3.1, 2.7, {q = 1,[1] = {vertex = 4}})
     --[[6]] graph1:addVertex(4.1, 2.7, {q = 2,[1] = {vertex = 3}, [2] = {vertex = 5}})
     --[[7]] graph1:addVertex(3.1, 2.5, {q = 1,[1] = {vertex = 5}})
-    --[[8]] graph1:addVertex(1.0, 2.5, {q = 2,[1] = {vertex = 7}, [2] = {vertex = 1}})
+    --[[8]] graph1:addVertex(1.0, 2.5, {q = 1,[1] = {vertex = 7}})
 
     --graph1:addVertex(1.8, 0.5, {q = 1,[1] = {vertex = 2}})
     --graph1:addVertex(2, 0.1, {q = 1,[1] = {vertex = 3}})

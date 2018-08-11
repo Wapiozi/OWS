@@ -345,11 +345,12 @@ function Enemy:checkForObstacle()
 	world:queryBoundingBox(x1, y1, x2, y2, self.getObstacle)
 end
 
-function Enemy:jump()
+function Enemy:jump(strength)
+	str = strength or 1
 	local vx, vy = self.body:getLinearVelocity()
 	self.body:applyLinearImpulse(10000 * -self.movDirection,0)
 	if vy ~= 0 then self.body:setLinearVelocity(vx, 0) end
-	self.body:applyLinearImpulse(0, -30000)
+	self.body:applyLinearImpulse(0, -30000 * str)
 end
 
 function Enemy:attack()
@@ -425,10 +426,10 @@ end
 function Enemy:nearG(g)
 	local x1, y1 = self.body:getPosition()
 	x1, y1 = fcoords(x1, y1)
-	if math.abs(x1 - g.x) + math.abs(x1 - g.y) <= 0.1 then return true else return false end
+	if math.abs(x1 - g.x) + math.abs(y1 - g.y) <= 0.05 then return true else return false end
 end
 
-function Enemy:standartMovement(dt, g, next_point)
+function Enemy:standartMovement(dt, g)
 	--check for the floor (in future)
 	if g == nil then
 		--FLY--
@@ -454,17 +455,17 @@ function Enemy:standartMovement(dt, g, next_point)
 			self.side = self.movDirection * self.type.imgturn
 		end
 
-		if g.nb[next_point].state == 'move' then
-			if self.behaviour.movement_bd == "move" then
-				local speed, direction = 0.35, 1
-				self:move(dt,speed,direction)
-			elseif self.behaviour.movement_bd == "slow_move" then
+		if math.abs(x1 - g.x) <= 0.1 and y1 - 0.1 > g.y then
+			self:jump(1.5)
+			--self:jump()
+			--self:jump()
+		else
+			if self.behaviour.movement_bd == "move" or self.behaviour.movement_bd == "slow_move" then
 				local speed, direction = 0.35, 1
 				self:move(dt,speed,direction)
 			end
-		elseif g.nb[next_point].state == 'jump' then
-			self:jump()
 		end
+
 		if self:nearG(g) then
 			self.MovementGraph.i = self.MovementGraph.i + 1
 		end
@@ -775,15 +776,16 @@ function Enemy:update(dt)
 	else
 		if self.searching.state then
 			if self.searching.time > 0 then
-				if self.searching.time == 3 then self.MovementGraph = graph1:whereToGo(self) end
+				--if self.searching.time == 3 then self.MovementGraph = graph1:whereToGo(self) end
 				self.body:setLinearVelocity(0, yveloc)
 				self.searching.time = self.searching.time - dt
 			else
 				self.searching.state = false
+				self.MovementGraph = graph1:whereToGo(self)
 			end
-		elseif self.MovementGraph ~= nil and self.MovementGraph.q - 1 ~= self.MovementGraph.i then
+		elseif self.MovementGraph ~= nil and self.MovementGraph.q ~= self.MovementGraph.i then
 			--love.event.quit(0)
-			self:standartMovement(dt,graph1[self.MovementGraph[self.MovementGraph.i]],self.MovementGraph[self.MovementGraph.i+1])
+			self:standartMovement(dt,graph1[self.MovementGraph[self.MovementGraph.i]])
 		else
 			self.MovementGraph = nil
 			self.step = self.step - 1
@@ -820,7 +822,7 @@ function Enemy:work()
 		if ((math.abs(x1-x2)<0.15) and (math.abs(y1-y2)<0.15) and (player1.nearEnemies == false)) then
 			love.graphics.setColor(1, 1, 1, 1)
 			love.graphics.draw(MessageImg, 0, 400)
-			love.graphics.printf(Dialogs:readStr(5,"DialogsTxt1.txt"), 200, 530 ,700,left,0,1.5)
+			love.graphics.printf(Dialogs:readStr(1,"DialogsTxt1.txt"), 200, 530 ,700,left,0,1.5)
 			--love.graphics.printf("That's where the story begins. You'll go through challenges and hard task and maybe even become a great and powerfull magician, but for now all you have this magic stuff of wizardry good luck surviving!", 200, 530 ,700,left,0,1.5)
 		end
 	end

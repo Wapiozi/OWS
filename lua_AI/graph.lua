@@ -11,6 +11,15 @@ end
 function Graph:new()
 	self = setmetatable({}, self)
     self.vertexQuantity = 0
+
+	self.nearestP = function(fixture, x1, y1, x2, y2, fraction)
+		obj = fixture:getUserData()
+		if obj.name == 'brick' then
+			self.fraq = fraction
+		end
+		return 1
+	end
+
     return self
 end
 
@@ -38,6 +47,7 @@ function Graph:addNB(i, nb, single)
 		self[vec].nb[self[vec].nb.q].vertex = i
 		self[i].nb[j].length = getDist(self[i].x, self[i].y, self[j].x, self[j].y)
         self[vec].nb[self[vec].nb.q].length = self[i].nb[j].length
+		--[[
 		if math.abs(self[i].x - self[vec].x) >= math.abs(self[i].y - self[vec].y) then
 			self[i].nb[j].state = 'move'
 			self[vec].nb[self[vec].nb.q].state = 'move'
@@ -45,6 +55,7 @@ function Graph:addNB(i, nb, single)
 			self[i].nb[j].state = 'jump'
 			self[vec].nb[self[vec].nb.q].state = 'jump'
 		end
+		]]
     end
 end
 
@@ -120,16 +131,40 @@ function Graph:whereToGo(enemy1)
 	local x1, y1 = fcoords(enemy1.body:getPosition())
 	local x2, y2 = fcoords(player1.body:getPosition())
 	local start, finish = 1, 1
+	--[[
 	for i = 1,self.vertexQuantity do
-		if ( math.abs(self[i].x - x1) + math.abs(self[i].y - y1) ) < ( math.abs(self[start].x - x1) * 10 + math.abs(self[start].y - y1) ) then
+		if ( math.abs(self[i].x - x1) + math.abs(self[i].y - y1) ) < ( math.abs(self[start].x - x1) + math.abs(self[start].y - y1) ) then
 			start = i
 		end
-		if ( math.abs(self[i].x - x2) + math.abs(self[i].y - y2) ) < ( math.abs(self[finish].x - x2) * 10 + math.abs(self[finish].y - y2) ) then
+		if ( math.abs(self[i].x - x2) + math.abs(self[i].y - y2) ) < ( math.abs(self[finish].x - x2) + math.abs(self[finish].y - y2) ) then
 			finish = i
 		end
 	end
+	]]
+	self.minStart = {}
+	self.minFinish = {}
+	for i= 1, self.vertexQuantity do
+		self.fraq = -1
+		world:rayCast(x1, y1, self[i].x, self[i].y, self.nearestP)
+		if self.fraq == -1 then
+			if self.minStart.ind == nil or self.minStart.dist > getDist(x1, y1, self[i].x, self[i].y) then
+				self.minStart.dist = getDist(x1, y1, self[i].x, self[i].y)
+				self.minStart.ind = i
+			end
+		end
 
-	return self:getPath(start,finish)
+		self.fraq = -1
+		world:rayCast(x2, y2, self[i].x, self[i].y, self.nearestP)
+		if self.fraq == -1 then
+			if self.minFinish.ind == nil or self.minFinish.dist > getDist(x2, y2, self[i].x, self[i].y) then
+				self.minFinish.dist = getDist(x2, y2, self[i].x, self[i].y)
+				self.minFinish.ind = i
+			end
+		end
+
+	end
+
+	return self:getPath(self.minStart.ind,self.minFinish.ind)
 end
 
 function Graph:draw()
