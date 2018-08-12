@@ -42,6 +42,8 @@ function Player:new(x, y)
 		end
 	end
 
+	self.bestVertex1, self.bestVertex2 = 0,0
+
 	self.body = love.physics.newBody(world, x, y, "dynamic")  --create new dynamic body in world
 	self.body:setAngle(0)
 	self.body:setFixedRotation(true)
@@ -143,6 +145,7 @@ function Player:getDamage(dmg, magic)
 end
 
 function Player:update(dt)
+
 	local xveloc, yveloc = self.body:getLinearVelocity()
 	if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:setLinearVelocity(plen(0.45), yveloc)
 	elseif (xveloc > -plen(0.45)) and (self.movDirection == -1) then self.body:setLinearVelocity(-plen(0.45), yveloc)
@@ -158,6 +161,7 @@ function Player:update(dt)
 	end
 	self.aimList = {}
 	self.objCnt = 0
+	graph1:enemyVertSeen(self)
 	enemies:exec(self.contCallback)
 end
 

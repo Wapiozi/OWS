@@ -535,7 +535,8 @@ function love.draw()
 		love.mouse.setVisible(true)
 	end
 
-	love.graphics.print(tostring(love.timer.getFPS( )), 10, 10)
+	love.graphics.print(tostring(player1.bestVertex1),10,10)--love.timer.getFPS( )), 10, 10)
+	love.graphics.print(tostring(player1.bestVertex2),100,10)
 	player1:drawHP()
 
 end
