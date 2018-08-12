@@ -28,16 +28,17 @@ function loadMap(transitionInd)
 	envirsh:add(Transition:new(1, 0.9, "maps/BigRoom", 1))
 
 	enemies:add(Enemy:new(NpcTypeChallenge, 0.9, 0.8))
-	enemies:add(Enemy:new(EnemyTypeRat, 1.5, 0.8))
-	enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
+	--enemies:add(Enemy:new(EnemyTypeRat, 1.5, 0.8))
+	--enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
 
+--[[
 	items:add(Item:new(0.5,0.8,WandObj))
 	items:add(Item:new(0.6,0.8,WandObj))
 	items:add(Item:new(0.7,0.8,WandObj))
 	items:add(Item:new(0.8,0.8,ClothObj))
 	items:add(Item:new(0.9,0.8,ClothObj))
 	items:add(Item:new(0.2,0.8,ClothObj))
-
+]]
     --graph1:addVertex(0.5, 0.1, {q = 0})
     --graph1:addVertex(0.7, 0.5, {q = 1,[1] = {vertex = 1}})
     --graph1:addVertex(1.8, 0.5, {q = 1,[1] = {vertex = 2}})

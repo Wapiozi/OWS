@@ -3,6 +3,8 @@ Enemy = {}
 Enemy.__index = Enemy
 Enemy.type = 'enemy'
 
+phraseCanBeGenerated = true
+
 function Enemy:init()
 
 	--[[
@@ -809,16 +811,22 @@ function Enemy:drawHP()
 end
 
 function Enemy:work()
-	if self.question == true and (not self.body:isDestroyed()) then
+	if --[[self.question == true and]] (not self.body:isDestroyed()) then
 		local x1, y1 = self.body:getPosition()
 		local x2, y2 = player1.body:getPosition()
 		x1, y1 = fcoords(x1, y1)
 		x2, y2 = fcoords(x2, y2)
 		if ((math.abs(x1-x2)<0.15) and (math.abs(y1-y2)<0.15) and (player1.nearEnemies == false)) then
-			love.graphics.setColor(1, 1, 1, 1)
+		--[[ love.graphics.setColor(1, 1, 1, 1)
 			love.graphics.draw(MessageImg, 0, 400)
-			love.graphics.printf(Dialogs:readStr(5,"DialogsTxt1.txt"), 200, 530 ,700,left,0,1.5)
-			--love.graphics.printf("That's where the story begins. You'll go through challenges and hard task and maybe even become a great and powerfull magician, but for now all you have this magic stuff of wizardry good luck surviving!", 200, 530 ,700,left,0,1.5)
+			love.graphics.printf(Dialogs:readStr(5,"DialogsTxt1.txt"), 200, 530 ,700,left,0,1.5) ]]--
+			if phraseCanBeGenerated == true then
+				randForPhrase = love.math.random(1,10)
+				phraseCanBeGenerated = false
+			end
+			Dialogs:startConversation(self)
+		else
+			phraseCanBeGenerated = true
 		end
 	end
 end
@@ -826,7 +834,7 @@ end
 function Enemy:draw()
 	-- there should be more enemies sprites
 	-- self:choose_sprite(red)
-	-- 		find max red[] and choose a sprite
+	-- find max red[] and choose a sprite
 	--love.graphics.polygon("fill", self.body:getWorldPoints(self.shape:getPoints()))
 	if self.body:isDestroyed() then return end
 
