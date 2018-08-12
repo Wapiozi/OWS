@@ -8,14 +8,20 @@ function vertexSorter:__lt(next)
 	return false
 end
 
+function nearestP(y)
+	return function()
+	seenVertexes[y] = {seen = false} end
+end
+
 function Graph:new()
 	self = setmetatable({}, self)
     self.vertexQuantity = 0
 
-	self.nearestP = function(fixture, x1, y1, x2, y2, fraction)
+	self.findNearestP = function(fixture, x1, y1, x2, y2, fraction)
 		obj = fixture:getUserData()
 		if obj.name == 'brick' then
-			self.fraq = fraction
+			seenPath()
+			--enemy1.seenVertexes[y] = {seen = false}
 		end
 		return 1
 	end
@@ -67,38 +73,66 @@ function Graph:addVertex(x1, y1, nb)
 end
 
 function Graph:dijkstra()
-    if av.q ~= 0 then  --delete current vertex from av queue
+	local ind,prev
+	if av.q > 0 then  --delete current vertex from av queue
+		ind = av[1].vertex --current vertex
+		prev = av[1].prevVertex
 		av[1].dist = plen(100)
 		av.q = av.q - 1
 		setmetatable(av[1], vertexSorter)
-    	--table.sort(av)
+    	table.sort(av)
+	else
+		return 0
 	end
-
-	local ind = av[1].vertex --current vertex
 
     --self[ind].visited = true
 	--self.visitCount = self.visitCount + 1
 
-	if (self.prev ~= nil) then  --save path
-		self[ind].visitedVertexes = self[self.prev].visitedVertexes
+	--[[if (self[ind].visitedVertexes == nil) then  --save path
+		self[ind].visitedVertexes = self[prev].visitedVertexes--self[self[prev].visitedVertexes[self[prev].visitedVertexes.q].prev].visitedVertexes
+		--self[ind].visitedVertexes[self[ind].visitedVertexes.q - 1] = prev
+		--self[ind].visitedVertexes[self[ind].visitedVertexes.q] = ind
 		self[ind].visitedVertexes.q = self[ind].visitedVertexes.q + 1
-		self[ind].visitedVertexes[self[ind].visitedVertexes.q] = self.prev
-	end
-	self.prev = ind
+		self[ind].visitedVertexes[self[ind].visitedVertexes.q] = ind
+		--self[ind].visitedVertexes[self[ind].visitedVertexes.q].prev = prev
+	end]]
 
     for i = 1,self[ind].nb.q do
-		local tmplen = self[ind].dist + self[ind].nb[i].length
-        --if self[self[ind].nb[i].vertex].visited == false then
-		if ind ~= i and tmplen < self[self[ind].nb[i].vertex].dist then  --if new dist is less than previous
-            self[self[ind].nb[i].vertex].dist = tmplen
+		if self[ind].nb[i].vertex ~= ind then
+			local tmplen = self[ind].dist + self[ind].nb[i].length
+	        --if self[self[ind].nb[i].vertex].visited == false then
+			local haveBeenSeen = false
+			if tmplen < self[self[ind].nb[i].vertex].dist then  --if new dist is less than previous
+	            self[self[ind].nb[i].vertex].dist = tmplen
 
-            av.q = av.q + 1 --add to queue
-			av[av.q] = {}
-            av[av.q].vertex = self[ind].nb[i].vertex
-			av[av.q].dist = self[self[ind].nb[i].vertex].dist
-			setmetatable(av[av.q], vertexSorter)
-        end
-
+				local ind2 = self[ind].nb[i].vertex
+				self[ind2].visitedVertexes = self[ind].visitedVertexes
+				self[ind2].visitedVertexes.q = self[ind2].visitedVertexes.q + 1
+				self[ind2].visitedVertexes[self[ind2].visitedVertexes.q] = ind2
+				--[[for j = 1, av.q do
+					if av[j].vertex == self[ind].nb[i].vertex then
+						av[j].dist = self[self[ind].nb[i].vertex].dist
+						haveBeenSeen = true
+						setmetatable(av[j], vertexSorter)
+					end
+				end]]
+			--if not haveBeenSeen then
+	        	av.q = av.q + 1 --add to queue
+				av[av.q] = {}
+				av[av.q].prevVertex = ind
+	        	av[av.q].vertex = self[ind].nb[i].vertex
+				av[av.q].dist = self[self[ind].nb[i].vertex].dist
+				for j = 1, av.q - 1 do
+					if av[j].vertex == av[av.q].vertex then
+						av[j].dist = plen(100)
+						av.q = av.q - 1
+						haveBeenSeen = true
+						setmetatable(av[j], vertexSorter)
+					end
+				end
+				if not haveBeenSeen then setmetatable(av[av.q], vertexSorter) end
+			end
+		end
     end
 
     table.sort(av)
@@ -107,7 +141,6 @@ function Graph:dijkstra()
 	--self[av[1].vertex].visitedVertexes[self[av[1].vertex].visitedVertexes.q] = ind
 
 	--if self.visitCount == self.vertexQuantity then return 0 end
-	if av.q == 0 then return 0 end
 	self:dijkstra()
 end
 
@@ -122,15 +155,29 @@ function Graph:getPath(start,finish)
     self[start].visitedVertexes = {i = 1, q = 1, [1] = start}
 	av[1] = {}
 	av[1].vertex = start
+	av[1].prevVertex = 0
 	av[1].dist = 0
     self:dijkstra()
+	self[finish].visitedVertexes[self[finish].visitedVertexes.q] = finish
     return self[finish].visitedVertexes
+end
+
+function Graph:enemyVertSeen(enemy1)
+	local x1, y1 = enemy1.body:getPosition()
+	seenVertexes = {}
+	for i=1, self.vertexQuantity do
+		seenVertexes[i] = {}
+		seenPath =nearestP(i)
+		local x2, y2 = pcoords(self[i].x, self[i].y)
+		world:rayCast(x1, y1, x2, y2, self.findNearestP)
+		seenVertexes[i].dist = getDist(x1, y1, x2, y2)
+	end
+	enemy1.seenVertexes = seenVertexes
 end
 
 function Graph:whereToGo(enemy1)
 	local x1, y1 = fcoords(enemy1.body:getPosition())
 	local x2, y2 = fcoords(player1.body:getPosition())
-	local start, finish = 1, 1
 	--[[
 	for i = 1,self.vertexQuantity do
 		if ( math.abs(self[i].x - x1) + math.abs(self[i].y - y1) ) < ( math.abs(self[start].x - x1) + math.abs(self[start].y - y1) ) then
@@ -144,26 +191,27 @@ function Graph:whereToGo(enemy1)
 	self.minStart = {}
 	self.minFinish = {}
 	for i= 1, self.vertexQuantity do
-		self.fraq = -1
-		world:rayCast(x1, y1, self[i].x, self[i].y, self.nearestP)
-		if self.fraq == -1 then
-			if self.minStart.ind == nil or self.minStart.dist > getDist(x1, y1, self[i].x, self[i].y) then
-				self.minStart.dist = getDist(x1, y1, self[i].x, self[i].y)
+		--self.nearestP = nearestP(i)
+		--world:rayCast(x1, y1, self[i].x, self[i].y, self.nearestP)
+		if enemy1.seenVertexes[i].seen == nil then
+			if self.minStart.ind == nil or self.minStart.dist > enemy1.seenVertexes[i].dist then
+				self.minStart.dist = enemy1.seenVertexes[i].dist
 				self.minStart.ind = i
 			end
 		end
 
-		self.fraq = -1
-		world:rayCast(x2, y2, self[i].x, self[i].y, self.nearestP)
-		if self.fraq == -1 then
-			if self.minFinish.ind == nil or self.minFinish.dist > getDist(x2, y2, self[i].x, self[i].y) then
-				self.minFinish.dist = getDist(x2, y2, self[i].x, self[i].y)
+		--self.nearestP = nearestP(i)
+		--world:rayCast(x2, y2, self[i].x, self[i].y, self.nearestP)
+		if player1.seenVertexes[i].seen == nil then
+			if self.minFinish.ind == nil or self.minFinish.dist > player1.seenVertexes[i].dist then
+				self.minFinish.dist = player1.seenVertexes[i].dist
 				self.minFinish.ind = i
 			end
 		end
 
 	end
 
+	--player1.bestVertex1, player1.bestVertex2 = self.minStart.ind,self.minFinish.ind
 	return self:getPath(self.minStart.ind,self.minFinish.ind)
 end
 

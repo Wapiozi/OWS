@@ -468,6 +468,7 @@ function Enemy:standartMovement(dt, g)
 
 		if self:nearG(g) then
 			self.MovementGraph.i = self.MovementGraph.i + 1
+			player1.bestVertex1 = self.MovementGraph[self.MovementGraph.i]
 		end
 
 	end
@@ -782,8 +783,9 @@ function Enemy:update(dt)
 			else
 				self.searching.state = false
 				self.MovementGraph = graph1:whereToGo(self)
+				player1.bestVertex1, player1.bestVertex2 = self.MovementGraph[self.MovementGraph.i],self.MovementGraph[self.MovementGraph.q]
 			end
-		elseif self.MovementGraph ~= nil and self.MovementGraph.q ~= self.MovementGraph.i then
+		elseif self.MovementGraph ~= nil and self.MovementGraph.q  + 1> self.MovementGraph.i then
 			--love.event.quit(0)
 			self:standartMovement(dt,graph1[self.MovementGraph[self.MovementGraph.i]])
 		else
@@ -797,6 +799,7 @@ function Enemy:update(dt)
 			self:standartMovement(dt)
 		end
 	end
+	graph1:enemyVertSeen(self)
 end
 
 function Enemy:drawHP()
