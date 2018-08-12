@@ -221,6 +221,9 @@ end
 
 function PriorityQ:add(av)
 	local tmp = self.list
+	if tmp == nil then
+		tmp = {value = {dist = nil}}
+	end
 	if tmp.value.dist ~= nil and tmp.value.dist > av.dist then
 		self.list = {next = tmp, value = {dist = av.dist, index = av.index}}
 	else
@@ -234,6 +237,9 @@ end
 
 function PriorityQ:take()
 	local tmp = self.list
+	if tmp == nil then
+		return nil
+	end
 	self.list = self.list.next
 	return tmp.value
 end
