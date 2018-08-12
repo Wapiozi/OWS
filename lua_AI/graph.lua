@@ -74,7 +74,7 @@ end
 
 function Graph:equalTables(ind1,ind2)
 	self[ind2] = { visitedVertexes = {i = 1, q = self[ind1].visitedVertexes.q } }
-	for i = 1, self[ind2].q do
+	for i = 1, self[ind2].visitedVertexes.q do
 		self[ind2].visitedVertexes[i] = self[ind1].visitedVertexes[i]
 	end
 end
@@ -90,9 +90,9 @@ function Graph:dijkstra()
             self[self[ind].nb[i].vertex].dist = tmplen
 
 			local ind2 = self[ind].nb[i].vertex
-            self[ind2].visitedVertexes = self[ind].visitedVertexes
+            self:equalTables(ind,ind2)
             self[ind2].visitedVertexes.q = self[ind2].visitedVertexes.q + 1
-            self[ind2].visitedVertexes[self[ind2].visitedVertexes.q] = ind
+            self[ind2].visitedVertexes[self[ind2].visitedVertexes.q] = ind2
 
 			av1 = {}
             av1.index = self[ind].nb[i].vertex
