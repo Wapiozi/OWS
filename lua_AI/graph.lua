@@ -79,13 +79,13 @@ function Graph:dijkstra()
     for i = 1, self[ind].nb.q do
 		local tmplen = self[ind].dist + self[ind].nb[i].length
 
-		if ind ~= i and tmplen < self[self[ind].nb[i].vertex].dist then  --if new dist is less than previous
+		if tmplen < self[self[ind].nb[i].vertex].dist then  --if new dist is less than previous
             self[self[ind].nb[i].vertex].dist = tmplen
 
 			local ind2 = self[ind].nb[i].vertex
             self[ind2].visitedVertexes = self[ind].visitedVertexes
             self[ind2].visitedVertexes.q = self[ind2].visitedVertexes.q + 1
-            self[ind2].visitedVertexes[self[ind2].visitedVertexes.q] = ind2
+            self[ind2].visitedVertexes[self[ind2].visitedVertexes.q] = ind
 
 			av1 = {}
             av1.index = self[ind].nb[i].vertex
@@ -222,15 +222,19 @@ end
 function PriorityQ:add(av)
 	local tmp = self.list
 	if tmp == nil then
-		tmp = {value = {dist = nil}}
-	end
-	if tmp.value.dist ~= nil and tmp.value.dist > av.dist then
-		self.list = {next = tmp, value = {dist = av.dist, index = av.index}}
+		tmp = {next = nil, value = {dist = av.dist, index = av.index}}
+		self.list = tmp
+	elseif tmp.value.dist ~= nil and tmp.next == nil then
+		if av.dist < tmp.value.dist then
+			self.list = {next = tmp, value = {dist = av.dist, index = av.index}}
+		else
+			self.list.next = {next = nil, value = {dist = av.dist, index = av.index}}
+		end
 	else
 	    while tmp.value.dist ~= nil and tmp.next.value.dist ~= nil and tmp.next.value.dist < av.dist do
 	        tmp = tmp.next
 	    end
-		local tmpNext = tmp.next
+		local tmpNext = tmp.next.next
 		tmp.next = {next = tmpNext, value = {dist = av.dist, index = av.index}}
 	end
 end
@@ -242,4 +246,13 @@ function PriorityQ:take()
 	end
 	self.list = self.list.next
 	return tmp.value
+end
+
+function PriorityQ:draw()
+	local tmp = self.list
+
+	while tmp ~= nil do
+		print("pq", tmp.value.index)
+		tmp = tmp.next
+	end
 end
