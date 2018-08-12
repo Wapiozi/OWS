@@ -72,6 +72,13 @@ function Graph:addVertex(x1, y1, nb)
     if nb ~= nil then self:addNB(i,nb) end
 end
 
+function Graph:equalTables(ind1,ind2)
+	self[ind2] = { visitedVertexes = {i = 1, q = self[ind1].visitedVertexes.q } }
+	for i = 1, self[ind2].q do
+		self[ind2].visitedVertexes[i] = self[ind1].visitedVertexes[i]
+	end
+end
+
 function Graph:dijkstra()
 	av = self.pq:take()
     if av == nil then return 0 end
