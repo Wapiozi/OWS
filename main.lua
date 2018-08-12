@@ -385,6 +385,7 @@ function love.load(arg)
 	--------------------------------------------------------------
 
 	love.window.setMode(1280,720)
+	--love.window.setMode(320,180)
 	screenWidth, screenHeight = love.window.getMode()
 
 
