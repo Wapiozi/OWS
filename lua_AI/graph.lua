@@ -122,17 +122,20 @@ end
 
 function Graph:getPath(start,finish)
 	self.visitCount = 0
-    av = { q = 1 } -- avaliable vertexes
+    --av = { q = 1 } -- avaliable vertexes
     for i = 1, self.vertexQuantity do
         self[i].dist = plen(100)
         --self[i].visited = false
     end
     self[start].dist = 0
     self[start].visitedVertexes = {i = 1, q = 1, [1] = start}
-	av[1] = {}
+	--[[av[1] = {}
 	av[1].vertex = start
 	av[1].prevVertex = 0
 	av[1].dist = 0
+	]]
+	av = {dist = 0, index = start}
+	self.pq = PriortyQ:new(av)
     self:dijkstra()
 	print(start, finish)
 	self[finish].visitedVertexes[self[finish].visitedVertexes.q] = finish
@@ -221,4 +224,32 @@ end
 
 function Graph:destroy()
 	self = {}
+end
+
+PriorityQ = {}
+PriorityQ.__index = PriorityQ
+
+function PriorityQ:new(av)
+	self = setmetatable({}, self)
+	self.list = {next = nil, value = {dist = av.dist, index = av.index}}
+	return self
+end
+
+function PriorityQ:add(av)
+	local tmp = self.list
+	if tmp.value.dist ~= nil and tmp.value.dist > av.dist then
+		self.list = {next = tmp, value = {dist = av.dist, index = av.index}}
+	else
+	    while tmp.value.dist ~= nil and tmp.next.value.dist ~= nil and tmp.next.value.dist < av.dist do
+	        tmp = tmp.next
+	    end
+		local tmpNext = tmp.next
+		tmp.next = {next = tmpNext, value = {dist = av.dist, index = av.index}}
+	end
+end
+
+function PriorityQ:take()
+	local tmp = self.list
+	self.list = tmp.next
+	return tmp.value
 end
