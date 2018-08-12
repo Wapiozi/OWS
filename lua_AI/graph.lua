@@ -73,7 +73,7 @@ function Graph:addVertex(x1, y1, nb)
 end
 
 function Graph:equalTables(ind1,ind2)
-	self[ind2] = { visitedVertexes = {i = 1, q = self[ind1].visitedVertexes.q } }
+	self[ind2].visitedVertexes = {i = 1, q = self[ind1].visitedVertexes.q }
 	for i = 1, self[ind2].visitedVertexes.q do
 		self[ind2].visitedVertexes[i] = self[ind1].visitedVertexes[i]
 	end
@@ -128,14 +128,6 @@ function Graph:getPath(start,finish)
 	av = {dist = 0, index = start}
 	self.pq = PriorityQ:new(av)
     self:dijkstra()
-	print(start, finish)
-	self[finish].visitedVertexes[self[finish].visitedVertexes.q] = finish
-
-	print("dist = ", self[finish].dist)
-	for i = 1, self[finish].visitedVertexes.q do
-		print(self[finish].visitedVertexes[i])
-	end
-	print("--------------------")
     return self[finish].visitedVertexes
 end
 
@@ -153,13 +145,6 @@ function Graph:enemyVertSeen(enemy1)
 end
 
 function Graph:whereToGo(enemy1)
-	for i = 1, self.vertexQuantity do
-		io.write(i, " to ")
-		for j = 1, self[i].nb.q do
-			io.write(self[i].nb[j].vertex, " ")
-		end
-		io.write("\n")
-	end
 	local x1, y1 = fcoords(enemy1.body:getPosition())
 	local x2, y2 = fcoords(player1.body:getPosition())
 	--[[
@@ -231,17 +216,21 @@ function PriorityQ:add(av)
 	if tmp == nil then
 		tmp = {next = nil, value = {dist = av.dist, index = av.index}}
 		self.list = tmp
-	elseif tmp.value.dist ~= nil and tmp.next == nil then
+	elseif tmp.next == nil then
 		if av.dist < tmp.value.dist then
 			self.list = {next = tmp, value = {dist = av.dist, index = av.index}}
 		else
 			self.list.next = {next = nil, value = {dist = av.dist, index = av.index}}
 		end
 	else
-	    while tmp.value.dist ~= nil and tmp.next.value.dist ~= nil and tmp.next.value.dist < av.dist do
+	    while tmp.value.dist ~= nil and tmp.next ~= nil and tmp.next.value.dist ~= nil and tmp.next.value.dist < av.dist do
 	        tmp = tmp.next
 	    end
-		local tmpNext = tmp.next.next
+		if tmp.next ~= nil then
+			local tmpNext = tmp.next.next
+		else
+			local tmpNext = nil
+		end
 		tmp.next = {next = tmpNext, value = {dist = av.dist, index = av.index}}
 	end
 end
@@ -253,13 +242,4 @@ function PriorityQ:take()
 	end
 	self.list = self.list.next
 	return tmp.value
-end
-
-function PriorityQ:draw()
-	local tmp = self.list
-
-	while tmp ~= nil do
-		print("pq", tmp.value.index)
-		tmp = tmp.next
-	end
 end
