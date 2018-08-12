@@ -73,22 +73,12 @@ function Graph:addVertex(x1, y1, nb)
 end
 
 function Graph:dijkstra()
-    if av.q ~= 0 then  --delete current vertex from av queue
-
-		av[1].dist = plen(100)
-		--av.q = av.q - 1
-		setmetatable(av[1], vertexSorter)
-    	--table.sort(av)
-	end
-
-	local ind = av[1].vertex --current vertex
-
-    --self[ind].visited = true
-	--self.visitCount = self.visitCount + 1
-
+	av = self.pq:take()
+    if av == nil then return 0 end
+	ind = av.index
     for i = 1, self[ind].nb.q do
 		local tmplen = self[ind].dist + self[ind].nb[i].length
-        --if self[self[ind].nb[i].vertex].visited == false then
+
 		if ind ~= i and tmplen < self[self[ind].nb[i].vertex].dist then  --if new dist is less than previous
             self[self[ind].nb[i].vertex].dist = tmplen
 
@@ -97,26 +87,20 @@ function Graph:dijkstra()
             self[ind2].visitedVertexes.q = self[ind2].visitedVertexes.q + 1
             self[ind2].visitedVertexes[self[ind2].visitedVertexes.q] = ind2
 
-            av.q = av.q + 1 --add to queue
-			av[av.q] = {}
-            av[av.q].vertex = self[ind].nb[i].vertex
-			av[av.q].dist = self[self[ind].nb[i].vertex].dist
-			setmetatable(av[av.q], vertexSorter)
+			av1 = {}
+            av1.index = self[ind].nb[i].vertex
+			av1.dist = self[self[ind].nb[i].vertex].dist
+			self.pq:add(av1)
         end
     end
 
-    table.sort(av)
-	av.q = av.q - 1
-	--self[av[1].vertex].visitedVertexes = self[ind].visitedVertexes
-	--self[av[1].vertex].visitedVertexes.q = self[av[1].vertex].visitedVertexes.q + 1
-	--self[av[1].vertex].visitedVertexes[self[av[1].vertex].visitedVertexes.q] = ind
-
-	--if self.visitCount == self.vertexQuantity then return 0 end
+	--[[
 	for i = 1, av.q do
 		print(av[1].vertex, av[1].dist)
 	end
 	print("---")
-	if av.q == 0 then return 0 end
+	--if av.q == 0 then return 0 end
+	]]
 	self:dijkstra()
 end
 
@@ -135,7 +119,7 @@ function Graph:getPath(start,finish)
 	av[1].dist = 0
 	]]
 	av = {dist = 0, index = start}
-	self.pq = PriortyQ:new(av)
+	self.pq = PriorityQ:new(av)
     self:dijkstra()
 	print(start, finish)
 	self[finish].visitedVertexes[self[finish].visitedVertexes.q] = finish
@@ -250,6 +234,6 @@ end
 
 function PriorityQ:take()
 	local tmp = self.list
-	self.list = tmp.next
+	self.list = self.list.next
 	return tmp.value
 end
