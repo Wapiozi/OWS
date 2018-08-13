@@ -872,6 +872,7 @@ function Enemy:work()
 			Dialogs:startConversation(self)
 		else
 			phraseCanBeGenerated = true
+			DialogIsOn = false
 		end
 	end
 end
