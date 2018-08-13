@@ -527,7 +527,7 @@ function Enemy:trigerredMovement(dt)
 		end
 	elseif
 	--MOVE--
-	(self.goToLastSeenXPoint == true) and (self.lastSeenXPoint ~= nil) and self.behaviour.movement_ad == "follow" then
+	(self.goToLastSeenXPoint == true) and (self.lastSeenXPoint ~= nil) and self.behaviour.movement_ad == "aggressive" then
 			if (x1 < self.lastSeenXPoint) then
 				self.movDirection = 1
 				self.side = 1 * self.type.imgturn
@@ -637,7 +637,7 @@ function Enemy:trigerredMovement(dt)
 		player1.jumpCoordX = nil
 	end
 
-	if (self.goToLastSeenXPoint == true) and (self.lastSeenXPoint ~= nil) and (flen(math.abs(self.lastSeenXPoint - x1)) > 0.05 ) then
+	if (self.goToLastSeenXPoint == true) and (self.lastSeenXPoint ~= nil) and (flen(math.abs(self.lastSeenXPoint - x1)) > 0.2 ) and (self.behaviour.movement_bd == "aggressive") then
 		if (x1 < self.lastSeenXPoint) then
 			self.movDirection = 1
 			self.side = 1 * self.type.imgturn
@@ -645,7 +645,7 @@ function Enemy:trigerredMovement(dt)
 			self.movDirection = -1
 			self.side = -1 * self.type.imgturn
 		end
-		local speed, direction = 0.8, 1
+		local speed, direction = 0.5, 1
 		self:move(dt,speed,direction)
 	else
 		self.goToLastSeenXPoint = false
