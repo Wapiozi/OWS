@@ -458,7 +458,7 @@ function Enemy:standartMovement(dt, g)
 		end
 
 		if math.abs(x1 - g.x) <= 0.1 and y1 - 0.1 > g.y then
-			self:jump(1.5)
+			self:jump(1.3)
 			--self:jump()
 			--self:jump()
 		else
@@ -527,8 +527,19 @@ function Enemy:trigerredMovement(dt)
 		end
 	elseif
 	--MOVE--
-
-	--[[elseif]] self.behaviour.movement_ad == "neutral" then
+	(self.goToLastSeenXPoint == true) and (self.lastSeenXPoint ~= nil) and self.behaviour.movement_ad == "follow" then
+			if (x1 < self.lastSeenXPoint) then
+				self.movDirection = 1
+				self.side = 1 * self.type.imgturn
+			else
+				self.movDirection = -1
+				self.side = -1 * self.type.imgturn
+			end
+			local speed, direction = 0.7, 1
+			self:move(dt,speed,direction)
+			self:move(dt,speed,direction)
+			self:move(dt,speed,direction)
+	elseif self.behaviour.movement_ad == "neutral" then
 		if (x1 < x2) then
 			self.movDirection = 1
 			self.side = 1 * self.type.imgturn
@@ -610,15 +621,37 @@ function Enemy:trigerredMovement(dt)
 			]]--
 			self.canAttack = true
 		end
+		xveloc, yveloc = self.body:getLinearVelocity()
+		self:checkForObstacle()
+		if (self.nearObstacle) then --(self.readytojump > 0.1) and (self.behaviour.canJump == true) and (xveloc ~= 0) then
+			--self.body:applyForce(-self.movDirection * 100000 / 2, 0)
+			self:jump()
+			self.readytojump = 0
+			self.nearObstacle = false
+		end
 	end
-	xveloc, yveloc = self.body:getLinearVelocity()
-	self:checkForObstacle()
-	if (self.nearObstacle) then --(self.readytojump > 0.1) and (self.behaviour.canJump == true) and (xveloc ~= 0) then
-		--self.body:applyForce(-self.movDirection * 100000 / 2, 0)
-		self:jump()
-		self.readytojump = 0
-		self.nearObstacle = false
+
+	if (player1.jumpCoordX ~= nil) and (flen(math.abs(player1.jumpCoordX - x1)) + (self.movDirection*0.02) <= 0.05 ) then
+		--love.event.quit()
+		self:jump(1.5)
+		player1.jumpCoordX = nil
 	end
+
+	if (self.goToLastSeenXPoint == true) and (self.lastSeenXPoint ~= nil) and (flen(math.abs(self.lastSeenXPoint - x1)) > 0.05 ) then
+		if (x1 < self.lastSeenXPoint) then
+			self.movDirection = 1
+			self.side = 1 * self.type.imgturn
+		else
+			self.movDirection = -1
+			self.side = -1 * self.type.imgturn
+		end
+		local speed, direction = 0.8, 1
+		self:move(dt,speed,direction)
+	else
+		self.goToLastSeenXPoint = false
+		self.lastSeenXPoint = nil
+	end
+
 	--check for the floor (in future)
 	--[[
 	-- find player, decide what to do
@@ -651,6 +684,7 @@ function Enemy:detect()
 			if (obj.name == "player") then
 				if hit.fraction > 0.92 then canBeSeen = false end
 				local player_fraction = hit.fraction
+				self.lastSeenXPoint = x2
 				--player1.hp = hit.fraction
 				--break
 			elseif (obj.name ~= "enemy") and (obj.name ~= "item") then
@@ -678,6 +712,9 @@ function Enemy:detect()
 		]]--
 		-- Clear fixture hit list.
 		Ray.hitList = {}
+		if canBeSeen == false then
+			self.goToLastSeenXPoint = true
+		end
 		return canBeSeen
 	end
 	if self.behaviour.sensor.smell then

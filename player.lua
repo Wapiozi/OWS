@@ -88,11 +88,13 @@ function Player:moveLeft()
 end
 
 function Player:jump()
+	local x1, y1 = self.body:getPosition()
 	if self.jumpCount < self.maxJumps then
 		local vx, vy = self.body:getLinearVelocity()
 		if vy ~= 0 then self.body:setLinearVelocity(vx, 0) end
 		self.body:applyLinearImpulse(0, -30000)
 		--self.jumpCount = self.jumpCount + 1
+		self.jumpCoordX, self.jumpCoordY = x1, y1
 	end
 end
 

@@ -484,7 +484,7 @@ function love.draw()
 	-------------------START DRAWING ROOM-------------------
 	camera:set()
 
-	lights:draw(camera._x, camera._y)
+	--lights:draw(camera._x, camera._y)
 
 	love.graphics.draw(BrickImg, backgr)
 
@@ -501,7 +501,7 @@ function love.draw()
 	player1:draw()
 	if not inventoryMode then bullets:CheckDraw() end
 
-	lights:endDraw()
+	--lights:endDraw()
 
 	graph1:draw()
 
@@ -535,7 +535,8 @@ function love.draw()
 		love.mouse.setVisible(true)
 	end
 
-	love.graphics.print(tostring(player1.bestVertex1),10,10)--love.timer.getFPS( )), 10, 10)
+	love.graphics.print(tostring(love.timer.getFPS( )), 10, 10)
+	love.graphics.print(tostring(player1.bestVertex1),50,10)--love.timer.getFPS( )), 10, 10)
 	love.graphics.print(tostring(player1.bestVertex2),100,10)
 	player1:drawHP()
 
