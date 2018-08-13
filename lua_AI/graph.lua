@@ -72,76 +72,62 @@ function Graph:addVertex(x1, y1, nb)
     if nb ~= nil then self:addNB(i,nb) end
 end
 
-function Graph:dijkstra()
-    if av.q ~= 0 then  --delete current vertex from av queue
-
-		av[1].dist = plen(100)
-		--av.q = av.q - 1
-		setmetatable(av[1], vertexSorter)
-    	--table.sort(av)
+function Graph:equalTables(ind1,ind2)
+	self[ind2].visitedVertexes = {i = 1, q = self[ind1].visitedVertexes.q }
+	for i = 1, self[ind2].visitedVertexes.q do
+		self[ind2].visitedVertexes[i] = self[ind1].visitedVertexes[i]
 	end
+end
 
-	local ind = av[1].vertex --current vertex
-
-    --self[ind].visited = true
-	--self.visitCount = self.visitCount + 1
-
+function Graph:dijkstra()
+	av = self.pq:take()
+    if av == nil then return 0 end
+	ind = av.index
     for i = 1, self[ind].nb.q do
 		local tmplen = self[ind].dist + self[ind].nb[i].length
-        --if self[self[ind].nb[i].vertex].visited == false then
-		if ind ~= i and tmplen < self[self[ind].nb[i].vertex].dist then  --if new dist is less than previous
+
+		if tmplen < self[self[ind].nb[i].vertex].dist then  --if new dist is less than previous
             self[self[ind].nb[i].vertex].dist = tmplen
 
 			local ind2 = self[ind].nb[i].vertex
-            self[ind2].visitedVertexes = self[ind].visitedVertexes
+            self:equalTables(ind,ind2)
             self[ind2].visitedVertexes.q = self[ind2].visitedVertexes.q + 1
             self[ind2].visitedVertexes[self[ind2].visitedVertexes.q] = ind2
 
-            av.q = av.q + 1 --add to queue
-			av[av.q] = {}
-            av[av.q].vertex = self[ind].nb[i].vertex
-			av[av.q].dist = self[self[ind].nb[i].vertex].dist
-			setmetatable(av[av.q], vertexSorter)
+			av1 = {}
+            av1.index = self[ind].nb[i].vertex
+			av1.dist = self[self[ind].nb[i].vertex].dist
+			self.pq:add(av1)
         end
     end
 
-    table.sort(av)
-	av.q = av.q - 1
-	--self[av[1].vertex].visitedVertexes = self[ind].visitedVertexes
-	--self[av[1].vertex].visitedVertexes.q = self[av[1].vertex].visitedVertexes.q + 1
-	--self[av[1].vertex].visitedVertexes[self[av[1].vertex].visitedVertexes.q] = ind
-
-	--if self.visitCount == self.vertexQuantity then return 0 end
+	--[[
 	for i = 1, av.q do
 		print(av[1].vertex, av[1].dist)
 	end
 	print("---")
-	if av.q == 0 then return 0 end
+	--if av.q == 0 then return 0 end
+	]]
 	self:dijkstra()
 end
 
 function Graph:getPath(start,finish)
 	self.visitCount = 0
-    av = { q = 1 } -- avaliable vertexes
+    --av = { q = 1 } -- avaliable vertexes
     for i = 1, self.vertexQuantity do
         self[i].dist = plen(100)
         --self[i].visited = false
     end
     self[start].dist = 0
     self[start].visitedVertexes = {i = 1, q = 1, [1] = start}
-	av[1] = {}
+	--[[av[1] = {}
 	av[1].vertex = start
 	av[1].prevVertex = 0
 	av[1].dist = 0
+	]]
+	av = {dist = 0, index = start}
+	self.pq = PriorityQ:new(av)
     self:dijkstra()
-	print(start, finish)
-	self[finish].visitedVertexes[self[finish].visitedVertexes.q] = finish
-
-	print("dist = ", self[finish].dist)
-	for i = 1, self[finish].visitedVertexes.q do
-		print(self[finish].visitedVertexes[i])
-	end
-	print("--------------------")
     return self[finish].visitedVertexes
 end
 
@@ -159,13 +145,6 @@ function Graph:enemyVertSeen(enemy1)
 end
 
 function Graph:whereToGo(enemy1)
-	for i = 1, self.vertexQuantity do
-		io.write(i, " to ")
-		for j = 1, self[i].nb.q do
-			io.write(self[i].nb[j].vertex, " ")
-		end
-		io.write("\n")
-	end
 	local x1, y1 = fcoords(enemy1.body:getPosition())
 	local x2, y2 = fcoords(player1.body:getPosition())
 	--[[
@@ -221,4 +200,46 @@ end
 
 function Graph:destroy()
 	self = {}
+end
+
+PriorityQ = {}
+PriorityQ.__index = PriorityQ
+
+function PriorityQ:new(av)
+	self = setmetatable({}, self)
+	self.list = {next = nil, value = {dist = av.dist, index = av.index}}
+	return self
+end
+
+function PriorityQ:add(av)
+	local tmp = self.list
+	if tmp == nil then
+		tmp = {next = nil, value = {dist = av.dist, index = av.index}}
+		self.list = tmp
+	elseif tmp.next == nil then
+		if av.dist < tmp.value.dist then
+			self.list = {next = tmp, value = {dist = av.dist, index = av.index}}
+		else
+			self.list.next = {next = nil, value = {dist = av.dist, index = av.index}}
+		end
+	else
+	    while tmp.value.dist ~= nil and tmp.next ~= nil and tmp.next.value.dist ~= nil and tmp.next.value.dist < av.dist do
+	        tmp = tmp.next
+	    end
+		if tmp.next ~= nil then
+			local tmpNext = tmp.next.next
+		else
+			local tmpNext = nil
+		end
+		tmp.next = {next = tmpNext, value = {dist = av.dist, index = av.index}}
+	end
+end
+
+function PriorityQ:take()
+	local tmp = self.list
+	if tmp == nil then
+		return nil
+	end
+	self.list = self.list.next
+	return tmp.value
 end
