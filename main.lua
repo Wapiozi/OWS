@@ -44,6 +44,12 @@ function flen(pval)
 	return fval
 end
 
+function relateWH(rval)
+	local heival = rval*screenHeight
+	local widval = rval*screenWidth
+	return (heival + widval)/2
+end
+
 function imageProps(height, img)
 	local wid, hig = img:getDimensions()
 	local scal = plen(height)/hig
@@ -345,7 +351,7 @@ function love.load(arg)
 	PlayerImg = love.graphics.newImage("sprites/creatures/Player.png")
 	MinecraftInv = love.graphics.newImage("sprites/inventory/minecraft.png")
 	InvborderImg = love.graphics.newImage("sprites/inventory/inventory_border.png")
-	MessageImg = love.graphics.newImage("sprites/creatures/message.png")
+	MessageFromNpcImg = love.graphics.newImage("sprites/creatures/MessageFromNpc.png")
 	TransitionImg = love.graphics.newImage("sprites/WTF_BALLS/Enemy.jpg")
 	--creatures
 		-- enemies
@@ -377,17 +383,22 @@ function love.load(arg)
 	-- particles
 		FireImg = love.graphics.newImage("sprites/particles/fire.png")
 		FireeImg = love.graphics.newImage("sprites/particles/firee.png")
-
-	--SUIT
-	--font = love.graphics.newFont("NotoSansHans-Regular.otf", 20)
-	--love.graphics.setFont(font)
-	--normal, hovered, active, mask = generateImageButton()
+	-- Dialogs
+		NpcTypeChallengeAnswers = "DialogsAndQuests/NpcTypeChallengeAnswers.txt"
+		NpcTypeChallengeQuestions = "DialogsAndQuests/NpcTypeChallengeQuestions.txt"
+		NpcTypeChallengeCommonPhrases = "DialogsAndQuests/NpcTypeChallengeCommonPhrases.txt"
+		--normal, hovered, active, mask = generateImageButton()
 	--------------------------------------------------------------
 
 	love.window.setMode(1280,720)
 	--love.window.setMode(320,180)
+
 	screenWidth, screenHeight = love.window.getMode()
 
+	MessageFromNpc = {}
+	MessageFromNpc.scale, MessageFromNpc.width, MessageFromNpc.height = imageProps(relateWH(0.2), MessageFromNpcImg)
+	fontEd = love.graphics.newFont("DialogsAndQuests/SpecialFont.TTF", relateWH(0.02))
+	love.graphics.setFont(fontEd)
 
 	world = love.physics.newWorld(0, 9.81*100) --we need the whole world
 	world:setCallbacks(beginContact, endContact, preSolve, postSolve)
@@ -405,6 +416,7 @@ function love.load(arg)
 		y2 = 0,
 		hitList = {}
 	}
+
 
 	graph1 = Graph:new()
 	player1 = Player:new(0.2, 0.8)
