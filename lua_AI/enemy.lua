@@ -114,7 +114,7 @@ function Enemy:init()
 			canJump = true
 		}, -- movement_bd = before detect | ad = after detect
 
-		timer = 5,
+		timer = 1,
 		Init = nil,
 		name = "EnemyTypeMadwizard"
 	}
@@ -485,6 +485,8 @@ function Enemy:trigerredMovement(dt)
 
 	--FLY--
 
+	print(self.goToLastSeenXPoint, self.lastSeenXPoint, self.behaviour.movement_ad)
+
 	if self.behaviour.movement_ad == "fly_aggressive" then
 		if (self.attackTimer <= 0) then
 			self.fixture:setFriction(0)
@@ -527,7 +529,7 @@ function Enemy:trigerredMovement(dt)
 		end
 	elseif
 	--MOVE--
-	(self.goToLastSeenXPoint == true) and (self.lastSeenXPoint ~= nil) and self.behaviour.movement_ad == "follow" then
+	(self.goToLastSeenXPoint == true) and (self.lastSeenXPoint ~= nil) and self.behaviour.movement_ad == "aggressive" then
 			if (x1 < self.lastSeenXPoint) then
 				self.movDirection = 1
 				self.side = 1 * self.type.imgturn
@@ -631,13 +633,13 @@ function Enemy:trigerredMovement(dt)
 		end
 	end
 
-	if (player1.jumpCoordX ~= nil) and (flen(math.abs(player1.jumpCoordX - x1)) + (self.movDirection*0.02) <= 0.05 ) then
+	if (player1.jumpCoordX ~= nil) and (flen(math.abs(player1.jumpCoordX - x1)) + (self.movDirection*0.02) <= 0.15 ) then
 		--love.event.quit()
 		self:jump(1.5)
 		player1.jumpCoordX = nil
 	end
 
-	if (self.goToLastSeenXPoint == true) and (self.lastSeenXPoint ~= nil) and (flen(math.abs(self.lastSeenXPoint - x1)) > 0.05 ) then
+	if (self.goToLastSeenXPoint == true) and (self.lastSeenXPoint ~= nil) and (flen(math.abs(self.lastSeenXPoint - x1)) > 0.15 ) then
 		if (x1 < self.lastSeenXPoint) then
 			self.movDirection = 1
 			self.side = 1 * self.type.imgturn
