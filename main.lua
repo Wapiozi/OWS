@@ -384,9 +384,8 @@ function love.load(arg)
 		FireImg = love.graphics.newImage("sprites/particles/fire.png")
 		FireeImg = love.graphics.newImage("sprites/particles/firee.png")
 	-- Dialogs
-		NpcTypeChallengeAnswers = "DialogsAndQuests/NpcTypeChallengeAnswers.txt"
-		NpcTypeChallengeQuestions = "DialogsAndQuests/NpcTypeChallengeQuestions.txt"
 		NpcTypeChallengeCommonPhrases = "DialogsAndQuests/NpcTypeChallengeCommonPhrases.txt"
+		NPCTypeChallengeDialog = "DialogsAndQuests/NPCTypeChallengeDialog.txt"
 		--normal, hovered, active, mask = generateImageButton()
 	--------------------------------------------------------------
 
@@ -396,8 +395,8 @@ function love.load(arg)
 	screenWidth, screenHeight = love.window.getMode()
 
 	MessageFromNpc = {}
-	MessageFromNpc.scale, MessageFromNpc.width, MessageFromNpc.height = imageProps(relateWH(0.2), MessageFromNpcImg)
-	fontEd = love.graphics.newFont("DialogsAndQuests/SpecialFont.TTF", relateWH(0.02))
+	MessageFromNpc.scale, MessageFromNpc.width, MessageFromNpc.height = imageProps(0.35, MessageFromNpcImg)
+	fontEd = love.graphics.newFont("DialogsAndQuests/SpecialFont.TTF", relateWH(0.017))
 	love.graphics.setFont(fontEd)
 
 	world = love.physics.newWorld(0, 9.81*100) --we need the whole world
@@ -496,7 +495,7 @@ function love.draw()
 	-------------------START DRAWING ROOM-------------------
 	camera:set()
 
-	--lights:draw(camera._x, camera._y)
+	lights:draw(camera._x, camera._y)
 
 	love.graphics.draw(BrickImg, backgr)
 
@@ -513,7 +512,7 @@ function love.draw()
 	player1:draw()
 	if not inventoryMode then bullets:CheckDraw() end
 
-	--lights:endDraw()
+	lights:endDraw()
 
 	graph1:draw()
 
