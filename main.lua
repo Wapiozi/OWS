@@ -384,9 +384,8 @@ function love.load(arg)
 		FireImg = love.graphics.newImage("sprites/particles/fire.png")
 		FireeImg = love.graphics.newImage("sprites/particles/firee.png")
 	-- Dialogs
-		NpcTypeChallengeAnswers = "DialogsAndQuests/NpcTypeChallengeAnswers.txt"
-		NpcTypeChallengeQuestions = "DialogsAndQuests/NpcTypeChallengeQuestions.txt"
 		NpcTypeChallengeCommonPhrases = "DialogsAndQuests/NpcTypeChallengeCommonPhrases.txt"
+		NPCTypeChallengeDialog = "DialogsAndQuests/NPCTypeChallengeDialog.txt"
 		--normal, hovered, active, mask = generateImageButton()
 	--------------------------------------------------------------
 
