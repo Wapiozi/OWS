@@ -19,7 +19,7 @@ function loadMap(transitionInd)
 	walls:add(Brick:new(16/9, 1+0.05, 16/9*2, 0.1, "floor"))
 	walls:add(Brick:new(0-0.05, 0.5, 0.1, 1, "wall"))
 
-	traps:add(Traps:new(1.4, 0.995, TrapTypeSpikes))
+	traps:add(Traps:new(1.4, 0.995, TrapTypeSlow))
 
 	envir:add(EnvObject:new(1, 0.5, ChestImg, true, 1000, 0.3))
 	envir:add(EnvObject:new(2, 0.5, ChestImg, true, 1000, 0.3))

@@ -9,6 +9,13 @@ function Traps:init()
         reload = 1,
         Collis = nil
     }
+    TrapTypeSlow = {
+        image = SlowImg,
+        damage = 0,
+        move = "static",
+        reload = 0,
+        Collis = nil
+    }
 end
 
 function Traps:new(x, y, type)
@@ -39,10 +46,18 @@ end
 
 function Traps:attack(obj)
     if self.lt >= self.maxTime then
+      if not TrapTypeSlow then
         obj.body:applyLinearImpulse(1000, -20000)
         return self.type.damage
+      elseif obj.name == 'player' then
+        obj.speed = 0.1
+      end
     end
     return 0
+end
+
+function Traps:plslow(obj)
+    obj.speed = 0.45
 end
 
 function Traps:draw()

@@ -132,9 +132,8 @@ function beginContact(f1, f2, cont) -- fixture1 fixture2 contact
 			elseif (obj2.name == "trap") then
 				obj1:getDamage(obj2:attack(obj1))
 			end
-
 		end
-	end
+		end
 
 	if (obj1 ~= nil) and (not obj2.fixture:isSensor()) and (obj1.name == "magic") then
 		obj1:collision()
@@ -216,6 +215,11 @@ function endContact(f1, f2, cont)
 				obj2.ItemCanBeTaken = false
 			end
 
+			if obj1.name == 'player' then
+				obj1.speed = 0.45
+			elseif obj2.name == 'player' then
+				obj2.speed = 0.45
+			end
 			if obj1.name == 'EnvObject' then
 				obj1.canInteract = false
 			elseif obj2.name == 'EnvObject' then
@@ -368,6 +372,7 @@ function love.load(arg)
 			TorchImg = love.graphics.newImage("sprites/env_obj/torch.png")
 		-- traps
 			SpikeImg = love.graphics.newImage("sprites/traps/spikes.png")
+			SlowImg = love.graphics.newImage("sprites/traps/slow.png")
 	-- bg
 		BrickImg = love.graphics.newImage("sprites/bg/brick.png")
 		BlueBrick = love.graphics.newImage("sprites/bg/brick2.png") BlueBrick:setWrap("repeat", "repeat")

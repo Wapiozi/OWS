@@ -17,6 +17,7 @@ function Player:new(x, y)
 	self.scale, self.width, self.height = imageProps(0.17, self.image)
 
 	self.name = "player"
+	self.speed = 0.45
 	self.movDirection = 0    --   1 right      -1 left      0 no
 	self.side = 1            --   1 right      -1 left
 
@@ -144,8 +145,8 @@ end
 
 function Player:update(dt)
 	local xveloc, yveloc = self.body:getLinearVelocity()
-	if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:setLinearVelocity(plen(0.45), yveloc)
-	elseif (xveloc > -plen(0.45)) and (self.movDirection == -1) then self.body:setLinearVelocity(-plen(0.45), yveloc)
+	if (xveloc < plen(0.45)) and (self.movDirection == 1) then self.body:setLinearVelocity(plen(self.speed), yveloc)
+	elseif (xveloc > -plen(0.45)) and (self.movDirection == -1) then self.body:setLinearVelocity(-plen(self.speed), yveloc)
 	elseif (self.movDirection == 0) then
 		if (xveloc > plen(0.07) ) then
 			self.body:applyForce(-100000, 0)
