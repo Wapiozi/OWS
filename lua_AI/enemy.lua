@@ -229,6 +229,7 @@ function Enemy:new(type, x, y) -- + class of enemy, warior, magician..
 	self.noise_time = 0
 	self.question = self.type.question or false
 	self.searching = {time = 0, state = false}
+	self.firstTimeSeen = false
 
 	if self.type.enemyType == "fly" then
 		self.movDirectionY = 1
@@ -527,7 +528,7 @@ function Enemy:trigerredMovement(dt)
 		end
 	elseif
 	--MOVE--
-	(self.goToLastSeenXPoint == true) and (self.lastSeenXPoint ~= nil) and self.behaviour.movement_ad == "follow" then
+	(self.goToLastSeenXPoint == true) and (self.lastSeenXPoint ~= nil) and self.behaviour.movement_ad == "aggressive" then
 			if (x1 < self.lastSeenXPoint) then
 				self.movDirection = 1
 				self.side = 1 * self.type.imgturn
@@ -637,7 +638,7 @@ function Enemy:trigerredMovement(dt)
 		player1.jumpCoordX = nil
 	end
 
-	if (self.goToLastSeenXPoint == true) and (self.lastSeenXPoint ~= nil) and (flen(math.abs(self.lastSeenXPoint - x1)) > 0.05 ) then
+	if (self.goToLastSeenXPoint == true) and (self.lastSeenXPoint ~= nil) and (flen(math.abs(self.lastSeenXPoint - x1)) > 0.2 ) then
 		if (x1 < self.lastSeenXPoint) then
 			self.movDirection = 1
 			self.side = 1 * self.type.imgturn
@@ -684,10 +685,12 @@ function Enemy:detect()
 			if (obj.name == "player") then
 				if hit.fraction > 0.92 then canBeSeen = false end
 				local player_fraction = hit.fraction
-				self.lastSeenXPoint = x2
+				if self.firstTimeSeen == true then
+					self.lastSeenXPoint = x2
+				end
 				--player1.hp = hit.fraction
 				--break
-			elseif (obj.name ~= "enemy") and (obj.name ~= "item") then
+			elseif (obj.name ~= "enemy") and (obj.name ~= "item") and (obj.name ~= "magic") and (obj.image ~= TransitionImg) then
 				--love.event.quit()
 				if player_fraction ~= nil then
 					if player_fraction > hit.fraction then canBeSeen = false end
@@ -712,8 +715,12 @@ function Enemy:detect()
 		]]--
 		-- Clear fixture hit list.
 		Ray.hitList = {}
-		if canBeSeen == false then
+		if canBeSeen == false and self.firstTimeSeen == true then
 			self.goToLastSeenXPoint = true
+			self.firstTimeSeen = false
+		end
+		if canBeSeen == true then
+			self.firstTimeSeen = true
 		end
 		return canBeSeen
 	end
