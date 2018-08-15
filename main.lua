@@ -296,11 +296,18 @@ function love.keypressed(key)
 	if (key == 'e') then
 		items:exec(inventory1.containerFunc)
 	end
+
+	if (key == "z") then
+		camera:scale(0.5)
+	end
 end
 
 function love.keyreleased(key)
 	if (key == "d") or (key == "a") then
 		player1.movDirection = 0
+	end
+	if (key == "z") then
+		camera:scale(1)
 	end
 end
 
@@ -459,6 +466,8 @@ function love.update(dt)
 	local dx = camera._x + screenWidth / 2 - player1.body:getX()
 	local dy = camera._y + screenHeight / 2 - player1.body:getY()
 	camera:move(dx*4*dt,dy*10*dt)
+--	camera._x = camera._x + (math.random()-0.5)*8
+--	camera._y = camera._y + (math.random()-0.5)*8
 	player1.nearEnemies = false
 	enemies:update(dt)
 	player1:update(dt)
@@ -485,8 +494,10 @@ function love.update(dt)
 	Buttons:update(1) --W A S D buttons
 	if questMenuOpen then
 		Buttons:load(2) --It's QUEST MENU, Bae!
-  	Buttons:update(2) --It's QUEST MENU, Bae!
-  end
+  		Buttons:update(2) --It's QUEST MENU, Bae!
+  	end
+
+	--camera.rotation = (math.random()-0.5)/12
 end
 
 function love.draw()
@@ -495,7 +506,7 @@ function love.draw()
 	-------------------START DRAWING ROOM-------------------
 	camera:set()
 
-	--lights:draw(camera._x, camera._y)
+	lights:draw(camera._x, camera._y)
 
 	love.graphics.draw(BrickImg, backgr)
 
@@ -512,7 +523,7 @@ function love.draw()
 	player1:draw()
 	if not inventoryMode then bullets:CheckDraw() end
 
-	--lights:endDraw()
+	lights:endDraw()
 
 	graph1:draw()
 

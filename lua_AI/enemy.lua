@@ -486,8 +486,6 @@ function Enemy:trigerredMovement(dt)
 
 	--FLY--
 
-	print(self.goToLastSeenXPoint, self.lastSeenXPoint, self.behaviour.movement_ad)
-
 	if self.behaviour.movement_ad == "fly_aggressive" then
 		if (self.attackTimer <= 0) then
 			self.fixture:setFriction(0)

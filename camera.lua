@@ -32,8 +32,8 @@ end
 
 function camera:scale(sx, sy)
     sx = sx or 1
-    self.scaleX = self.scaleX * sx
-    self.scaleY = self.scaleY * (sy or sx)
+    self.scaleX = sx
+    self.scaleY = (sy or sx)
 end
 
 function camera:setX(value)
