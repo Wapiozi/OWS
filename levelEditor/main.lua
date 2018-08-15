@@ -223,7 +223,7 @@ end
 function CreateButtons()
 	local mx, my = love.mouse.getPosition()
 	if suit.Button("Create Brick", 10,50, 100,30).hit then
-		walls:add(Brick:new(flen(mx+curPos.x), flen(my+curPos.y), 0.5, 0.1, "floor", 0, LaserImg))
+		walls:add(Brick:new(flen(mx+curPos.x), flen(my+curPos.y), 2, 0.01, "floor", 0, LaserImg))
 		showAll = false
     end
 	if suit.Button("Create Enemy", 10,90, 100,30).hit then
@@ -341,7 +341,7 @@ function love.load(arg)
 	PlayerImg = love.graphics.newImage("OWS/sprites/creatures/Player.png")
 	MinecraftInv = love.graphics.newImage("OWS/sprites/inventory/minecraft.png")
 	InvborderImg = love.graphics.newImage("OWS/sprites/inventory/inventory_border.png")
-	MessageImg = love.graphics.newImage("OWS/sprites/creatures/message.png")
+	--MessageImg = love.graphics.newImage("OWS/sprites/creatures/message.png")
 	TransitionImg = love.graphics.newImage("OWS/sprites/WTF_BALLS/Enemy.jpg")
 	--creatures
 		-- enemies

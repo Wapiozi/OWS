@@ -14,5 +14,5 @@ enemies:add(Enemy:new(EnemyTypeMadwizard,2.0822221544054,1.3538889567057))
 enemies:add(Enemy:new(NpcTypeChallenge,2.5419443766276,1.3052777608236))
 enemies:add(Enemy:new(EnemyTypeBat,0.68083326551649,0.7705556233724))
 lights:add(1.1613889058431,0.78722220526801,0.5,false,nil,0.915,0.625,0.785)
-envirsh:add(Transition:new(0.15444444020589,1.3580556233724,"maps/BigRoom",nil))
+envirsh:add(Transition:new(0.15444444020589,1.3580556233724,"maps/level3",nil))
 backgr = love.graphics.newQuad(plen(-100), plen(-100), plen(200), plen(200), BrickImg:getDimensions())end

@@ -495,7 +495,7 @@ function love.draw()
 	-------------------START DRAWING ROOM-------------------
 	camera:set()
 
-	lights:draw(camera._x, camera._y)
+	--lights:draw(camera._x, camera._y)
 
 	love.graphics.draw(BrickImg, backgr)
 
@@ -512,7 +512,7 @@ function love.draw()
 	player1:draw()
 	if not inventoryMode then bullets:CheckDraw() end
 
-	lights:endDraw()
+	--lights:endDraw()
 
 	graph1:draw()
 
