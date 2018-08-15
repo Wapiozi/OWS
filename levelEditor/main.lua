@@ -397,7 +397,7 @@ function love.load(arg)
 	camera:setPosition(0,screenWidth/2)
 
 	---------------CREATING ROOM--------------------------
-	currentMap = dofile("OWS/maps/BigRoom"..".lua")
+	currentMap = dofile("OWS/maps/testgraph"..".lua")
 
 	enemies = Container:new() -- Category 3
 	items = Container:new() --Category 4
