@@ -28,7 +28,7 @@ function loadMap(transitionInd)
 	--:add(Enemy:new(EnemyTypeBat, 1, 2))
 	enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
 
-    envirsh:add(Transition:new(1, 2.9, "maps/testgraph", 1))
+    envirsh:add(Transition:new(1, 2.9, "maps/graphmap2", 1))
     envirsh:add(Transition:new(2, 2.9, "maps/outMap", 2))
 
     --[[1]] graph1:addVertex(0.6, 2.9, {q = 0})

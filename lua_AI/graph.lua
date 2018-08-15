@@ -48,11 +48,13 @@ function Graph:addNB(i, nb, single)
 	self[i].nb = nb
     for j = 1, nb.q do
 		local vec = self[i].nb[j].vertex
-        self[vec].nb.q = self[vec].nb.q + 1
-		self[vec].nb[self[vec].nb.q] = {}
-		self[vec].nb[self[vec].nb.q].vertex = i
-		self[i].nb[j].length = getDist(self[i].x, self[i].y, self[j].x, self[j].y)
-        self[vec].nb[self[vec].nb.q].length = self[i].nb[j].length
+		if vec <= self.vertexQuantity then
+        	self[vec].nb.q = self[vec].nb.q + 1
+			self[vec].nb[self[vec].nb.q] = {}
+			self[vec].nb[self[vec].nb.q].vertex = i
+			self[i].nb[j].length = getDist(self[i].x, self[i].y, self[vec].x, self[vec].y)
+        	self[vec].nb[self[vec].nb.q].length = self[i].nb[j].length
+		end
 		--[[
 		if math.abs(self[i].x - self[vec].x) >= math.abs(self[i].y - self[vec].y) then
 			self[i].nb[j].state = 'move'
@@ -195,7 +197,7 @@ function Graph:draw()
 				local xx, yy = pcoords(self[self[i].nb[j].vertex].x, self[self[i].nb[j].vertex].y)
 				love.graphics.line(x, y, xx, yy)
 				local Mx,My = (x + xx) /2, (y + yy) /2
-				love.graphics.print(string.format("%.2f",tostring(self[i].nb[j].length)), Mx - plen(0.008), My - plen(0.04))
+				--love.graphics.print(string.format("%.2f",tostring(self[i].nb[j].length)), Mx - plen(0.008), My - plen(0.04))
 			end
 		end
 	end
