@@ -50,7 +50,7 @@ end
 Torch = {}
 Torch.__index = Torch
 
-function Torch:new(x, y)
+function Torch:new(x, y, bright)
     self = setmetatable({}, self)
 
 	x, y = pcoords(x, y)
@@ -74,7 +74,7 @@ function Torch:new(x, y)
     self.canInteract = false
     self.attachedBody = nil
     self.joint = nil
-    lights:add(x, y, 0.01, true, self.body, 1, 0.7, 0.05)
+    lights:add(x, y, bright or 0.01, true, self.body, 1, 0.7, 0.05)
     return self
 end
 
