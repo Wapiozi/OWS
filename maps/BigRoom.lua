@@ -30,6 +30,7 @@ function loadMap(transitionInd)
 
     envirsh:add(Transition:new(1, 2.9, "maps/start", 1))
     envirsh:add(Transition:new(2, 2.9, "maps/outMap", 2))
+    envirsh:add(Transition:new(3, 2.9, "maps/traproom", 2))
 
     backgr = love.graphics.newQuad(0, 0, plen(16/9*4), plen(3), BrickImg:getDimensions())
 end
