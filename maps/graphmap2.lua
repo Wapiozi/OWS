@@ -1,10 +1,10 @@
-spawnPoints = { 
+spawnPoints = {
  {x = 1,y = 2.9},
 {x = 2,y = 2.9},
 {x = 4.9238891601563,y = 2.4872222900391},
 
-} 
- 
+}
+
 function loadMap(transitionInd)
 player1:setPosition(spawnPoints[transitionInd].x,spawnPoints[transitionInd].y)
 camera:setBounds(0,0,screenWidth*4,screenHeight*3)
@@ -63,5 +63,6 @@ graph1:addVertex(5.7183336046007,2.5025000678168,{q = 2,[1] = {vertex = 14},[2] 
 graph1:addVertex(6.3224999321832,2.7233334011502,{q = 2,[1] = {vertex = 12},[2] = {vertex = 9}})
 graph1:addVertex(4.5722222222222,1.8777777777778,{q = 1,[1] = {vertex = 20}})
 graph1:addVertex(2.6027777777778,1.8777777777778,{q = 1,[1] = {vertex = 28}})
+graph1:countLengthes()
 backgr = love.graphics.newQuad(plen(-100), plen(-100), plen(200), plen(200), BrickImg:getDimensions())
 end

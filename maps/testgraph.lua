@@ -52,5 +52,6 @@ graph1:addVertex(6.5724999321832,2.2900000678168,{q = 1,[1] = {vertex = 15}})
 graph1:addVertex(7.0363891601562,2.2872222900391,{q = 1,[1] = {vertex = 17}})
 graph1:addVertex(7.0197224934896,2.0691667344835,{q = 1,[1] = {vertex = 18}})
 graph1:addVertex(4.9475002712674,2.0775000678168,{q = 1,[1] = {vertex = 19}})
+graph1:countLengthes()
 backgr = love.graphics.newQuad(plen(-100), plen(-100), plen(200), plen(200), BrickImg:getDimensions())
 end
