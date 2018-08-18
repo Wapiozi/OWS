@@ -830,8 +830,8 @@ function Enemy:update(dt)
 				self.searching.state = false
 				self.MovementGraph = graph1:whereToGo(self)
 				player1.bestVertex1, player1.bestVertex2 = self.MovementGraph[self.MovementGraph.i],self.MovementGraph[self.MovementGraph.i + 1]
-				if  (x1 < graph1[player1.bestVertex1].x and graph1[player1.bestVertex2].x < graph1[player1.bestVertex1].x and graph1[player1.bestVertex2].x > x1) or
-					(x1 > graph1[player1.bestVertex1].x and graph1[player1.bestVertex2].x > graph1[player1.bestVertex1].x and graph1[player1.bestVertex2].x < x1) then
+				if  (x1 > graph1[player1.bestVertex1].x and graph1[player1.bestVertex2].x < graph1[player1.bestVertex1].x) or
+					(x1 > graph1[player1.bestVertex1].x and graph1[player1.bestVertex2].x > graph1[player1.bestVertex1].x) then
 					self.MovementGraph.i = self.MovementGraph.i + 1
 				end
 			end
