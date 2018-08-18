@@ -434,7 +434,7 @@ end
 
 function Enemy:standartMovement(dt, g)
 	--check for the floor (in future)
-	if g == nil then
+	if (self.behaviour.movement_ad ~= "aggressive" and self.behaviour.movement_ad ~= "follow") or (g == nil) then
 		--FLY--
 		if self.behaviour.movement_bd == "fly_stay" then
 			local speed, direction = 0.35, 0
@@ -632,7 +632,7 @@ function Enemy:trigerredMovement(dt)
 		end
 	end
 
-	if (player1.jumpCoordX ~= nil) and (flen(math.abs(player1.jumpCoordX - x1)) + (self.movDirection*0.02) <= 0.15 ) then
+	if (player1.jumpCoordX ~= nil) and (flen(math.abs(player1.jumpCoordX - x1)) + (self.movDirection*0.02) <= 0.15 ) and ( self.behaviour.movement_ad == "follow" or  self.behaviour.movement_ad == "aggressive") then
 		--love.event.quit()
 		self:jump(1.5)
 		player1.jumpCoordX = nil
@@ -829,9 +829,13 @@ function Enemy:update(dt)
 			else
 				self.searching.state = false
 				self.MovementGraph = graph1:whereToGo(self)
-				player1.bestVertex1, player1.bestVertex2 = self.MovementGraph[self.MovementGraph.i],self.MovementGraph[self.MovementGraph.q]
+				player1.bestVertex1, player1.bestVertex2 = self.MovementGraph[self.MovementGraph.i],self.MovementGraph[self.MovementGraph.i + 1]
+				if  (x1 < graph1[player1.bestVertex1].x and graph1[player1.bestVertex2].x < graph1[player1.bestVertex1].x and graph1[player1.bestVertex2].x > x1) or
+					(x1 > graph1[player1.bestVertex1].x and graph1[player1.bestVertex2].x > graph1[player1.bestVertex1].x and graph1[player1.bestVertex2].x < x1) then
+					self.MovementGraph.i = self.MovementGraph.i + 1
+				end
 			end
-		elseif self.MovementGraph ~= nil and self.MovementGraph.q  + 1> self.MovementGraph.i then
+		elseif self.MovementGraph ~= nil and self.MovementGraph.q + 1> self.MovementGraph.i then
 			--love.event.quit(0)
 			self:standartMovement(dt,graph1[self.MovementGraph[self.MovementGraph.i]])
 		else

@@ -210,7 +210,7 @@ function Graph:draw()
 
 			for j = 1, self[i].nb.q do
 				local xx, yy = pcoords(self[self[i].nb[j].vertex].x, self[self[i].nb[j].vertex].y)
-				love.graphics.line(x, y, xx, yy)
+				love.graphics.line(x, y, xx + 5, yy + 5)
 				local Mx,My = (x + xx) /2, (y + yy) /2
 				--love.graphics.print(string.format("%.2f",tostring(self[i].nb[j].length)), Mx - plen(0.008), My - plen(0.04))
 			end
