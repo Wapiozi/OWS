@@ -15,6 +15,7 @@ libtraps = require("lua_objects/traps")
 suit = require ("SUIT")
 libbuttons = require ("Buttons")
 libdialogs = require ("Dialogs")
+libinterface = require("UI/interface")
 --libnpc = require("npc")
 utf8 = require("utf8")
 
@@ -61,6 +62,10 @@ end
 function getDist(x1, y1, x2, y2)
     local dist = math.sqrt((x2-x1) ^ 2 + (y2 - y1) ^ 2)
     return dist
+end
+
+function getWid()
+	return fcoords(screenWidth)
 end
 
 destroyer = {}
@@ -311,6 +316,12 @@ function love.keyreleased(key)
 	end
 end
 
+function love.mousepressed(x, y, button, isTouch)
+	if not isTouch then
+		UI:pressed("mouse", x, y)
+	end
+end
+
 function love.mousereleased(x, y, button)
 	if inventoryOpen then
 	   if button == 1 and released == false then
@@ -318,6 +329,15 @@ function love.mousereleased(x, y, button)
 			released = true
 	   end
 	end
+	UI:released("mouse")
+end
+
+function love.touchpressed(id, x, y, dx, dy, pressure)
+	UI:pressed(id, x, y)
+end
+
+function love.touchreleased(id, x, y, dx, dy, pressure)
+	UI:released(id)
 end
 
 function eraseMap()
@@ -414,6 +434,7 @@ function love.load(arg)
 	Inventory:init()
 	Enemy:init()
 	Traps:init()
+	UI:init()
 
 	Ray = {
 		x1 = 0,
@@ -452,6 +473,16 @@ function love.load(arg)
 	endLoadMap()
 
 	----------------END OF CREATING ROOM------------------
+
+	UI:newGestureElement()
+
+	--test button
+	local onClick = function(element)
+		local x, y = player1:getMagicCoords()
+		bullets:add(Magic:new(x, y, 1*player1.side, 0, MagicTypeGround, "player"))
+	end
+
+	UI:newTextButton(0.3, 0.3, 0.2, 0.05, "fuck the system", onClick)
 end
 
 
@@ -478,6 +509,7 @@ function love.update(dt)
 	envir:update(dt)
 	envirsh:update(dt)
 	traps:update(dt)
+	UI:update(dt, player1.body:getPosition())
 
 	-- Clear fixture hit list.
 	Ray.hitList = {}
@@ -501,7 +533,8 @@ function love.update(dt)
 end
 
 function love.draw()
-	if not inventoryOpen then loadMovement() end
+	local x, y = love.mouse.getPosition()
+	--if not inventoryOpen then loadMovement(x, y, love.mouse.isDown(1)) end
 
 	-------------------START DRAWING ROOM-------------------
 	camera:set()
@@ -561,6 +594,8 @@ function love.draw()
 	love.graphics.print(tostring(player1.bestVertex1),50,10)--love.timer.getFPS( )), 10, 10)
 	love.graphics.print(tostring(player1.bestVertex2),100,10)
 	player1:drawHP()
+
+	UI:draw()
 
 end
 

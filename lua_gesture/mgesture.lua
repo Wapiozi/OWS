@@ -1,14 +1,16 @@
 math = require("math")
 
-prevx, prevy = love.mouse.getPosition()
-x, y = love.mouse.getPosition()
-prevMov = false
-prevDirect = null
-toler = 20		--line tolerance
-angToler = 22.5  --angle tolerance
-lastMovement = {}
-got = 0       --there is free unused gesture
-prevState = 1   --needed for right got status
+local prevx, prevy = love.mouse.getPosition()
+local x, y = love.mouse.getPosition()
+local prevMov = false
+local prevDirect = null
+local toler = 20		--line tolerance
+local angToler = 22.5  --angle tolerance
+local lastMovement = {}
+local got = 0       --there is free unused gesture
+local prevState = 1   --needed for right got status
+local gest = {}
+local lastIn = 1
 
 --[[
 Angles:
@@ -25,12 +27,7 @@ Can't be more than 2 equal angles in a row
 
 ]]--
 
-gr = love.graphics
-
 local function getDirection(px, py, nx, ny)
-
-	gr.line(px, py, nx, ny)
-
 	local xx = nx - px
 	local yy = ny - py
 	local mv = 0
@@ -56,16 +53,14 @@ local function getDirection(px, py, nx, ny)
 	return res
 end
 
-gest = {}
-lastIn = 1
+function setStart(x, y)
+	prevx, prevy = x, y
+end
 
-function loadMovement()
-
-
-	if love.mouse.isDown(1) then
+function loadMovement(x, y, state)
+	if state then
 		prevState = 0
-		x, y = love.mouse.getPosition()
-		if (math.abs(x-prevx) > toler) or (math.abs(y-prevy) > toler) then
+		if  (math.abs(x-prevx) > toler) or (math.abs(y-prevy) > toler) then
 			local direct = getDirection(prevx, prevy, x, y)
 			prevx = x
 			prevy = y
@@ -98,9 +93,7 @@ function loadMovement()
 			else
 				lastIn = lastIn + 1
 				gest[lastIn] = dir
-
 			end
-			gr.print(tostring(dir), 100, 100)
 			lastMovement = dir
 			prevDirect = dir
 		end
@@ -111,7 +104,7 @@ function loadMovement()
 			gest[lastIn] = 10   --end code
 			prevState = 1
 		end
-		prevx, prevy = love.mouse.getPosition()
+		prevx, prevy = x, y
 		lastIn = 1
 		prevDirect = null
 		if got == 0 then gest = {} end
