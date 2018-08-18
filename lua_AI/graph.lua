@@ -33,7 +33,7 @@ function Graph:deleteNB(i,j)
 
 end
 
-function Graph:addNB(i, nb, single)
+--function Graph:addNB(i, nb)
     --[[
         nb = {
             q = quantity of connected vertexes
@@ -45,8 +45,8 @@ function Graph:addNB(i, nb, single)
         }
 
     ]]
-	self[i].nb = nb
-    for j = 1, nb.q do
+--	self[i].nb = nb
+    --[[for j = 1, nb.q do
 		local vec = self[i].nb[j].vertex
 		if vec <= self.vertexQuantity then
         	self[vec].nb.q = self[vec].nb.q + 1
@@ -54,7 +54,7 @@ function Graph:addNB(i, nb, single)
 			self[vec].nb[self[vec].nb.q].vertex = i
 			self[i].nb[j].length = getDist(self[i].x, self[i].y, self[vec].x, self[vec].y)
         	self[vec].nb[self[vec].nb.q].length = self[i].nb[j].length
-		end
+		end]]
 		--[[
 		if math.abs(self[i].x - self[vec].x) >= math.abs(self[i].y - self[vec].y) then
 			self[i].nb[j].state = 'move'
@@ -63,15 +63,25 @@ function Graph:addNB(i, nb, single)
 			self[i].nb[j].state = 'jump'
 			self[vec].nb[self[vec].nb.q].state = 'jump'
 		end
-		]]
-    end
+    end]]
+--end
+
+function Graph:countLengthes()
+	for i = 1, self.vertexQuantity do
+		for j = 1, self[i].nb.q do
+			local vec = self[i].nb[j].vertex
+			self[i].nb[j].length = getDist(self[i].x, self[i].y, self[vec].x, self[vec].y)
+		end
+	end
 end
 
 function Graph:addVertex(x1, y1, nb)
     self.vertexQuantity = self.vertexQuantity  + 1
-    local i = self.vertexQuantity
+	local i = self.vertexQuantity
+	color = { r = (math.random(0,100)/100), g = (math.random(0,100)/100), b = (math.random(0,100)/100)}
     self[i] = {x = x1, y = y1, name = "graph", dist = 0} --name needed for level editor
-    if nb ~= nil then self:addNB(i,nb) end
+	self[i].color = color
+    if nb ~= nil then self[i].nb = nb end--self:addNB(i,nb) end
 end
 
 function Graph:equalTables(ind1,ind2)
@@ -188,6 +198,11 @@ end
 
 function Graph:draw()
 	for i = 1, self.vertexQuantity do
+
+		local r, g, b, a = love.graphics.getColor()
+		love.graphics.setColor(self[i].color.r, self[i].color.g, self[i].color.b, 1)
+		--love.graphics.line(self.x, self.y, self.x + plen(self.type.maxLen*self.vx), self.y + plen(self.type.maxLen*self.vy))
+
 		local x, y = pcoords(self[i].x, self[i].y)
 		love.graphics.print(tostring(i), x - plen(0.008), y - plen(0.04))
 		love.graphics.circle("line", x, y, 10)
@@ -195,11 +210,14 @@ function Graph:draw()
 
 			for j = 1, self[i].nb.q do
 				local xx, yy = pcoords(self[self[i].nb[j].vertex].x, self[self[i].nb[j].vertex].y)
-				love.graphics.line(x, y, xx, yy)
+				love.graphics.line(x, y, xx + 5, yy + 5)
 				local Mx,My = (x + xx) /2, (y + yy) /2
 				--love.graphics.print(string.format("%.2f",tostring(self[i].nb[j].length)), Mx - plen(0.008), My - plen(0.04))
 			end
 		end
+
+		love.graphics.setColor(r, g, b, a)
+
 	end
 end
 
