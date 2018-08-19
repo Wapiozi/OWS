@@ -830,7 +830,10 @@ function Enemy:update(dt)
 	if self.timer > 0 then
 		self.timer = self.timer - dt
 		self:trigerredMovement(dt)
-		if self.timer <= 0 then self.searching.time = 3 self.searching.state = true end
+		if self.timer <= 0 then
+			if self.type.enemyType ~= 'fly' then self.searching.time = 3 else self.searching.time = 0 end
+			self.searching.state = true
+		end
 	elseif self.noise_time > 0 or self.smell_detection_time > 0 then
 		if self.noise_time > 0 then
 			self.noise_time = self.noise_time - dt
@@ -846,11 +849,13 @@ function Enemy:update(dt)
 				self.searching.time = self.searching.time - dt
 			else
 				self.searching.state = false
-				self.MovementGraph = graph1:whereToGo(self)
-				player1.bestVertex1, player1.bestVertex2 = self.MovementGraph[self.MovementGraph.i],self.MovementGraph[self.MovementGraph.i + 1]
-				if  (x1 > graph1[player1.bestVertex1].x and graph1[player1.bestVertex2].x < graph1[player1.bestVertex1].x) or
-					(x1 > graph1[player1.bestVertex1].x and graph1[player1.bestVertex2].x > graph1[player1.bestVertex1].x) then
-					self.MovementGraph.i = self.MovementGraph.i + 1
+				if graph1[1] ~= nil then
+					self.MovementGraph = graph1:whereToGo(self)
+					player1.bestVertex1, player1.bestVertex2 = self.MovementGraph[self.MovementGraph.i],self.MovementGraph[self.MovementGraph.i + 1]
+					if  (x1 > graph1[player1.bestVertex1].x and graph1[player1.bestVertex2].x < graph1[player1.bestVertex1].x) or
+						(x1 > graph1[player1.bestVertex1].x and graph1[player1.bestVertex2].x > graph1[player1.bestVertex1].x) then
+						self.MovementGraph.i = self.MovementGraph.i + 1
+					end
 				end
 			end
 		elseif self.MovementGraph ~= nil and self.MovementGraph.q + 1> self.MovementGraph.i then
