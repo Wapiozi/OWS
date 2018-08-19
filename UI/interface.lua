@@ -38,7 +38,6 @@ end
 function UI.standartTextClickRelease(button)
     button.ftextColor = {1, 1, 1, 0.9}
     button.fcolor = {0.5, 0.5, 0.5, 0}
-    button.time = 0
 end
 
 function UI.standartTextUpdate(button, dt)
@@ -107,6 +106,7 @@ function UI:newCustomElement(x, y, width, height, onClick, onRelease, onDraw, on
 
     elem.x, elem.y, elem.width, elem.height = x, y, width, height
     elem.state = false
+    elem.time = 0
     elem.onClick = onClick or self.doNothing
     elem.onRelease = onRelease or self.doNothing
     elem.onDraw = onDraw or self.doNothing
@@ -171,7 +171,10 @@ end
 function UI:init()
     qholo = love.graphics.newImage("UI/textures/hologram.png")
     self.x, self.y = 0, 0
-    holoshader = love.graphics.newShader("shaders/UIholo.frag")
+end
+
+function UI:clear()
+    self.elements = {}
 end
 
 function UI:pressed(id, x, y)
@@ -192,6 +195,7 @@ function UI:released(id)
 			el.state = false
 			el:onRelease()
 			el.touchID = nil
+            el.time = 0
 			break
 		end
 	end
@@ -218,11 +222,4 @@ function UI:draw()
     for i, v in pairs(self.elements) do
         v:onDraw()
     end
-
-    holoshader:send("time", love.timer.getTime())
-    holoshader:send("tarColor", {0, 0.1, 1, 0.4})  --color of hologram
-
-    love.graphics.setShader(holoshader)
-    love.graphics.draw(qholo, 800, 50)
-    love.graphics.setShader()
 end

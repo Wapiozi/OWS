@@ -16,6 +16,7 @@ suit = require ("SUIT")
 libbuttons = require ("Buttons")
 libdialogs = require ("Dialogs")
 libinterface = require("UI/interface")
+libscreens = require("UI/screens")
 --libnpc = require("npc")
 utf8 = require("utf8")
 
@@ -309,7 +310,7 @@ end
 
 function love.keyreleased(key)
 	if (key == "d") or (key == "a") then
-		player1.movDirection = 0
+		player1:stop()
 	end
 	if (key == "z") then
 		camera:scale(1)
@@ -435,6 +436,7 @@ function love.load(arg)
 	Enemy:init()
 	Traps:init()
 	UI:init()
+	screens:init()
 
 	Ray = {
 		x1 = 0,
@@ -474,15 +476,7 @@ function love.load(arg)
 
 	----------------END OF CREATING ROOM------------------
 
-	UI:newGestureElement()
-
-	--test button
-	local onClick = function(element)
-		local x, y = player1:getMagicCoords()
-		bullets:add(Magic:new(x, y, 1*player1.side, 0, MagicTypeGround, "player"))
-	end
-
-	UI:newTextButton(0.3, 0.3, 0.2, 0.05, "fuck the system", onClick)
+	screens:mainScreenSet()
 end
 
 
@@ -510,6 +504,7 @@ function love.update(dt)
 	envirsh:update(dt)
 	traps:update(dt)
 	UI:update(dt, player1.body:getPosition())
+	screens:update(dt)
 
 	-- Clear fixture hit list.
 	Ray.hitList = {}
@@ -522,12 +517,12 @@ function love.update(dt)
 	but_d = suit.Button("->",{id=3, cornerRadius=plen(0.05)} , plen(0.40),plen(0.7), plen(0.15), plen(0.15))
 	but_w = suit.Button("^",{id=4, cornerRadius=plen(0.05)} , plen(0.25),plen(0.55), plen(0.15), plen(0.15))
 	]]--
-	Buttons:load(1) --W A S D buttons
-	Buttons:update(1) --W A S D buttons
-	if questMenuOpen then
-		Buttons:load(2) --It's QUEST MENU, Bae!
-  		Buttons:update(2) --It's QUEST MENU, Bae!
-  	end
+	--Buttons:load(1) --W A S D buttons
+	--Buttons:update(1) --W A S D buttons
+	--if questMenuOpen then
+	--	Buttons:load(2) --It's QUEST MENU, Bae!
+  	--	Buttons:update(2) --It's QUEST MENU, Bae!
+  --	end
 
 	--camera.rotation = (math.random()-0.5)/12
 end
@@ -574,7 +569,7 @@ function love.draw()
 	end
 
 	camera:unset()
-	Buttons:draw(1) --W A S D buttons
+	--Buttons:draw(1) --W A S D buttons
 	enemies:exec(Enemy.work)
 
 	if inventoryOpen then
@@ -593,9 +588,9 @@ function love.draw()
 	love.graphics.print(tostring(love.timer.getFPS( )), 10, 10)
 	love.graphics.print(tostring(player1.bestVertex1),50,10)--love.timer.getFPS( )), 10, 10)
 	love.graphics.print(tostring(player1.bestVertex2),100,10)
-	player1:drawHP()
 
 	UI:draw()
+	player1:drawHP()
 
 end
 
