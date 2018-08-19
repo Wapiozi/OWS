@@ -221,3 +221,7 @@ function Player:shoot(gesture)
 		i = i+1
 	end
 end
+
+function Player:stop()
+	self.movDirection = 0
+end
