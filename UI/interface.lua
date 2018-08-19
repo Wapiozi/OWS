@@ -219,8 +219,10 @@ function UI:draw()
         v:onDraw()
     end
 
+    local r, g, b = math.random(0.00,0.00), math.random(0.00,0.00), math.random(0.60,0.80)--ImageData:getPixel( 800, 50 )
+
     holoshader:send("time", love.timer.getTime())
-    holoshader:send("tarColor", {0, 0.1, 1, 0.4})  --color of hologram
+    holoshader:send("tarColor", {r, g, b, 0.4})  --color of hologram
 
     love.graphics.setShader(holoshader)
     love.graphics.draw(qholo, 800, 50)

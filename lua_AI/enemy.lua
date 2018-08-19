@@ -38,7 +38,7 @@ function Enemy:init()
 		ghost = false,
 
 		behaviour = {
-			movement_bd = "fly_stay",
+			movement_bd = "fly_move",
 			movement_ad = "fly_aggressive",
 			attack = "fly_contact",
 			sensor = {vision = true, smell = false, noise = false},
@@ -434,11 +434,16 @@ end
 
 function Enemy:standartMovement(dt, g)
 	--check for the floor (in future)
-	if (self.behaviour.movement_ad ~= "aggressive" and self.behaviour.movement_ad ~= "follow") or (g == nil) then
+	if (self.type.enemyType == "ground" and self.behaviour.movement_ad ~= "aggressive" and self.behaviour.movement_ad ~= "follow")
+	or (self.type.enemyType == "fly" and self.behaviour.movement_bd ~= "fly_move")
+	or (g == nil) then
 		--FLY--
 		if self.behaviour.movement_bd == "fly_stay" then
 			local speed, direction = 0.35, 0
 			self:fly(dt,speed,direction)
+		elseif self.behaviour.movement_bd == "fly_move" then
+			local speed, directionX, directionY = 0.15, 1, 1
+			self:fly(dt,speed,directionX, directionY)
 		--MOVE--
 		elseif self.behaviour.movement_bd == "move" then
 			local speed, direction = 0.35, 1
@@ -458,15 +463,28 @@ function Enemy:standartMovement(dt, g)
 			self.side = self.movDirection * self.type.imgturn
 		end
 
-		if math.abs(x1 - g.x) <= 0.1 and y1 - 0.1 > g.y then
-			self:jump(1.3)
-			--self:jump()
-			--self:jump()
-		else
-			if self.behaviour.movement_bd == "move" or self.behaviour.movement_bd == "slow_move" then
-				local speed, direction = 0.35, 1
-				self:move(dt,speed,direction)
+		if self.type.enemyType == "fly" then
+
+			if g.y <= y1 then
+				self.movDirectionY = -1
+			else
+				self.movDirectionY = 1
 			end
+			local speed, directionX, directionY = 0.35, 1, 1
+			self:fly(dt,speed,directionX, directionY)
+		elseif self.type.enemyType == "ground" then
+			if math.abs(x1 - g.x) <= 0.1 and y1 - 0.1 > g.y then
+				self:jump(1.3)
+				--self:jump()
+				--self:jump()
+			else
+				if self.behaviour.movement_bd == "move" or self.behaviour.movement_bd == "slow_move" then
+					local speed, direction = 0.35, 1
+					self:move(dt,speed,direction)
+				end
+			end
+		elseif self.type.enemyType == "npc" then
+			-- just do nothing
 		end
 
 		if self:nearG(g) then
@@ -802,7 +820,7 @@ function Enemy:update(dt)
 	-- MOVEMENT_________________________________________________________________
 
 	if self.type.enemyType == 'fly' then
-		if (y2 >= y1 + plen(0.2)) then
+		if (y2 >= y1 + plen(0.0525)) then
 			self.movDirectionY = 1
 		else
 			self.movDirectionY = -1

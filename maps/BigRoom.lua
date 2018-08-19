@@ -26,7 +26,7 @@ function loadMap(transitionInd)
 
     --enemies:add(Enemy:new(NpcTypeChallenge, 0.9, 0.8))
 	--:add(Enemy:new(EnemyTypeBat, 1, 2))
-	enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
+	enemies:add(Enemy:new(EnemyTypeBat, 1, 0.8))
 
     envirsh:add(Transition:new(1, 2.9, "maps/graphmap2", 1))
     envirsh:add(Transition:new(2, 2.9, "maps/outMap", 2))
