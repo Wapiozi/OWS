@@ -21,13 +21,13 @@ function loadMap(transitionInd)
 
 	traps:add(Traps:new(1.4, 0.995, TrapTypeSpikes))
 
-	envir:add(EnvObject:new(1, 0.5, ChestImg, true, 1000, 0.3))
+	--envir:add(EnvObject:new(1, 0.5, ChestImg, true, 1000, 0.3))
 	envir:add(EnvObject:new(2, 0.5, ChestImg, true, 1000, 0.3))
 
 	envirsh:add(Torch:new(0.5, 0.1))
 	envirsh:add(Transition:new(1, 0.9, "maps/BigRoom", 1))
 
-	enemies:add(Enemy:new(NpcTypeChallenge, 0.9, 0.8))
+	--enemies:add(Enemy:new(NpcTypeChallenge, 0.9, 0.8))
 	--enemies:add(Enemy:new(EnemyTypeRat, 1.5, 0.8))
 	--enemies:add(Enemy:new(EnemyTypeMadwizard, 1, 0.8))
 

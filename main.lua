@@ -330,7 +330,7 @@ function love.mousereleased(x, y, button)
 			released = true
 	   end
 	end
-	UI:released("mouse")
+	UI:released("mouse", x, y)
 end
 
 function love.touchpressed(id, x, y, dx, dy, pressure)
@@ -338,7 +338,7 @@ function love.touchpressed(id, x, y, dx, dy, pressure)
 end
 
 function love.touchreleased(id, x, y, dx, dy, pressure)
-	UI:released(id)
+	UI:released(id, x, y)
 end
 
 function eraseMap()
@@ -585,12 +585,9 @@ function love.draw()
 		love.mouse.setVisible(true)
 	end
 
-	love.graphics.print(tostring(love.timer.getFPS( )), 10, 10)
-	love.graphics.print(tostring(player1.bestVertex1),50,10)--love.timer.getFPS( )), 10, 10)
-	love.graphics.print(tostring(player1.bestVertex2),100,10)
+	love.graphics.print(tostring(love.timer.getFPS( )), 0, 0)
 
 	UI:draw()
-	player1:drawHP()
 
 end
 

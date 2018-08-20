@@ -151,13 +151,7 @@ function UI:newGestureElement()
             loadMovement(x, y, true)
         end
     end
-    gest.onRelease = function(gest)
-        local x, y
-        if gest.touchID == "mouse" then
-            x, y = love.mouse.getPosition()
-        else
-            x, y = love.touch.getPosition(gest.touchID)
-        end
+    gest.onRelease = function(gest, x, y)
         loadMovement(x, y, false)
     end
     setmetatable(gest, elSorter)
@@ -189,11 +183,11 @@ function UI:pressed(id, x, y)
 	end
 end
 
-function UI:released(id)
+function UI:released(id, x, y)
     for j, el in ipairs(UI.elements) do
 		if el.touchID == id then
 			el.state = false
-			el:onRelease()
+			el:onRelease(x, y)
 			el.touchID = nil
             el.time = 0
 			break

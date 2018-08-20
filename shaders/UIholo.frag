@@ -1,3 +1,7 @@
+#ifdef GL_ES
+precision mediump float;
+#endif
+
 extern float time;
 extern vec4 tarColor;
 
